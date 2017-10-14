@@ -36,6 +36,5 @@
 	<classpathentry kind="lib" path="build/libs/scala-parser-combinators_2.11-1.0.4.jar"/>
 	<classpathentry kind="lib" path="build/libs/scala-reflect-2.11.7.jar"/>
 	<classpathentry kind="lib" path="build/libs/tools.jar"/>
-	<classpathentry kind="lib" path="build/libs/WiggleIndexer-master.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
