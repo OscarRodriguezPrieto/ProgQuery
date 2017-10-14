@@ -1,4 +1,4 @@
-package tests;
+package tests.old;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.neo4j.test.TestGraphDatabaseFactory;
 import org.neo4j.graphdb.Result;
 
 import tests.utils.TestUtils;
-import visitors.WiggleVisitor;
+import visitors.TotalVisitor;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.api.JavacTaskImpl;
@@ -51,7 +51,7 @@ public class TypeHierarchyTest {
 
 		CompilationUnitTree u = parse.get(0);
 
-		WiggleVisitor v = new WiggleVisitor(task, graphDb, Collections.singletonMap("projectName", "Test_Extends"));
+		TotalVisitor v = new TotalVisitor(task, graphDb, Collections.singletonMap("projectName", "Test_Extends"));
 		v.scan(u, null);
 
 //		ExecutionEngine engine = new ExecutionEngine(graphDb, new BufferingLogger());
@@ -86,7 +86,7 @@ public class TypeHierarchyTest {
 		CompilationUnitTree u1 = parse.get(0);
 		CompilationUnitTree u2 = parse.get(1);
 
-		WiggleVisitor v = new WiggleVisitor(task, graphDb, Collections.singletonMap("projectName", "Test_Extends"));
+		TotalVisitor v = new TotalVisitor(task, graphDb, Collections.singletonMap("projectName", "Test_Extends"));
 		v.scan(u1, null);
 		v.scan(u2, null);
 
