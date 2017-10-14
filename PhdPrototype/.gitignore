@@ -1,2 +1,2 @@
 *.class
-*.neostore.transaction.db.*
+neostore.transaction.db.*
