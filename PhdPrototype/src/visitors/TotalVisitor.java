@@ -12,7 +12,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 
 import relations.RelationTypes;
-
 import utils.Pair;
 
 import com.sun.source.tree.*;
@@ -28,22 +27,26 @@ import com.sun.tools.javac.tree.TreeInfo;
 import com.sun.tools.javac.tree.JCTree.JCExpression;
 import com.sun.tools.javac.tree.JCTree.LetExpr;
 
-public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationTypes>> {
-	private static final boolean DEBUG = false;
+import cache.nodes.DefinitionCache;
 
+public class TotalVisitor extends TreePathScanner<Void, Pair<Tree, RelationTypes>> {
+	private static final boolean DEBUG = false;
 	private final SourcePositions sourcePositions;
 	private final Trees trees;
 	private final Types types;
+
 	private final GraphDatabaseService graphDb;
 	private CompilationUnitTree currCompUnit;
 	private final Map<String, String> cuProps;
 
 	private final Map<Tree, Node> treeToNodeCache = new HashMap<>();
 	private Map<Tree, Pair<Node, RelationTypes>> todo = new HashMap<>();
-	private Map<String, Node> classTypeCache = new HashMap<>();
+
+	// Relating Symbol/Identifier:String=>Node<:ClassType
 	private Map<String, Node> methodTypeCache = new HashMap<>();
 
-	public WiggleVisitor(JavacTask task, GraphDatabaseService graphDb, Map<String, String> cuProps) {
+	public TotalVisitor(JavacTask task, GraphDatabaseService graphDb, Map<String, String> cuProps) {
+
 		this.types = task.getTypes();
 		this.trees = Trees.instance(task);
 		this.sourcePositions = trees.getSourcePositions();
@@ -58,11 +61,11 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 	@Override
 	public Void visitCompilationUnit(CompilationUnitTree compilationUnitTree, Pair<Tree, RelationTypes> t) {
-
+		System.out.println("**************   Visiting compilation unit   ***************");
 		currCompUnit = compilationUnitTree;
 
 		// DEFAULT
-		Pair<Tree, RelationTypes> n = Pair.create((Tree) compilationUnitTree, RelationTypes.CU_ENCLOSES);
+		Pair<Tree, RelationTypes> n = Pair.create(compilationUnitTree, RelationTypes.HAS_TYPE_DEC);
 
 		Node compilationUnitNode = null;
 		Transaction tx = graphDb.beginTx();
@@ -75,10 +78,11 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 			String fileName = compilationUnitTree.getSourceFile().toUri().toString();
 			compilationUnitNode.setProperty("fileName", fileName);
-			if (DEBUG)
+			if (DEBUG) {
 				System.out.println("Visiting CompilationUnit " + fileName);
-
-			System.out.println("FILE_NAME: " + fileName);
+				System.out.println("CONTAINS: " + treeToNodeCache.containsKey(compilationUnitTree));
+				System.out.println("CU: " + compilationUnitTree);
+			}
 			scan(compilationUnitTree.getPackageAnnotations(), n);
 			scan(compilationUnitTree.getPackageName(), n);
 			scan(compilationUnitTree.getImports(), n);
@@ -111,20 +115,20 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 		TreePath path = TreePath.getPath(currCompUnit, classTree);
 		TypeMirror fullyQualifiedType = trees.getTypeMirror(path);
-
 		Node baseClassNode = null;
 		if (treeToNodeCache.containsKey(classTree)) {
 			baseClassNode = treeToNodeCache.get(classTree);
 		} else {
 			String longName = classTree.getSimpleName().toString();
 			baseClassNode = createSkeletonNode(classTree);
-			baseClassNode.setProperty("simpleName", classTree.getSimpleName().toString());
+
+			// Redundancia simple Name fullyqualifiedName
+			baseClassNode.setProperty("simpleName", longName);
 
 			if (fullyQualifiedType != null) {
 				longName = fullyQualifiedType.toString();
 
 			}
-			System.out.println(longName);
 			baseClassNode.setProperty("fullyQualifiedName", longName);
 
 			connectWithParent(baseClassNode, t.getFirst(), t.getSecond());
@@ -138,6 +142,8 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 		}
 
+		DefinitionCache.CLASS_TYPE_CACHE.putDefinition(fullyQualifiedType.toString(), baseClassNode);
+
 		Tree extendsTree = classTree.getExtendsClause();
 		// extends
 		connectSubType(path, extendsTree, baseClassNode, RelationTypes.IS_SUBTYPE_EXTENDS);
@@ -148,46 +154,76 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 		scan(classTree.getModifiers(), Pair.create((Tree) classTree, RelationTypes.HAS_CLASS_MODIFIERS));
 		scan(classTree.getTypeParameters(), Pair.create((Tree) classTree, RelationTypes.HAS_CLASS_TYPEPARAMETERS));
-
+		// System.out.println("ClassTree: " + classTree);
+		// if (classTree != null)
+		// System.out.println("EXTENDS CLAUSE " + classTree.getExtendsClause());
+		// if (classTree.getExtendsClause() != null)
+		// System.out.println(classTree.getExtendsClause().getClass());
+		// System.out.println("EXTENDS CLAUSE " +
+		// classTree.getExtendsClause()
+		// == null ? "NULL"
+		// : classTree.getExtendsClause().getClass());
 		scan(classTree.getExtendsClause(), Pair.create((Tree) classTree, RelationTypes.HAS_CLASS_EXTENDS));
 
 		scan(classTree.getImplementsClause(), Pair.create((Tree) classTree, RelationTypes.HAS_CLASS_IMPLEMENTS));
-		scan(classTree.getMembers(), Pair.create((Tree) classTree, RelationTypes.HAS_CLASS_BODY));
+		scan(classTree.getMembers(), Pair.create((Tree) classTree, RelationTypes.HAS_STATIC_INIT));
 		return null;
 
 	}
 
-	private void connectSubType(TreePath path, Tree superTree, Node baseClassNode, RelationTypes r) {
+	private Node getClassType(String typeStr) {
+		Node classType = null;
+		if (DEBUG)
+			System.out.println(
+					"CLASS TYPE CACHE CONTAINS TYPESTR :" + DefinitionCache.CLASS_TYPE_CACHE.containsKey(typeStr) + " "
+							+ DefinitionCache.CLASS_TYPE_CACHE.totalTypesCached());
+		if (DefinitionCache.CLASS_TYPE_CACHE.containsKey(typeStr)) {
 
+			classType = DefinitionCache.CLASS_TYPE_CACHE.get(typeStr);
+			System.out.println("CLASS TYPE CACHED" + classType);
+		} else {
+			classType = graphDb.createNode();
+			classType.setProperty("nodeType", "ClassType");
+			classType.setProperty("fullyQualifiedName", typeStr);
+
+			System.out.println("NEW CLASS TYPE " + classType);
+			DefinitionCache.CLASS_TYPE_CACHE.put(typeStr, classType);
+			System.out.println("CLASS TYPE CACHE CONTAINS TYPESTR (AFTER) :"
+					+ DefinitionCache.CLASS_TYPE_CACHE.containsKey(typeStr) + "  "
+					+ DefinitionCache.CLASS_TYPE_CACHE.totalTypesCached());
+
+		}
+		return classType;
+	}
+
+	private void connectSubType(TreePath path, Tree superTree, Node baseClassNode, RelationTypes r) {
+		System.out.println("--------NEW CONNECT SUBTYPE--------" + r.toString());
+		System.out.println("BASE CLASS NODE " + baseClassNode);
 		JCTree jcTree = (JCTree) superTree;
 
+		System.out.println("SUPER TREE :" + superTree);
+		System.out.println("SUPER TREE cast to JCTREE:" + jcTree);
 		if (jcTree != null) {
 			Symbol s = TreeInfo.symbol(jcTree);
+			System.out.println("JCTREE SYMBOL:" + s + " " + s.toString().length() + " " + s.getClass());
 			Tree superClassTree = trees.getTree(s);
 
+			System.out.println("SUPERCLASS TREE :" + superClassTree);
+
+			String typeStr = s.toString();
 			if (superClassTree == null) {
-				String typeStr = s.toString();
-
-				Node classType = null;
-				if (classTypeCache.containsKey(typeStr)) {
-					classType = classTypeCache.get(typeStr);
-				} else {
-					classType = graphDb.createNode();
-					classType.setProperty("nodeType", "ClassType");
-					classType.setProperty("fullyQualifiedName", typeStr);
-					classTypeCache.put(typeStr, classType);
-				}
-
-				baseClassNode.createRelationshipTo(classType, r);
+				System.out.println("Creating rel. " + baseClassNode + " " + getClassType(typeStr) + " " + r);
+				baseClassNode.createRelationshipTo(getClassType(typeStr), r);
 
 			} else if (superClassTree.getKind() == Kind.CLASS || superClassTree.getKind() == Kind.INTERFACE) {
-
+				// POR QUE USA CLASS TYPE CACHE Y TREETONODECACHE¿?¿?¿? SI LOS
+				// TYPES SON NODES, porque responden al mismo nombre¿
 				if (treeToNodeCache.containsKey(superClassTree)) {
 					Node superTypeNode = treeToNodeCache.get(superClassTree);
 					baseClassNode.createRelationshipTo(superTypeNode, r);
+					System.out.println("SUPERCLASSTREE WITH NODE CACHED " + superTypeNode);
 				} else {
-					Pair<Node, RelationTypes> todoTuple = Pair.create(baseClassNode, r);
-					todo.put(superClassTree, todoTuple);
+					baseClassNode.createRelationshipTo(getClassType(typeStr), r);
 				}
 			}
 		}
@@ -198,7 +234,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 		Node methodNode = createSkeletonNode(methodTree);
 		methodNode.setProperty("name", methodTree.getName().toString());
 
-		if (t.getSecond().equals(RelationTypes.HAS_CLASS_BODY)) {
+		if (t.getSecond().equals(RelationTypes.HAS_STATIC_INIT)) {
 			connectWithParent(methodNode, t.getFirst(), RelationTypes.DECLARES_METHOD);
 		} else {
 			connectWithParent(methodNode, t.getFirst(), t.getSecond());
@@ -235,7 +271,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 		attachType(variableTree, variableNode);
 		System.out.println("VARIABLE:" + variableTree.getName() + "(" + variableNode.getProperty("actualType") + ")");
 
-		if (t.getSecond().equals(RelationTypes.HAS_CLASS_BODY)) {
+		if (t.getSecond().equals(RelationTypes.HAS_STATIC_INIT)) {
 			connectWithParent(variableNode, t.getFirst(), RelationTypes.DECLARES_FIELD);
 		} else {
 			connectWithParent(variableNode, t.getFirst(), t.getSecond());
@@ -331,10 +367,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 		Node switchNode = createSkeletonNode(switchTree);
 		connectWithParent(switchNode, t.getFirst(), t.getSecond());
-
 		scan(switchTree.getExpression(), Pair.create((Tree) switchTree, RelationTypes.SWITCH_EXPR));
-
-		// TODO: order
 		scan(switchTree.getCases(), Pair.create((Tree) switchTree, RelationTypes.SWITCH_ENCLOSES_CASES));
 		return null;
 	}
@@ -474,6 +507,34 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 		return null;
 	}
 
+	public Void visitNewArray(NewArrayTree newArrayTree, Pair<Tree, RelationTypes> t) {
+
+		Node newArrayNode = createSkeletonNode(newArrayTree);
+		attachType(newArrayTree, newArrayNode);
+		connectWithParent(newArrayNode, t.getFirst(), t.getSecond());
+
+		scan(newArrayTree.getType(), Pair.create((Tree) newArrayTree, RelationTypes.NEWARRAY_TYPE));
+		scan(newArrayTree.getDimensions(), Pair.create((Tree) newArrayTree, RelationTypes.NEWARRAY_DIMENSION));
+
+		// TODO: order
+		scan(newArrayTree.getInitializers(), Pair.create((Tree) newArrayTree, RelationTypes.NEWARRAY_INIT));
+		return null;
+	}
+
+	public Void visitParenthesized(ParenthesizedTree parenthesizedTree, Pair<Tree, RelationTypes> t) {
+
+		if (parenthesizedTree instanceof LetExpr)
+			return null;
+		Pair<Tree, RelationTypes> n = Pair.create((Tree) parenthesizedTree, RelationTypes.PARENTHESIZED_ENCLOSES);
+
+		Node parenthesizedNode = createSkeletonNode(parenthesizedTree);
+		attachType(parenthesizedTree, parenthesizedNode);
+		connectWithParent(parenthesizedNode, t.getFirst(), t.getSecond());
+
+		scan(parenthesizedTree.getExpression(), n);
+		return null;
+	}
+
 	@Override
 	public Void visitMethodInvocation(MethodInvocationTree methodInvocationTree, Pair<Tree, RelationTypes> t) {
 
@@ -580,6 +641,208 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 					methodDeclNode.createRelationshipTo(methodType, RelationTypes.CALLS);
 				}
 			}
+		case AND:
+			break;
+		case AND_ASSIGNMENT:
+			break;
+		case ANNOTATED_TYPE:
+			break;
+		case ANNOTATION:
+			break;
+		case ANNOTATION_TYPE:
+			break;
+		case ARRAY_ACCESS:
+			break;
+		case ARRAY_TYPE:
+			break;
+		case ASSERT:
+			break;
+		case ASSIGNMENT:
+			break;
+		case BITWISE_COMPLEMENT:
+			break;
+		case BLOCK:
+			break;
+		case BOOLEAN_LITERAL:
+			break;
+		case BREAK:
+			break;
+		case CASE:
+			break;
+		case CATCH:
+			break;
+		case CHAR_LITERAL:
+			break;
+		case CLASS:
+			break;
+		case COMPILATION_UNIT:
+			break;
+		case CONDITIONAL_AND:
+			break;
+		case CONDITIONAL_EXPRESSION:
+			break;
+		case CONDITIONAL_OR:
+			break;
+		case CONTINUE:
+			break;
+		case DIVIDE:
+			break;
+		case DIVIDE_ASSIGNMENT:
+			break;
+		case DOUBLE_LITERAL:
+			break;
+		case DO_WHILE_LOOP:
+			break;
+		case EMPTY_STATEMENT:
+			break;
+		case ENHANCED_FOR_LOOP:
+			break;
+		case ENUM:
+			break;
+		case EQUAL_TO:
+			break;
+		case ERRONEOUS:
+			break;
+		case EXPRESSION_STATEMENT:
+			break;
+		case EXTENDS_WILDCARD:
+			break;
+		case FLOAT_LITERAL:
+			break;
+		case FOR_LOOP:
+			break;
+		case GREATER_THAN:
+			break;
+		case GREATER_THAN_EQUAL:
+			break;
+		case IDENTIFIER:
+			break;
+		case IF:
+			break;
+		case IMPORT:
+			break;
+		case INSTANCE_OF:
+			break;
+		case INTERFACE:
+			break;
+		case INTERSECTION_TYPE:
+			break;
+		case INT_LITERAL:
+			break;
+		case LABELED_STATEMENT:
+			break;
+		case LAMBDA_EXPRESSION:
+			break;
+		case LEFT_SHIFT:
+			break;
+		case LEFT_SHIFT_ASSIGNMENT:
+			break;
+		case LESS_THAN:
+			break;
+		case LESS_THAN_EQUAL:
+			break;
+		case LOGICAL_COMPLEMENT:
+			break;
+		case LONG_LITERAL:
+			break;
+		case MEMBER_REFERENCE:
+			break;
+		case MEMBER_SELECT:
+			break;
+		case METHOD:
+			break;
+		case MINUS:
+			break;
+		case MINUS_ASSIGNMENT:
+			break;
+		case MODIFIERS:
+			break;
+		case MULTIPLY:
+			break;
+		case MULTIPLY_ASSIGNMENT:
+			break;
+		case NEW_ARRAY:
+			break;
+		case NEW_CLASS:
+			break;
+		case NOT_EQUAL_TO:
+			break;
+		case NULL_LITERAL:
+			break;
+		case OR:
+			break;
+		case OR_ASSIGNMENT:
+			break;
+		case OTHER:
+			break;
+		case PARAMETERIZED_TYPE:
+			break;
+		case PARENTHESIZED:
+			break;
+		case PLUS:
+			break;
+		case PLUS_ASSIGNMENT:
+			break;
+		case POSTFIX_DECREMENT:
+			break;
+		case POSTFIX_INCREMENT:
+			break;
+		case PREFIX_DECREMENT:
+			break;
+		case PREFIX_INCREMENT:
+			break;
+		case PRIMITIVE_TYPE:
+			break;
+		case REMAINDER:
+			break;
+		case REMAINDER_ASSIGNMENT:
+			break;
+		case RETURN:
+			break;
+		case RIGHT_SHIFT:
+			break;
+		case RIGHT_SHIFT_ASSIGNMENT:
+			break;
+		case STRING_LITERAL:
+			break;
+		case SUPER_WILDCARD:
+			break;
+		case SWITCH:
+			break;
+		case SYNCHRONIZED:
+			break;
+		case THROW:
+			break;
+		case TRY:
+			break;
+		case TYPE_ANNOTATION:
+			break;
+		case TYPE_CAST:
+			break;
+		case TYPE_PARAMETER:
+			break;
+		case UNARY_MINUS:
+			break;
+		case UNARY_PLUS:
+			break;
+		case UNBOUNDED_WILDCARD:
+			break;
+		case UNION_TYPE:
+			break;
+		case UNSIGNED_RIGHT_SHIFT:
+			break;
+		case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+			break;
+		case VARIABLE:
+			break;
+		case WHILE_LOOP:
+			break;
+		case XOR:
+			break;
+		case XOR_ASSIGNMENT:
+			break;
+		default:
+			break;
 		}
 
 		scan(methodInvocationTree.getTypeArguments(),
@@ -603,34 +866,6 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 		scan(newClassTree.getTypeArguments(), Pair.create((Tree) newClassTree, RelationTypes.NEW_CLASS_TYPE_ARGUMENTS));
 		scan(newClassTree.getArguments(), Pair.create((Tree) newClassTree, RelationTypes.NEW_CLASS_ARGUMENTS));
 		scan(newClassTree.getClassBody(), Pair.create((Tree) newClassTree, RelationTypes.NEW_CLASS_BODY));
-		return null;
-	}
-
-	public Void visitNewArray(NewArrayTree newArrayTree, Pair<Tree, RelationTypes> t) {
-
-		Node newArrayNode = createSkeletonNode(newArrayTree);
-		attachType(newArrayTree, newArrayNode);
-		connectWithParent(newArrayNode, t.getFirst(), t.getSecond());
-
-		scan(newArrayTree.getType(), Pair.create((Tree) newArrayTree, RelationTypes.NEWARRAY_TYPE));
-		scan(newArrayTree.getDimensions(), Pair.create((Tree) newArrayTree, RelationTypes.NEWARRAY_DIMENSION));
-
-		// TODO: order
-		scan(newArrayTree.getInitializers(), Pair.create((Tree) newArrayTree, RelationTypes.NEWARRAY_INIT));
-		return null;
-	}
-
-	public Void visitParenthesized(ParenthesizedTree parenthesizedTree, Pair<Tree, RelationTypes> t) {
-
-		if (parenthesizedTree instanceof LetExpr)
-			return null;
-		Pair<Tree, RelationTypes> n = Pair.create((Tree) parenthesizedTree, RelationTypes.PARENTHESIZED_ENCLOSES);
-
-		Node parenthesizedNode = createSkeletonNode(parenthesizedTree);
-		attachType(parenthesizedTree, parenthesizedNode);
-		connectWithParent(parenthesizedNode, t.getFirst(), t.getSecond());
-
-		scan(parenthesizedTree.getExpression(), n);
 		return null;
 	}
 
@@ -718,7 +953,11 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 	}
 
 	public Void visitMemberSelect(MemberSelectTree memberSelectTree, Pair<Tree, RelationTypes> t) {
+		if (DEBUG) {
+			System.out.println("Father member select:" + t.getFirst().getKind());
 
+			System.out.println("CU: " + t.getFirst());
+		}
 		Node memberSelect = createSkeletonNode(memberSelectTree);
 		memberSelect.setProperty("name", memberSelectTree.getIdentifier().toString());
 
@@ -731,11 +970,12 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 	}
 
 	public Void visitIdentifier(IdentifierTree identifierTree, Pair<Tree, RelationTypes> t) {
-		System.out.println("Visitando identificador:\t" + identifierTree.getName().toString());
+		// System.out.println("Visitando identificador:\t" +
+		// identifierTree.getName().toString());
 
 		Node identifierNode = createSkeletonNode(identifierTree);
 		identifierNode.setProperty("name", identifierTree.getName().toString());
-
+		System.out.println("IDENTIFIER:\t" + identifierTree.getName().toString());
 		attachType(identifierTree, identifierNode);
 		connectWithParent(identifierNode, t.getFirst(), t.getSecond());
 
@@ -753,7 +993,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 		connectWithParent(literalNode, t.getFirst(), t.getSecond());
 
 		return null;
-	
+
 	}
 
 	public Void visitPrimitiveType(PrimitiveTypeTree primitiveTypeTree, Pair<Tree, RelationTypes> t) {
@@ -834,19 +1074,22 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 		return null;
 	}
 
-	public Void visitAnnotation(AnnotationTree annotationTree, Pair<Tree, RelationTypes> t) {
-
-		Node annotationNode = createSkeletonNode(annotationTree);
-		connectWithParent(annotationNode, t.getFirst(), RelationTypes.HAS_ANNOTATIONS);
-
-		scan(annotationTree.getAnnotationType(),
-				Pair.create((Tree) annotationTree, RelationTypes.HAS_ANNOTATIONS_TYPE));
-
-		// TODO: order
-		scan(annotationTree.getArguments(),
-				Pair.create((Tree) annotationTree, RelationTypes.HAS_ANNOTATIONS_ARGUMENTS));
-		return null;
-	}
+	// public Void visitAnnotation(AnnotationTree annotationTree, Pair<Tree,
+	// RelationTypes> t) {
+	//
+	// Node annotationNode = createSkeletonNode(annotationTree);
+	// connectWithParent(annotationNode, t.getFirst(),
+	// RelationTypes.HAS_ANNOTATIONS);
+	//
+	// scan(annotationTree.getAnnotationType(),
+	// Pair.create((Tree) annotationTree, RelationTypes.HAS_ANNOTATIONS_TYPE));
+	//
+	// // TODO: order
+	// scan(annotationTree.getArguments(),
+	// Pair.create((Tree) annotationTree,
+	// RelationTypes.HAS_ANNOTATIONS_ARGUMENTS));
+	// return null;
+	// }
 
 	private Node createSkeletonNode(Tree tree) {
 

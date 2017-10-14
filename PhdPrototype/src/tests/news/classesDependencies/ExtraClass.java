@@ -1,17 +1,33 @@
-package newTests.classesDependencies;
+package tests.news.classesDependencies;
 
-import newTests.OtherClass;
+import tests.news.OtherClass;
 
-public class ExtraClass {
+public class ExtraClass implements Interface {
 
-	public static OtherClass OTHER = new OtherClass(null);
+	static {
+		ExtraClass e;
+		(e = new ExtraClass()).getO();
+		e.getO();
+	}
+
+	public ExtraClass() {
+		ExtraClass e;
+		(e = new ExtraClass()).getO();
+		e.getO();
+	}
+
+	public static OtherClass getA() {
+		return new ExtraClass().OTHER;
+	}
 
 	public OtherClass getO() {
-		return OTHER;
+		return getA();
 	}
-	
-	
+
 	private static class InnerClass {
-		static int n=0;
+		static int n = 0;
 	}
+
+	public OtherClass OTHER = new OtherClass();
+
 }
