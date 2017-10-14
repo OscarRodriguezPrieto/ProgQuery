@@ -40,6 +40,7 @@ import com.sun.tools.javac.tree.JCTree.JCNewClass;
 import cache.nodes.DefinitionCache;
 import cache.nodes.TreeToNodeCache;
 import database.DatabaseFachade;
+import relations.NodeTypes;
 import relations.RelationTypes;
 import scala.reflect.internal.Trees.GenericApply;
 import sun.tools.tree.TypeExpression;
@@ -55,13 +56,12 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 	@Override
 	public Object visitCompilationUnit(CompilationUnitTree compilationUnitTree,
 			Pair<Pair<Tree, Node>, RelationTypes> pair) {
-		String nodeType = "ClassFile(CU)";
 		// DEFAULT
 
 		Node compilationUnitNode = null;
 		Transaction tx = DatabaseFachade.beginTx();
 		try {
-			compilationUnitNode = DatabaseFachade.createSkeletonNode(compilationUnitTree, nodeType);
+			compilationUnitNode = DatabaseFachade.createSkeletonNode(compilationUnitTree, NodeTypes.COMPILATION_UNIT);
 			String fileName = compilationUnitTree.getSourceFile().toUri().toString();
 			compilationUnitNode.setProperty("fileName", fileName);
 			Tree packageDec = compilationUnitTree.getPackageName();
@@ -111,7 +111,7 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 		Node classNode = null;
 		// DE momento prescindimos de la cach, estudiarlo
 
-		classNode = DatabaseFachade.createSkeletonNode(classTree, classTree.getKind().toString() + "_DEC");
+		classNode = DatabaseFachade.createSkeletonNode(classTree, NodeTypes.CLASS_DECLARATION);
 
 		// Redundancia simple Name fullyqualifiedName
 		classNode.setProperty("simpleName", simpleName);
@@ -139,7 +139,7 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 	@Override
 	public Object visitImport(ImportTree importTree, Pair<Pair<Tree, Node>, RelationTypes> t) {
 
-		Node importNode = DatabaseFachade.createSkeletonNode(importTree, "Import");
+		Node importNode = DatabaseFachade.createSkeletonNode(importTree, NodeTypes.IMPORT);
 		importNode.setProperty("qualifiedIdentifier", importTree.getQualifiedIdentifier().toString());
 		importNode.setProperty("isStatic", importTree.isStatic());
 
@@ -152,7 +152,7 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 	@Override
 	public Object visitAnnotation(AnnotationTree annotationTree, Pair<Pair<Tree, Node>, RelationTypes> t) {
 
-		Node annotationNode = DatabaseFachade.createSkeletonNode(annotationTree, "Annotation");
+		Node annotationNode = DatabaseFachade.createSkeletonNode(annotationTree, NodeTypes.ANNOTATION);
 		connectWithParent(annotationNode, t.getFirst(), RelationTypes.HAS_ANNOTATIONS);
 
 		Pair<Tree, Node> treeNodePair = Pair.create(annotationTree, annotationNode);
@@ -167,7 +167,7 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 	public Object visitMethod(MethodTree methodTree, Pair<Pair<Tree, Node>, RelationTypes> t) {
 
 		Node previousMethodDec = lastMethodDecVisited;
-		Node methodNode = DatabaseFachade.createSkeletonNode(methodTree, "Method_DEC");
+		Node methodNode = DatabaseFachade.createSkeletonNode(methodTree, NodeTypes.METHOD_DEC);
 		lastMethodDecVisited = methodNode;
 		Pair<Tree, Node> treeNodePair = Pair.create(methodTree, methodNode);
 		String fullyQualifiedName = fullNamePrecedent + ":" + methodTree.getName().toString();
@@ -197,7 +197,7 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 
 	public Object visitBlock(BlockTree blockTree, Pair<Pair<Tree, Node>, RelationTypes> t) {
 
-		Node blockNode = DatabaseFachade.createSkeletonNode(blockTree, "Block");
+		Node blockNode = DatabaseFachade.createSkeletonNode(blockTree, NodeTypes.BLOCK);
 		Pair<Pair<Tree, Node>, RelationTypes> n = Pair.create(Pair.create(blockTree, blockNode),
 				RelationTypes.ENCLOSES);
 		blockNode.setProperty("isStatic", blockTree.isStatic());
@@ -262,12 +262,12 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 
 		TreePath path = JavacInfo.getPath(methodInvocationTree);
 
-		Node methodInvocationNode = DatabaseFachade.createSkeletonNode(methodInvocationTree, "MethodInvocation");
+		Node methodInvocationNode = DatabaseFachade.createSkeletonNode(methodInvocationTree,
+				NodeTypes.METHOD_INVOCATION);
 		attachType(methodInvocationTree, methodInvocationNode, path);
 		connectWithParent(methodInvocationNode, pair);
 		JCMethodInvocation inv = (JCMethodInvocation) methodInvocationTree;
 		JCExpression meth = inv.meth;
-		
 
 		System.out.println("METHOD TYPE=" + meth.type);
 
@@ -368,7 +368,7 @@ public class OldASTTypesVisitor extends TreePathScanner<Object, Pair<Pair<Tree, 
 	@Override
 	public Void visitNewClass(NewClassTree newClassTree, Pair<Pair<Tree, Node>, RelationTypes> pair) {
 
-		Node newClassNode = DatabaseFachade.createSkeletonNode(newClassTree, "NewClass");
+		Node newClassNode = DatabaseFachade.createSkeletonNode(newClassTree, NodeTypes.NEW_INSTANCE);
 
 		Pair<Tree, Node> treeNodePair = Pair.create(newClassTree, newClassNode);
 		// Igual no hace falta el attachType porque la expresión siempre es del
