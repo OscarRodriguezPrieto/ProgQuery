@@ -1,4 +1,4 @@
-package testsBloch;
+package tests.bloch;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package tests;
+package tests.old;
 
 public class MethodDeclarationTest {
 // test method definition

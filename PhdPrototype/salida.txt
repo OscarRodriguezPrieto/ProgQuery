@@ -1,0 +1,1046 @@
+warning: Supported source version 'RELEASE_7' from annotation processor 'org.neo4j.kernel.impl.annotations.ServiceProcessor' less than -source '1.8'
+warning: Supported source version 'RELEASE_7' from annotation processor 'org.neo4j.kernel.impl.annotations.DocumentationProcessor' less than -source '1.8'
+-*-*-*-*-*-*-* NEW COMPILATION UNIT AND VISITOR-*-*-*-*-*-*-*
+C:\Users\Oscar\Desktop\java\Library.java
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+final class Library {
+    
+    Library() {
+        super();
+    }
+    
+    public static String reverse(String s) {
+        return new StringBuilder(s).reverse().toString();
+    }
+    
+    public static boolean isPalindrome(String s) {
+        return s.equals(reverse(s));
+    }
+    
+    public static boolean isPalindrome(int x) {
+        return isPalindrome(Integer.toString(x));
+    }
+    
+    public static int sqrt(int x) {
+        if (x < 0) throw new IllegalArgumentException("Square root of negative number");
+        int y = 0;
+        for (int i = 1 << 15; i != 0; i >>>= 1) {
+            y |= i;
+            if (y > 46340 || y * y > x) y ^= i;
+        }
+        return y;
+    }
+    
+    public static long sqrt(long x) {
+        if (x < 0) throw new IllegalArgumentException("Square root of negative number");
+        long y = 0;
+        for (long i = 1L << 31; i != 0; i >>>= 1) {
+            y |= i;
+            if (y > 3037000499L || y * y > x) y ^= i;
+        }
+        return y;
+    }
+    
+    public static BigInteger sqrt(BigInteger x) {
+        if (x.signum() == -1) throw new IllegalArgumentException("Square root of negative number");
+        BigInteger y = BigInteger.ZERO;
+        for (int i = (x.bitLength() - 1) / 2; i >= 0; i--) {
+            y = y.setBit(i);
+            if (y.multiply(y).compareTo(x) > 0) y = y.clearBit(i);
+        }
+        return y;
+    }
+    
+    public static boolean isSquare(int x) {
+        if (x < 0) return false;
+        int y = Library.sqrt(x);
+        return y * y == x;
+    }
+    
+    public static int pow(int x, int y) {
+        if (x < 0) throw new IllegalArgumentException("Negative base not supported");
+        if (y < 0) throw new IllegalArgumentException("Negative exponent");
+        int z = 1;
+        for (int i = 0; i < y; i++) {
+            if (Integer.MAX_VALUE / z < x) throw new ArithmeticException("Overflow");
+            z *= x;
+        }
+        return z;
+    }
+    
+    public static int powMod(int x, int y, int m) {
+        if (x < 0) throw new IllegalArgumentException("Negative base not supported");
+        if (y < 0) throw new IllegalArgumentException("Modular reciprocal not supported");
+        if (m <= 0) throw new IllegalArgumentException("Modulus must be positive");
+        if (m == 1) return 0;
+        int z = 1;
+        for (; y != 0; y >>>= 1) {
+            if ((y & 1) != 0) z = (int)((long)z * x % m);
+            x = (int)((long)x * x % m);
+        }
+        return z;
+    }
+    
+    public static int reciprocalMod(int x, int m) {
+        if (!(0 <= x && x < m)) throw new IllegalArgumentException();
+        int y = x;
+        x = m;
+        int a = 0;
+        int b = 1;
+        while (y != 0) {
+            int z = x % y;
+            int c = a - x / y * b;
+            x = y;
+            y = z;
+            a = b;
+            b = c;
+        }
+        if (x == 1) return a >= 0 ? a : a + m; else throw new IllegalArgumentException("Reciprocal does not exist");
+    }
+    
+    public static BigInteger factorial(int n) {
+        if (n < 0) throw new IllegalArgumentException("Factorial of negative number");
+        BigInteger prod = BigInteger.ONE;
+        for (int i = 2; i <= n; i++) prod = prod.multiply(BigInteger.valueOf(i));
+        return prod;
+    }
+    
+    public static BigInteger binomial(int n, int k) {
+        if (k < 0 || k > n) throw new IllegalArgumentException();
+        BigInteger product = BigInteger.ONE;
+        for (int i = 0; i < k; i++) product = product.multiply(BigInteger.valueOf(n - i));
+        return product.divide(factorial(k));
+    }
+    
+    public static int gcd(int x, int y) {
+        if (x < 0 || y < 0) throw new IllegalArgumentException("Negative number");
+        while (y != 0) {
+            int z = x % y;
+            x = y;
+            y = z;
+        }
+        return x;
+    }
+    
+    public static boolean isPrime(int x) {
+        if (x < 0) throw new IllegalArgumentException("Negative number");
+        if (x == 0 || x == 1) return false; else if (x == 2) return true; else {
+            if (x % 2 == 0) return false;
+            for (int i = 3, end = sqrt(x); i <= end; i += 2) {
+                if (x % i == 0) return false;
+            }
+            return true;
+        }
+    }
+    
+    public static boolean[] listPrimality(int n) {
+        if (n < 0) throw new IllegalArgumentException("Negative array size");
+        boolean[] result = new boolean[n + 1];
+        if (n >= 2) result[2] = true;
+        for (int i = 3; i <= n; i += 2) result[i] = true;
+        for (int i = 3, end = sqrt(n); i <= end; i += 2) {
+            if (result[i]) {
+                for (int j = i * i, inc = i * 2; j <= n; j += inc) result[j] = false;
+            }
+        }
+        return result;
+    }
+    
+    public static int[] listPrimes(int n) {
+        boolean[] isPrime = listPrimality(n);
+        int count = 0;
+        for (boolean b : isPrime) {
+            if (b) count++;
+        }
+        int[] result = new int[count];
+        for (int i = 0, j = 0; i < isPrime.length; i++) {
+            if (isPrime[i]) {
+                result[j] = i;
+                j++;
+            }
+        }
+        return result;
+    }
+    
+    public static int[] listSmallestPrimeFactors(int n) {
+        int[] result = new int[n + 1];
+        int limit = sqrt(n);
+        for (int i = 2; i < result.length; i++) {
+            if (result[i] == 0) {
+                result[i] = i;
+                if (i <= limit) {
+                    for (int j = i * i; j <= n; j += i) {
+                        if (result[j] == 0) result[j] = i;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    public static int totient(int n) {
+        if (n <= 0) throw new IllegalArgumentException("Totient of non-positive integer");
+        int p = 1;
+        for (int i = 2, end = Library.sqrt(n); i <= end; i++) {
+            if (n % i == 0) {
+                p *= i - 1;
+                n /= i;
+                while (n % i == 0) {
+                    p *= i;
+                    n /= i;
+                }
+                end = Library.sqrt(n);
+            }
+        }
+        if (n != 1) p *= n - 1;
+        return p;
+    }
+    
+    public static int[] listTotients(int n) {
+        if (n < 0) throw new IllegalArgumentException("Negative array size");
+        int[] result = new int[n + 1];
+        for (int i = 0; i <= n; i++) result[i] = i;
+        for (int i = 2; i <= n; i++) {
+            if (result[i] == i) {
+                for (int j = i; j <= n; j += i) result[j] -= result[j] / i;
+            }
+        }
+        return result;
+    }
+    
+    public static boolean nextPermutation(int[] arr) {
+        int i = arr.length - 1;
+        for (; i > 0 && arr[i - 1] >= arr[i]; i--) ;
+        if (i <= 0) return false;
+        {
+            int j = arr.length - 1;
+            for (; arr[j] <= arr[i - 1]; j--) ;
+            int temp = arr[i - 1];
+            arr[i - 1] = arr[j];
+            arr[j] = temp;
+        }
+        for (int j = arr.length - 1; i < j; i++, j--) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+        return true;
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:final 
+Sobreescribiendo la entrada para el mismo tree:
+<init>() {
+    super();
+}
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    super();
+}
+Sobreescribiendo la entrada para el mismo tree:super()
+Sobreescribiendo la entrada para el mismo tree:
+public static String reverse(String s) {
+    return new StringBuilder(s).reverse().toString();
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:String s
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    return new StringBuilder(s).reverse().toString();
+}
+Sobreescribiendo la entrada para el mismo tree:new StringBuilder(s).reverse().toString()
+Sobreescribiendo la entrada para el mismo tree:new StringBuilder(s).reverse().toString
+Sobreescribiendo la entrada para el mismo tree:new StringBuilder(s).reverse()
+Sobreescribiendo la entrada para el mismo tree:new StringBuilder(s).reverse
+Sobreescribiendo la entrada para el mismo tree:new StringBuilder(s)
+Sobreescribiendo la entrada para el mismo tree:
+public static boolean isPalindrome(String s) {
+    return s.equals(reverse(s));
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:String s
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    return s.equals(reverse(s));
+}
+Sobreescribiendo la entrada para el mismo tree:s.equals(reverse(s))
+Sobreescribiendo la entrada para el mismo tree:s.equals
+Sobreescribiendo la entrada para el mismo tree:reverse(s)
+Sobreescribiendo la entrada para el mismo tree:
+public static boolean isPalindrome(int x) {
+    return isPalindrome(Integer.toString(x));
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    return isPalindrome(Integer.toString(x));
+}
+Sobreescribiendo la entrada para el mismo tree:isPalindrome(Integer.toString(x))
+Sobreescribiendo la entrada para el mismo tree:Integer.toString(x)
+Sobreescribiendo la entrada para el mismo tree:Integer.toString
+Sobreescribiendo la entrada para el mismo tree:
+public static int sqrt(int x) {
+    if (x < 0) throw new IllegalArgumentException("Square root of negative number");
+    int y = 0;
+    for (int i = 1 << 15; i != 0; i >>>= 1) {
+        y |= i;
+        if (y > 46340 || y * y > x) y ^= i;
+    }
+    return y;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x < 0) throw new IllegalArgumentException("Square root of negative number");
+    int y = 0;
+    for (int i = 1 << 15; i != 0; i >>>= 1) {
+        y |= i;
+        if (y > 46340 || y * y > x) y ^= i;
+    }
+    return y;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Square root of negative number")
+Sobreescribiendo la entrada para el mismo tree:int y = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 1 << 15
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    y |= i;
+    if (y > 46340 || y * y > x) y ^= i;
+}
+Sobreescribiendo la entrada para el mismo tree:
+public static long sqrt(long x) {
+    if (x < 0) throw new IllegalArgumentException("Square root of negative number");
+    long y = 0;
+    for (long i = 1L << 31; i != 0; i >>>= 1) {
+        y |= i;
+        if (y > 3037000499L || y * y > x) y ^= i;
+    }
+    return y;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:long x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x < 0) throw new IllegalArgumentException("Square root of negative number");
+    long y = 0;
+    for (long i = 1L << 31; i != 0; i >>>= 1) {
+        y |= i;
+        if (y > 3037000499L || y * y > x) y ^= i;
+    }
+    return y;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Square root of negative number")
+Sobreescribiendo la entrada para el mismo tree:long y = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:long i = 1L << 31
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    y |= i;
+    if (y > 3037000499L || y * y > x) y ^= i;
+}
+Sobreescribiendo la entrada para el mismo tree:
+public static BigInteger sqrt(BigInteger x) {
+    if (x.signum() == -1) throw new IllegalArgumentException("Square root of negative number");
+    BigInteger y = BigInteger.ZERO;
+    for (int i = (x.bitLength() - 1) / 2; i >= 0; i--) {
+        y = y.setBit(i);
+        if (y.multiply(y).compareTo(x) > 0) y = y.clearBit(i);
+    }
+    return y;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:BigInteger x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x.signum() == -1) throw new IllegalArgumentException("Square root of negative number");
+    BigInteger y = BigInteger.ZERO;
+    for (int i = (x.bitLength() - 1) / 2; i >= 0; i--) {
+        y = y.setBit(i);
+        if (y.multiply(y).compareTo(x) > 0) y = y.clearBit(i);
+    }
+    return y;
+}
+Sobreescribiendo la entrada para el mismo tree:x.signum()
+Sobreescribiendo la entrada para el mismo tree:x.signum
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Square root of negative number")
+Sobreescribiendo la entrada para el mismo tree:BigInteger y = BigInteger.ZERO
+Sobreescribiendo la entrada para el mismo tree:BigInteger.ZERO
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = (x.bitLength() - 1) / 2
+Sobreescribiendo la entrada para el mismo tree:x.bitLength()
+Sobreescribiendo la entrada para el mismo tree:x.bitLength
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    y = y.setBit(i);
+    if (y.multiply(y).compareTo(x) > 0) y = y.clearBit(i);
+}
+Sobreescribiendo la entrada para el mismo tree:y.setBit(i)
+Sobreescribiendo la entrada para el mismo tree:y.setBit
+Sobreescribiendo la entrada para el mismo tree:y.multiply(y).compareTo(x)
+Sobreescribiendo la entrada para el mismo tree:y.multiply(y).compareTo
+Sobreescribiendo la entrada para el mismo tree:y.multiply(y)
+Sobreescribiendo la entrada para el mismo tree:y.multiply
+Sobreescribiendo la entrada para el mismo tree:y.clearBit(i)
+Sobreescribiendo la entrada para el mismo tree:y.clearBit
+Sobreescribiendo la entrada para el mismo tree:
+public static boolean isSquare(int x) {
+    if (x < 0) return false;
+    int y = Library.sqrt(x);
+    return y * y == x;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x < 0) return false;
+    int y = Library.sqrt(x);
+    return y * y == x;
+}
+Sobreescribiendo la entrada para el mismo tree:int y = Library.sqrt(x)
+Sobreescribiendo la entrada para el mismo tree:Library.sqrt(x)
+Sobreescribiendo la entrada para el mismo tree:Library.sqrt
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+public static int pow(int x, int y) {
+    if (x < 0) throw new IllegalArgumentException("Negative base not supported");
+    if (y < 0) throw new IllegalArgumentException("Negative exponent");
+    int z = 1;
+    for (int i = 0; i < y; i++) {
+        if (Integer.MAX_VALUE / z < x) throw new ArithmeticException("Overflow");
+        z *= x;
+    }
+    return z;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int y
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x < 0) throw new IllegalArgumentException("Negative base not supported");
+    if (y < 0) throw new IllegalArgumentException("Negative exponent");
+    int z = 1;
+    for (int i = 0; i < y; i++) {
+        if (Integer.MAX_VALUE / z < x) throw new ArithmeticException("Overflow");
+        z *= x;
+    }
+    return z;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Negative base not supported")
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Negative exponent")
+Sobreescribiendo la entrada para el mismo tree:int z = 1
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (Integer.MAX_VALUE / z < x) throw new ArithmeticException("Overflow");
+    z *= x;
+}
+Sobreescribiendo la entrada para el mismo tree:Integer.MAX_VALUE
+Sobreescribiendo la entrada para el mismo tree:new ArithmeticException("Overflow")
+Sobreescribiendo la entrada para el mismo tree:
+public static int powMod(int x, int y, int m) {
+    if (x < 0) throw new IllegalArgumentException("Negative base not supported");
+    if (y < 0) throw new IllegalArgumentException("Modular reciprocal not supported");
+    if (m <= 0) throw new IllegalArgumentException("Modulus must be positive");
+    if (m == 1) return 0;
+    int z = 1;
+    for (; y != 0; y >>>= 1) {
+        if ((y & 1) != 0) z = (int)((long)z * x % m);
+        x = (int)((long)x * x % m);
+    }
+    return z;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int y
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int m
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x < 0) throw new IllegalArgumentException("Negative base not supported");
+    if (y < 0) throw new IllegalArgumentException("Modular reciprocal not supported");
+    if (m <= 0) throw new IllegalArgumentException("Modulus must be positive");
+    if (m == 1) return 0;
+    int z = 1;
+    for (; y != 0; y >>>= 1) {
+        if ((y & 1) != 0) z = (int)((long)z * x % m);
+        x = (int)((long)x * x % m);
+    }
+    return z;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Negative base not supported")
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Modular reciprocal not supported")
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Modulus must be positive")
+Sobreescribiendo la entrada para el mismo tree:int z = 1
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if ((y & 1) != 0) z = (int)((long)z * x % m);
+    x = (int)((long)x * x % m);
+}
+Sobreescribiendo la entrada para el mismo tree:
+public static int reciprocalMod(int x, int m) {
+    if (!(0 <= x && x < m)) throw new IllegalArgumentException();
+    int y = x;
+    x = m;
+    int a = 0;
+    int b = 1;
+    while (y != 0) {
+        int z = x % y;
+        int c = a - x / y * b;
+        x = y;
+        y = z;
+        a = b;
+        b = c;
+    }
+    if (x == 1) return a >= 0 ? a : a + m; else throw new IllegalArgumentException("Reciprocal does not exist");
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int m
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (!(0 <= x && x < m)) throw new IllegalArgumentException();
+    int y = x;
+    x = m;
+    int a = 0;
+    int b = 1;
+    while (y != 0) {
+        int z = x % y;
+        int c = a - x / y * b;
+        x = y;
+        y = z;
+        a = b;
+        b = c;
+    }
+    if (x == 1) return a >= 0 ? a : a + m; else throw new IllegalArgumentException("Reciprocal does not exist");
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException()
+Sobreescribiendo la entrada para el mismo tree:int y = x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int a = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int b = 1
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    int z = x % y;
+    int c = a - x / y * b;
+    x = y;
+    y = z;
+    a = b;
+    b = c;
+}
+Sobreescribiendo la entrada para el mismo tree:int z = x % y
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int c = a - x / y * b
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Reciprocal does not exist")
+Sobreescribiendo la entrada para el mismo tree:
+public static BigInteger factorial(int n) {
+    if (n < 0) throw new IllegalArgumentException("Factorial of negative number");
+    BigInteger prod = BigInteger.ONE;
+    for (int i = 2; i <= n; i++) prod = prod.multiply(BigInteger.valueOf(i));
+    return prod;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int n
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (n < 0) throw new IllegalArgumentException("Factorial of negative number");
+    BigInteger prod = BigInteger.ONE;
+    for (int i = 2; i <= n; i++) prod = prod.multiply(BigInteger.valueOf(i));
+    return prod;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Factorial of negative number")
+Sobreescribiendo la entrada para el mismo tree:BigInteger prod = BigInteger.ONE
+Sobreescribiendo la entrada para el mismo tree:BigInteger.ONE
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 2
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:prod.multiply(BigInteger.valueOf(i))
+Sobreescribiendo la entrada para el mismo tree:prod.multiply
+Sobreescribiendo la entrada para el mismo tree:BigInteger.valueOf(i)
+Sobreescribiendo la entrada para el mismo tree:BigInteger.valueOf
+Sobreescribiendo la entrada para el mismo tree:
+public static BigInteger binomial(int n, int k) {
+    if (k < 0 || k > n) throw new IllegalArgumentException();
+    BigInteger product = BigInteger.ONE;
+    for (int i = 0; i < k; i++) product = product.multiply(BigInteger.valueOf(n - i));
+    return product.divide(factorial(k));
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int n
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int k
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (k < 0 || k > n) throw new IllegalArgumentException();
+    BigInteger product = BigInteger.ONE;
+    for (int i = 0; i < k; i++) product = product.multiply(BigInteger.valueOf(n - i));
+    return product.divide(factorial(k));
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException()
+Sobreescribiendo la entrada para el mismo tree:BigInteger product = BigInteger.ONE
+Sobreescribiendo la entrada para el mismo tree:BigInteger.ONE
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:product.multiply(BigInteger.valueOf(n - i))
+Sobreescribiendo la entrada para el mismo tree:product.multiply
+Sobreescribiendo la entrada para el mismo tree:BigInteger.valueOf(n - i)
+Sobreescribiendo la entrada para el mismo tree:BigInteger.valueOf
+Sobreescribiendo la entrada para el mismo tree:product.divide(factorial(k))
+Sobreescribiendo la entrada para el mismo tree:product.divide
+Sobreescribiendo la entrada para el mismo tree:factorial(k)
+Sobreescribiendo la entrada para el mismo tree:
+public static int gcd(int x, int y) {
+    if (x < 0 || y < 0) throw new IllegalArgumentException("Negative number");
+    while (y != 0) {
+        int z = x % y;
+        x = y;
+        y = z;
+    }
+    return x;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int y
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x < 0 || y < 0) throw new IllegalArgumentException("Negative number");
+    while (y != 0) {
+        int z = x % y;
+        x = y;
+        y = z;
+    }
+    return x;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Negative number")
+Sobreescribiendo la entrada para el mismo tree:{
+    int z = x % y;
+    x = y;
+    y = z;
+}
+Sobreescribiendo la entrada para el mismo tree:int z = x % y
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+public static boolean isPrime(int x) {
+    if (x < 0) throw new IllegalArgumentException("Negative number");
+    if (x == 0 || x == 1) return false; else if (x == 2) return true; else {
+        if (x % 2 == 0) return false;
+        for (int i = 3, end = sqrt(x); i <= end; i += 2) {
+            if (x % i == 0) return false;
+        }
+        return true;
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int x
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x < 0) throw new IllegalArgumentException("Negative number");
+    if (x == 0 || x == 1) return false; else if (x == 2) return true; else {
+        if (x % 2 == 0) return false;
+        for (int i = 3, end = sqrt(x); i <= end; i += 2) {
+            if (x % i == 0) return false;
+        }
+        return true;
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Negative number")
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x % 2 == 0) return false;
+    for (int i = 3, end = sqrt(x); i <= end; i += 2) {
+        if (x % i == 0) return false;
+    }
+    return true;
+}
+Sobreescribiendo la entrada para el mismo tree:int i = 3
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int end = sqrt(x)
+Sobreescribiendo la entrada para el mismo tree:sqrt(x)
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (x % i == 0) return false;
+}
+Sobreescribiendo la entrada para el mismo tree:
+public static boolean[] listPrimality(int n) {
+    if (n < 0) throw new IllegalArgumentException("Negative array size");
+    boolean[] result = new boolean[n + 1];
+    if (n >= 2) result[2] = true;
+    for (int i = 3; i <= n; i += 2) result[i] = true;
+    for (int i = 3, end = sqrt(n); i <= end; i += 2) {
+        if (result[i]) {
+            for (int j = i * i, inc = i * 2; j <= n; j += inc) result[j] = false;
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int n
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (n < 0) throw new IllegalArgumentException("Negative array size");
+    boolean[] result = new boolean[n + 1];
+    if (n >= 2) result[2] = true;
+    for (int i = 3; i <= n; i += 2) result[i] = true;
+    for (int i = 3, end = sqrt(n); i <= end; i += 2) {
+        if (result[i]) {
+            for (int j = i * i, inc = i * 2; j <= n; j += inc) result[j] = false;
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Negative array size")
+Sobreescribiendo la entrada para el mismo tree:boolean[] result = new boolean[n + 1]
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 3
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 3
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int end = sqrt(n)
+Sobreescribiendo la entrada para el mismo tree:sqrt(n)
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (result[i]) {
+        for (int j = i * i, inc = i * 2; j <= n; j += inc) result[j] = false;
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:{
+    for (int j = i * i, inc = i * 2; j <= n; j += inc) result[j] = false;
+}
+Sobreescribiendo la entrada para el mismo tree:int j = i * i
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int inc = i * 2
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+public static int[] listPrimes(int n) {
+    boolean[] isPrime = listPrimality(n);
+    int count = 0;
+    for (boolean b : isPrime) {
+        if (b) count++;
+    }
+    int[] result = new int[count];
+    for (int i = 0, j = 0; i < isPrime.length; i++) {
+        if (isPrime[i]) {
+            result[j] = i;
+            j++;
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int n
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    boolean[] isPrime = listPrimality(n);
+    int count = 0;
+    for (boolean b : isPrime) {
+        if (b) count++;
+    }
+    int[] result = new int[count];
+    for (int i = 0, j = 0; i < isPrime.length; i++) {
+        if (isPrime[i]) {
+            result[j] = i;
+            j++;
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:boolean[] isPrime = listPrimality(n)
+Sobreescribiendo la entrada para el mismo tree:listPrimality(n)
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int count = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:boolean b
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (b) count++;
+}
+Sobreescribiendo la entrada para el mismo tree:int[] result = new int[count]
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int j = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:isPrime.length
+Sobreescribiendo la entrada para el mismo tree:{
+    if (isPrime[i]) {
+        result[j] = i;
+        j++;
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:{
+    result[j] = i;
+    j++;
+}
+Sobreescribiendo la entrada para el mismo tree:
+public static int[] listSmallestPrimeFactors(int n) {
+    int[] result = new int[n + 1];
+    int limit = sqrt(n);
+    for (int i = 2; i < result.length; i++) {
+        if (result[i] == 0) {
+            result[i] = i;
+            if (i <= limit) {
+                for (int j = i * i; j <= n; j += i) {
+                    if (result[j] == 0) result[j] = i;
+                }
+            }
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int n
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    int[] result = new int[n + 1];
+    int limit = sqrt(n);
+    for (int i = 2; i < result.length; i++) {
+        if (result[i] == 0) {
+            result[i] = i;
+            if (i <= limit) {
+                for (int j = i * i; j <= n; j += i) {
+                    if (result[j] == 0) result[j] = i;
+                }
+            }
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:int[] result = new int[n + 1]
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int limit = sqrt(n)
+Sobreescribiendo la entrada para el mismo tree:sqrt(n)
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 2
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:result.length
+Sobreescribiendo la entrada para el mismo tree:{
+    if (result[i] == 0) {
+        result[i] = i;
+        if (i <= limit) {
+            for (int j = i * i; j <= n; j += i) {
+                if (result[j] == 0) result[j] = i;
+            }
+        }
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:{
+    result[i] = i;
+    if (i <= limit) {
+        for (int j = i * i; j <= n; j += i) {
+            if (result[j] == 0) result[j] = i;
+        }
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:{
+    for (int j = i * i; j <= n; j += i) {
+        if (result[j] == 0) result[j] = i;
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:int j = i * i
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (result[j] == 0) result[j] = i;
+}
+Sobreescribiendo la entrada para el mismo tree:
+public static int totient(int n) {
+    if (n <= 0) throw new IllegalArgumentException("Totient of non-positive integer");
+    int p = 1;
+    for (int i = 2, end = Library.sqrt(n); i <= end; i++) {
+        if (n % i == 0) {
+            p *= i - 1;
+            n /= i;
+            while (n % i == 0) {
+                p *= i;
+                n /= i;
+            }
+            end = Library.sqrt(n);
+        }
+    }
+    if (n != 1) p *= n - 1;
+    return p;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int n
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (n <= 0) throw new IllegalArgumentException("Totient of non-positive integer");
+    int p = 1;
+    for (int i = 2, end = Library.sqrt(n); i <= end; i++) {
+        if (n % i == 0) {
+            p *= i - 1;
+            n /= i;
+            while (n % i == 0) {
+                p *= i;
+                n /= i;
+            }
+            end = Library.sqrt(n);
+        }
+    }
+    if (n != 1) p *= n - 1;
+    return p;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Totient of non-positive integer")
+Sobreescribiendo la entrada para el mismo tree:int p = 1
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 2
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int end = Library.sqrt(n)
+Sobreescribiendo la entrada para el mismo tree:Library.sqrt(n)
+Sobreescribiendo la entrada para el mismo tree:Library.sqrt
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (n % i == 0) {
+        p *= i - 1;
+        n /= i;
+        while (n % i == 0) {
+            p *= i;
+            n /= i;
+        }
+        end = Library.sqrt(n);
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:{
+    p *= i - 1;
+    n /= i;
+    while (n % i == 0) {
+        p *= i;
+        n /= i;
+    }
+    end = Library.sqrt(n);
+}
+Sobreescribiendo la entrada para el mismo tree:{
+    p *= i;
+    n /= i;
+}
+Sobreescribiendo la entrada para el mismo tree:Library.sqrt(n)
+Sobreescribiendo la entrada para el mismo tree:Library.sqrt
+Sobreescribiendo la entrada para el mismo tree:
+public static int[] listTotients(int n) {
+    if (n < 0) throw new IllegalArgumentException("Negative array size");
+    int[] result = new int[n + 1];
+    for (int i = 0; i <= n; i++) result[i] = i;
+    for (int i = 2; i <= n; i++) {
+        if (result[i] == i) {
+            for (int j = i; j <= n; j += i) result[j] -= result[j] / i;
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int n
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (n < 0) throw new IllegalArgumentException("Negative array size");
+    int[] result = new int[n + 1];
+    for (int i = 0; i <= n; i++) result[i] = i;
+    for (int i = 2; i <= n; i++) {
+        if (result[i] == i) {
+            for (int j = i; j <= n; j += i) result[j] -= result[j] / i;
+        }
+    }
+    return result;
+}
+Sobreescribiendo la entrada para el mismo tree:new IllegalArgumentException("Negative array size")
+Sobreescribiendo la entrada para el mismo tree:int[] result = new int[n + 1]
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 0
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int i = 2
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    if (result[i] == i) {
+        for (int j = i; j <= n; j += i) result[j] -= result[j] / i;
+    }
+}
+Sobreescribiendo la entrada para el mismo tree:{
+    for (int j = i; j <= n; j += i) result[j] -= result[j] / i;
+}
+Sobreescribiendo la entrada para el mismo tree:int j = i
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+public static boolean nextPermutation(int[] arr) {
+    int i = arr.length - 1;
+    for (; i > 0 && arr[i - 1] >= arr[i]; i--) ;
+    if (i <= 0) return false;
+    {
+        int j = arr.length - 1;
+        for (; arr[j] <= arr[i - 1]; j--) ;
+        int temp = arr[i - 1];
+        arr[i - 1] = arr[j];
+        arr[j] = temp;
+    }
+    for (int j = arr.length - 1; i < j; i++, j--) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return true;
+}
+Sobreescribiendo la entrada para el mismo tree:public static 
+Sobreescribiendo la entrada para el mismo tree:int[] arr
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    int i = arr.length - 1;
+    for (; i > 0 && arr[i - 1] >= arr[i]; i--) ;
+    if (i <= 0) return false;
+    {
+        int j = arr.length - 1;
+        for (; arr[j] <= arr[i - 1]; j--) ;
+        int temp = arr[i - 1];
+        arr[i - 1] = arr[j];
+        arr[j] = temp;
+    }
+    for (int j = arr.length - 1; i < j; i++, j--) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return true;
+}
+Sobreescribiendo la entrada para el mismo tree:int i = arr.length - 1
+Sobreescribiendo la entrada para el mismo tree:arr.length
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    int j = arr.length - 1;
+    for (; arr[j] <= arr[i - 1]; j--) ;
+    int temp = arr[i - 1];
+    arr[i - 1] = arr[j];
+    arr[j] = temp;
+}
+Sobreescribiendo la entrada para el mismo tree:int j = arr.length - 1
+Sobreescribiendo la entrada para el mismo tree:arr.length
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int temp = arr[i - 1]
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:int j = arr.length - 1
+Sobreescribiendo la entrada para el mismo tree:arr.length
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:{
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+Sobreescribiendo la entrada para el mismo tree:int temp = arr[i]
+Sobreescribiendo la entrada para el mismo tree:
+Sobreescribiendo la entrada para el mismo tree:
+final class Fraction implements Comparable {
+}
+Sobreescribiendo la entrada para el mismo tree:final 
+Sobreescribiendo la entrada para el mismo tree:
+class D {
+}
+Sobreescribiendo la entrada para el mismo tree:
+2 warnings

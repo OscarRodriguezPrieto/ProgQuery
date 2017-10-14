@@ -1,4 +1,4 @@
-package newTests;
+package tests.news.classesDependencies;
 
 public interface Interface {
 
