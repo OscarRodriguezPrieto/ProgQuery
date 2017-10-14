@@ -1,3 +1,10 @@
 /database/
 /visitors/
 /relations/
+/cache/
+/io/
+/querys/
+/tasklisteners/
+/tests/
+/typeInfo/
+/utils/

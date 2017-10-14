@@ -14,6 +14,7 @@ import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
 import com.sun.source.util.TaskEvent.Kind;
 import database.DatabaseFachade;
+import relations.NodeTypes;
 import relations.RelationTypes;
 import utils.GraphUtils;
 import utils.JavacInfo;
@@ -84,11 +85,10 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		JavacInfo.setJavacInfo(new JavacInfo(u, task));
 		DatabaseFachade.setDB(graphDb);
 
-		String nodeType = "ClassFile(CU)";
 		String fileName = u.getSourceFile().toUri().toString();
 
 		transaction = DatabaseFachade.beginTx();
-		Node compilationUnitNode = DatabaseFachade.createSkeletonNode(u, nodeType);
+		Node compilationUnitNode = DatabaseFachade.createSkeletonNode(u, NodeTypes.COMPILATION_UNIT);
 		compilationUnitNode.setProperty("fileName", fileName);
 
 		argument = Pair.createPair(u, compilationUnitNode, RelationTypes.CU_PACKAGE_DEC);
