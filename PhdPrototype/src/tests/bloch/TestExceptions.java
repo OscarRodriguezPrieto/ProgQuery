@@ -1,4 +1,4 @@
-package testsBloch;
+package tests.bloch;
 
 import java.io.IOException;
 import java.sql.SQLException;

@@ -1,4 +1,4 @@
-package testsBloch;
+package tests.bloch;
 
 public class HierarchyTest extends NestedClassesTest{
 	@Override

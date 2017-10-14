@@ -1,4 +1,4 @@
-package newTests;
+package tests.news;
 
 public class TestUtil {
 	@Override
