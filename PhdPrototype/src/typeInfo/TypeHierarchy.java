@@ -5,12 +5,13 @@ import org.neo4j.graphdb.Node;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeInfo;
 
-import cache.nodes.DefinitionCache;
-import database.DatabaseFachade;
-import relations.RelationTypes;
+import cache.DefinitionCache;
+import database.nodes.NodeTypes;
+import database.relations.RelationTypes;
 
 public class TypeHierarchy {
 
@@ -28,33 +29,6 @@ public class TypeHierarchy {
 
 	}
 
-	private static Node getClassType(String typeStr) {
-		Node classType = null;
-		if (DEBUG)
-			System.out.println(
-					"CLASS TYPE CACHE CONTAINS TYPESTR :" + DefinitionCache.CLASS_TYPE_CACHE.containsKey(typeStr) + " "
-							+ DefinitionCache.CLASS_TYPE_CACHE.totalTypesCached());
-		if (DefinitionCache.CLASS_TYPE_CACHE.containsKey(typeStr)) {
-
-			classType = DefinitionCache.CLASS_TYPE_CACHE.get(typeStr);
-			if (DEBUG)
-				System.out.println("CLASS TYPE CACHED" + classType);
-		} else {
-			classType = DatabaseFachade.createNode();
-			classType.setProperty("nodeType", "ClassType");
-			classType.setProperty("fullyQualifiedName", typeStr);
-			if (DEBUG)
-				System.out.println("NEW CLASS TYPE " + classType);
-			DefinitionCache.CLASS_TYPE_CACHE.put(typeStr, classType);
-			if (DEBUG)
-				System.out.println("CLASS TYPE CACHE CONTAINS TYPESTR (AFTER) :"
-						+ DefinitionCache.CLASS_TYPE_CACHE.containsKey(typeStr) + "  "
-						+ DefinitionCache.CLASS_TYPE_CACHE.totalTypesCached());
-
-		}
-		return classType;
-	}
-
 	private static void connectSubType(Tree superTree, Node baseClassNode, RelationTypes r) {
 		if (DEBUG) {
 			System.out.println("--------NEW CONNECT SUBTYPE--------" + r.toString());
@@ -69,9 +43,10 @@ public class TypeHierarchy {
 			Symbol s = TreeInfo.symbol(jcTree);
 			if (DEBUG)
 				System.out.println("JCTREE SYMBOL:" + s + " " + s.toString().length() + " " + s.getClass());
-
-			String typeStr = s.toString();
-			baseClassNode.createRelationshipTo(getClassType(typeStr), r);
+			System.out.println(s + "    " + s.getClass() + "    " + ((ClassSymbol) s).classfile.getKind() + "    "
+					+ ((ClassSymbol) s).sourcefile.getKind());
+			baseClassNode
+					.createRelationshipTo(DefinitionCache.getOrCreateTypeDec(s), r);
 
 		}
 	}
