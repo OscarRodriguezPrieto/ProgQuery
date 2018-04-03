@@ -87,6 +87,7 @@ import utils.JavacInfo;
 import utils.Pair;
 
 public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<RelationTypes>, Object>> {
+
 	private static final boolean DEBUG = false;
 	private String fullNamePrecedent = null;
 	private Node lastStaticConsVisited = null;
@@ -842,17 +843,68 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		return methodInvocationNode;
 	}
 
+	private void modifierPropertyToNode(ModifiersTree modTree, Node modNode, String propertyName) {
+		modNode.setProperty("is" + propertyName, modTree.getFlags().toString().contains(propertyName.toLowerCase()));
+	}
+
+	private void modifierAccessLevelToNode(ModifiersTree modTree, Node modNode) {
+		modNode.setProperty("accessLevel",
+				modTree.getFlags().toString().contains("pri") ? "private"
+						: modTree.getFlags().toString().contains("pu") ? "public"
+								: modTree.getFlags().toString().contains("pro") ? "protected" : "package");
+
+	}
+
 	@Override
-	public Node visitModifiers(ModifiersTree modifiersTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+	public strictfp Node visitModifiers(ModifiersTree modifiersTree, Pair<PartialRelation<RelationTypes>, Object> t) {
 
 		Node modifiersNode = DatabaseFachade.createSkeletonNode(modifiersTree, NodeTypes.MODIFIERS);
-		modifiersNode.setProperty("flags", modifiersTree.getFlags().toString());
+		// modifiersNode.setProperty("flags",
+		// modifiersTree.getFlags().toString());
+
 		GraphUtils.connectWithParent(modifiersNode, t);
 
 		Pair<PartialRelation<RelationTypes>, Object> n = Pair.createPair(modifiersNode, RelationTypes.ENCLOSES);
 		scan(modifiersTree.getAnnotations(), n);
+		switch (t.getFirst().getStartingNode().getProperty("nodeType").toString()) {
+		case "CLASS_DECLARATION":
+			modifierPropertyToNode(modifiersTree, modifiersNode, "static");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "abstract");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "final");
+			modifierAccessLevelToNode(modifiersTree, modifiersNode);
+			break;
+		case "INTERFACE_DECLARATION":
+			modifierPropertyToNode(modifiersTree, modifiersNode, "static");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "abstract");
+			modifierAccessLevelToNode(modifiersTree, modifiersNode);
+			break;
+		case "ENUM_DECLARATION":
+			modifierPropertyToNode(modifiersTree, modifiersNode, "static");
+			modifierAccessLevelToNode(modifiersTree, modifiersNode);
+			break;
+		case "METHOD_DEC":
+			modifierPropertyToNode(modifiersTree, modifiersNode, "static");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "abstract");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "final");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "synchronized");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "native");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "strictfp");
+			modifierAccessLevelToNode(modifiersTree, modifiersNode);
+			break;
+		case "ATTR_DEC":
+			modifierPropertyToNode(modifiersTree, modifiersNode, "static");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "final");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "volatile");
+			modifierPropertyToNode(modifiersTree, modifiersNode, "transient");
+			modifierAccessLevelToNode(modifiersTree, modifiersNode);
+			break;
+		default:
+			// Locals and params
 
-		return null;
+			modifierPropertyToNode(modifiersTree, modifiersNode, "final");
+
+		}
+		return modifiersNode;
 	}
 
 	@Override
@@ -1117,7 +1169,8 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		if (DEBUG)
 			System.out
 					.println("VARIABLE:" + variableTree.getName() + "(" + variableNode.getProperty("actualType") + ")");
-		scan(variableTree.getModifiers(), Pair.createPair(variableNode, RelationTypes.HAS_VARIABLEDECL_MODIFIERS));
+		Node modifiersNode = scan(variableTree.getModifiers(),
+				Pair.createPair(variableNode, RelationTypes.HAS_VARIABLEDECL_MODIFIERS));
 
 		if (isAttr) {
 			// Warning, lineNumber and position should be added depending on the
@@ -1127,8 +1180,8 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 			pdgUtils.newMethod(variableNode);
 			Pair<List<Node>, List<Node>> param = ((Pair<Pair<List<Node>, List<Node>>, List<Node>>) t.getSecond())
 					.getFirst();
-			(variableTree.getModifiers().getFlags().toString().contains("static") ? param.getSecond()
-					: param.getFirst()).add(pdgUtils.getLastMethodDecVisited());
+			((boolean) modifiersNode.getProperty("isStatic") ? param.getSecond() : param.getFirst())
+					.add(pdgUtils.getLastMethodDecVisited());
 			createVarInit(variableTree, variableNode);
 			pdgUtils.endMethod();
 
