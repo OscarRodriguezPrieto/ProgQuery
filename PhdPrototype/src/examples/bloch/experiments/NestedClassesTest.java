@@ -1,4 +1,4 @@
-package examples.bloch;
+package examples.bloch.experiments;
 public class NestedClassesTest {
 	private int val;
 	public String toString(){
