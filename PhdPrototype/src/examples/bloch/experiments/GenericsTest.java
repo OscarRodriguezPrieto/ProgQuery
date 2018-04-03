@@ -1,4 +1,4 @@
-package examples.bloch;
+package examples.bloch.experiments;
 
 import java.util.HashSet;
 import java.util.Set;
