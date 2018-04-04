@@ -1,28 +1,29 @@
 package utils;
 
-import java.util.Currency;
-
+import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
-
-import org.parboiled.trees.TreeUtils;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.Scope;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
-import com.sun.tools.doclets.internal.toolkit.util.ClassTree;
+import com.sun.tools.javac.api.JavacTaskImpl;
 import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Symtab;
+import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCExpression;
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
+import com.sun.tools.javac.tree.TreeInfo;
 
 public class JavacInfo {
 
@@ -36,12 +37,15 @@ public class JavacInfo {
 	private final Trees trees;
 	private final CompilationUnitTree currCompilationUnit;
 	private final Types types;
+	private final Symtab symTab;
 
 	public JavacInfo(CompilationUnitTree currCompilationUnit, JavacTask task) {
 		this.currCompilationUnit = currCompilationUnit;
 		this.trees = Trees.instance(task);
 		types = task.getTypes();
 		this.sourcePositions = trees.getSourcePositions();
+		symTab = Symtab.instance(((com.sun.tools.javac.api.BasicJavacTask) task).getContext());
+
 	}
 
 	// private CompilationUnitTree currentCompilationUnit;
@@ -79,12 +83,12 @@ public class JavacInfo {
 		return currentJavacInfo.trees.getTypeMirror(getPath(tree));
 	}
 
-	public static TypeMirror getTypeDirect(ExpressionTree tree) {
+	public static Type getTypeDirect(ExpressionTree tree) {
 
 		return ((JCExpression) tree).type;
 	}
 
-	public static TypeMirror getTypeDirect(VariableTree tree) {
+	public static com.sun.tools.javac.code.Type getTypeDirect(VariableTree tree) {
 
 		return ((JCVariableDecl) tree).type;
 	}
@@ -98,4 +102,31 @@ public class JavacInfo {
 		return currentJavacInfo.trees.getTree(s);
 	}
 
+	public static Tree getTreeFromElement(Element e) {
+		return currentJavacInfo.trees.getTree(e);
+	}
+
+	public static Tree getTreeFromElement(Tree t) {
+		return currentJavacInfo.trees.getTree(currentJavacInfo.trees.getElement(getPath(t)));
+	}
+
+	public static Scope getScope(Tree t) {
+		return currentJavacInfo.trees.getScope(getPath(t));
+	}
+
+	public static boolean isSubtype(Type t1, Type t2) {
+		return currentJavacInfo.types.isSubtype(t1, t2);
+	}
+
+	public static boolean isSuperType(Type t1, Type t2) {
+		return currentJavacInfo.types.isSubtype(t2, t1);
+	}
+
+	public static Symtab getSymtab() {
+		return currentJavacInfo.symTab;
+	}
+
+	public static Symbol getSymbolFromTree(Tree t) {
+		return TreeInfo.symbol((JCTree) t);
+	}
 }
