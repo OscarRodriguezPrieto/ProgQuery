@@ -1,1 +1,0 @@
-java -cp bin;build\libs\* querys.MainQuery > query.txt

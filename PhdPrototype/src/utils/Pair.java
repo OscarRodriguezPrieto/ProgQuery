@@ -2,8 +2,9 @@ package utils;
 
 import org.neo4j.graphdb.Node;
 
-import src.database.relations.PartialRelation;
-import src.database.relations.SimplePartialRelation;
+import database.relations.PartialRelation;
+import database.relations.RelationTypes;
+import database.relations.SimplePartialRelation;
 
 public class Pair<X, Y> {
 	
@@ -24,7 +25,7 @@ public class Pair<X, Y> {
 		return x;
 	}
 
-	public Y gsetSecond() {
+	public Y getSecond() {
 		return y;
 	}
 
