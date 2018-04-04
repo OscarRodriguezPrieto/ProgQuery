@@ -1,12 +1,24 @@
+<<<<<<< HEAD
 /META-INF/
 /examples/
 /mig/
 /services/
 /database/
 /visitors/
+=======
+/cache/
+/database/
+/io/
+/querys/
+/relations/
+>>>>>>> 35eb70e6a97b8ef16fe55a3f0ce9611eb967a81c
 /tasklisteners/
 /ast/
 /pdg/
 /test/
 /utils/
+<<<<<<< HEAD
 /cache/
+=======
+/visitors/
+>>>>>>> 35eb70e6a97b8ef16fe55a3f0ce9611eb967a81c
