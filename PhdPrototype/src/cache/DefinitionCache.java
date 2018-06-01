@@ -13,6 +13,7 @@ import com.sun.tools.javac.code.Symbol.ClassSymbol;
 
 import database.DatabaseFachade;
 import database.nodes.NodeTypes;
+import database.relations.RelationTypes;
 
 public class DefinitionCache<TKEY> {
 	private static final boolean DEBUG = false;
@@ -31,21 +32,39 @@ public class DefinitionCache<TKEY> {
 			auxNodeCache.put(k, v);
 	}
 
+	public void putClassDefinition(TKEY classSymbol, Node classDec) {
+		boolean containsKey;
+		if (containsKey = auxNodeCache.containsKey(classSymbol)) {
+			for (Relationship r : auxNodeCache.get(classSymbol).getRelationships(Direction.OUTGOING,
+					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR))
+				r.delete();
+
+		}
+
+		putDefinition(classSymbol, classDec, containsKey);
+	}
+
 	public void putDefinition(TKEY k, Node v) {
+		putDefinition(k, v, auxNodeCache.containsKey(k));
+	}
+
+	private void putDefinition(TKEY k, Node v, boolean containsKey) {
 		if (DEBUG)
 			System.out.println("putting def " + k + " " + v);
-		if (auxNodeCache.containsKey(k)) {
+
+		if (containsKey) {
 			if (DEBUG)
 				System.out.println("Removing " + auxNodeCache.get(k));
 			// No me deja eliminalo porque todavía tiene relaciones
 
 			// Habria que pasar las relaciones al nuevo type
 			// Igual es más eficiente iterar todas y un if??? con direction
-			for (Relationship r : auxNodeCache.get(k).getRelationships(Direction.INCOMING)) {
+			Node cachedNode = auxNodeCache.get(k);
+			for (Relationship r : cachedNode.getRelationships(Direction.INCOMING)) {
 				r.getStartNode().createRelationshipTo(v, r.getType());
 				r.delete();
 			}
-			for (Relationship r : auxNodeCache.get(k).getRelationships(Direction.OUTGOING)) {
+			for (Relationship r : cachedNode.getRelationships(Direction.OUTGOING)) {
 				v.createRelationshipTo(r.getEndNode(), r.getType());
 				r.delete();
 			}
@@ -77,10 +96,10 @@ public class DefinitionCache<TKEY> {
 		return definitionNodeCache.size();
 	}
 
-	public static Node getOrCreateTypeDec(Symbol classSymbol) {
-		ClassSymbol c = (ClassSymbol) classSymbol;
-		return getOrCreateTypeDec(classSymbol, c.isInterface() ? NodeTypes.INTERFACE_DECLARATION
-				: c.isEnum() ? NodeTypes.ENUM_DECLARATION : NodeTypes.CLASS_DECLARATION);
+	public static Node getOrCreateTypeDec(ClassSymbol classSymbol) {
+
+		return getOrCreateTypeDec(classSymbol, classSymbol.isInterface() ? NodeTypes.INTERFACE_DECLARATION
+				: classSymbol.isEnum() ? NodeTypes.ENUM_DECLARATION : NodeTypes.CLASS_DECLARATION);
 	}
 
 	public static Node getOrCreateTypeDec(Symbol classSymbol, NodeTypes type) {

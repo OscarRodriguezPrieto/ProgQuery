@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
-import database.nodes.NodeUtils;
+import database.nodes.NodeTypes;
+import database.relations.CGRelationTypes;
 import database.relations.PDGRelationTypes;
 import database.relations.RelationTypes;
 import utils.Pair;
@@ -37,30 +37,22 @@ public class GetDeclarationFromExpression {
 	}
 
 	private List<Pair<Node, Boolean>> scan(Node n) {
-		switch (n.getProperty("nodeType").toString()) {
 
-		case "METHOD_INVOCATION":
-			return scanMethodInvocation(n);
-		case "CONDITIONAL_EXPRESSION":
-			return scanConditionalExpression(n);
-		case "IDENTIFIER":
-			return scanIdentifier(n);
-		case "MEMBER_SELECTION":
-			return scanAPart(n, RelationTypes.MEMBER_SELECT_EXPR);
-		case "ARRAY_ACCESS":
-			return scanAPart(n, RelationTypes.ARRAYACCESS_EXPR);
-		case "ASSIGNMENT":
-			return scanAPart(n, RelationTypes.ASSIGNMENT_LHS);
-		case "TYPE_CAST":
-			return scanAPart(n, RelationTypes.CAST_ENCLOSES);
+		return n.hasLabel(NodeTypes.IDENTIFIER) ? scanIdentifier(n)
+				: n.hasLabel(NodeTypes.MEMBER_SELECTION) ? scanAPart(n, RelationTypes.MEMBER_SELECT_EXPR)
+						: n.hasLabel(NodeTypes.METHOD_INVOCATION) ? scanMethodInvocation(n)
+								: n.hasLabel(NodeTypes.ASSIGNMENT) ? scanAPart(n, RelationTypes.ASSIGNMENT_LHS)
+										: n.hasLabel(NodeTypes.ARRAY_ACCESS)
+												? scanAPart(n, RelationTypes.ARRAYACCESS_EXPR)
+												: n.hasLabel(NodeTypes.TYPE_CAST)
+														? scanAPart(n, RelationTypes.CAST_ENCLOSES)
+														: n.hasLabel(NodeTypes.CONDITIONAL_EXPRESSION)
+																? scanConditionalExpression(n)
+																: new ArrayList<Pair<Node, Boolean>>();
 
-		default:
-			return new ArrayList<Pair<Node, Boolean>>();
-
-		}
 	}
 
-	private List<Pair<Node, Boolean>> scanIdentifier(Node identifier) {
+	public List<Pair<Node, Boolean>> scanIdentifier(Node identifier) {
 		Node identDeclaration = identificationForLeftAssignIdents.get(identifier);
 		if (identDeclaration == null && identifier.hasRelationship(PDGRelationTypes.USED_BY, Direction.INCOMING))
 			identDeclaration = identifier.getSingleRelationship(PDGRelationTypes.USED_BY, Direction.INCOMING)
@@ -79,7 +71,7 @@ public class GetDeclarationFromExpression {
 			return ret;
 
 		identDeclaration = methodInvocationRelIfExists.getStartNode()
-				.getSingleRelationship(RelationTypes.HAS_DEC, Direction.OUTGOING).getEndNode();
+				.getSingleRelationship(CGRelationTypes.HAS_DEC, Direction.OUTGOING).getEndNode();
 		Node thisRef = thisRefsOfMethods.get(identDeclaration);
 		// If thisRef is null, then it must be a static method
 		if (thisRef == null)
@@ -88,7 +80,7 @@ public class GetDeclarationFromExpression {
 		return ret;
 	}
 
-	private List<Pair<Node, Boolean>> scanConditionalExpression(Node conditionalExpr) {
+	public List<Pair<Node, Boolean>> scanConditionalExpression(Node conditionalExpr) {
 		List<Pair<Node, Boolean>> decsOfTheInvocation = new ArrayList<Pair<Node, Boolean>>();
 		decsOfTheInvocation.addAll(convertMustToMay(scan(conditionalExpr
 				.getSingleRelationship(RelationTypes.CONDITIONAL_EXPR_CONDITION, Direction.OUTGOING).getEndNode())));
@@ -97,7 +89,7 @@ public class GetDeclarationFromExpression {
 		return null;
 	}
 
-	private List<Pair<Node, Boolean>> scanAPart(Node memberSelection, RelationTypes r) {
+	public List<Pair<Node, Boolean>> scanAPart(Node memberSelection, RelationTypes r) {
 		return scan(memberSelection.getSingleRelationship(r, Direction.OUTGOING).getEndNode());
 	}
 
@@ -121,22 +113,20 @@ public class GetDeclarationFromExpression {
 	}
 
 	public List<Pair<Node, Boolean>> scanMethodInvocation(Node methodInvocation) {
-		System.out.println("ANALYSING METHOD_ INVOCATION:\n" + NodeUtils.nodeToString(methodInvocation));
 
 		Map<Integer, List<Pair<Node, Boolean>>> varDecsInArguments = new HashMap<Integer, List<Pair<Node, Boolean>>>();
 		varDecsInArguments.put(0, scan(methodInvocation
 				.getSingleRelationship(RelationTypes.METHODINVOCATION_METHOD_SELECT, Direction.OUTGOING).getEndNode()));
-		System.out.println("METHOD_SELECT:\n" + NodeUtils.nodeToString(methodInvocation
-				.getSingleRelationship(RelationTypes.METHODINVOCATION_METHOD_SELECT, Direction.OUTGOING).getEndNode()));
 
 		for (Relationship argumentRel : methodInvocation.getRelationships(RelationTypes.METHODINVOCATION_ARGUMENTS,
-				Direction.OUTGOING)) {
-			System.out.println("Argument " + (int) argumentRel.getProperty("argumentIndex") + ":\n"
-					+ NodeUtils.nodeToString(argumentRel.getEndNode()));
+				Direction.OUTGOING))
+			// System.out.println("Argument " + (int)
+			// argumentRel.getProperty("argumentIndex") + ":\n"
+			// + NodeUtils.nodeToString(argumentRel.getEndNode()));
 			varDecsInArguments.put((int) argumentRel.getProperty("argumentIndex"), scan(argumentRel.getEndNode()));
-		}
+
 		// Aquí faltan cosas pa sacar la declaracion
-		Node methodDeclaration = methodInvocation.getSingleRelationship(RelationTypes.HAS_DEC, Direction.OUTGOING)
+		Node methodDeclaration = methodInvocation.getSingleRelationship(CGRelationTypes.HAS_DEC, Direction.OUTGOING)
 				.getEndNode();
 		List<Pair<Node, Boolean>> decsOfTheInvocation = new ArrayList<Pair<Node, Boolean>>();
 		for (Relationship rel : methodDeclaration.getRelationships(Direction.OUTGOING, PDGRelationTypes.RETURNS,
@@ -147,12 +137,7 @@ public class GetDeclarationFromExpression {
 				PDGRelationTypes.MAY_RETURN_A_PART_OF))
 			decsOfTheInvocation.addAll(getDecsForAReturn(rel, varDecsInArguments, false));
 
-		System.out.println("PUTTING METHOD_ INVOCATION:\n" + NodeUtils.nodeToString(methodInvocation));
-		for (Entry<Integer, List<Pair<Node, Boolean>>> entry : varDecsInArguments.entrySet()) {
-			System.out.println("For integer " + entry.getKey() + "  :");
-			for (Pair<Node, Boolean> pair : entry.getValue())
-				System.out.println(NodeUtils.nodeToString(pair.getFirst()) + "\n" + pair.getSecond());
-		}
+
 		invocationsMayModifyVars.put(methodInvocation, varDecsInArguments);
 
 		// Falta recorrer a la derecha y añadir cache porque vamos a visitar

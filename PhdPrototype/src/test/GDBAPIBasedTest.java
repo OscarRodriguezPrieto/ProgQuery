@@ -1,6 +1,5 @@
 package test;
 
-import java.io.File;
 import java.util.List;
 
 import org.junit.After;
@@ -19,7 +18,7 @@ import database.DatabaseFachade;
 import database.nodes.NodeTypes;
 import database.querys.MainQuery;
 import database.relations.RelationTypes;
-import test.utils.CompilerUtils; 
+import test.utils.CompilerUtils;
 import utils.JavacInfo;
 import utils.Pair;
 import visitors.ASTTypesVisitor;

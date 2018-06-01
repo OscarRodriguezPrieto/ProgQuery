@@ -1,6 +1,6 @@
 package examples.pdg;
 
-public class PDG2 {
+public class PDG2 implements PDG1.I {
 	public PDG1 pdg;
 	public PDG1[][][] tensor;
 
@@ -119,7 +119,9 @@ public class PDG2 {
 	}
 
 	public PDG2 paramReturn(PDG2 p) {
+		p.m();
 		return p;
 	}
+
 
 }

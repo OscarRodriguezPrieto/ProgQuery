@@ -7,7 +7,7 @@ import launcher
 import datetime
 
 isInstrumented=False
-
+dbRefresh=True
 def run_startup_ins(list):
 ##    run_startup(list)
     launcher.instrumentation_time=True
@@ -21,6 +21,8 @@ def run_startup(list):
         file.write("Timestamp: {}\tComputerName: {}\n".format(datetime.datetime.now(), os.environ['COMPUTERNAME']))
         file.close()
     for command, it in list:
+        if dbRefresh:
+            os.system("refreshDb.bat");
         startup.run(command, command, out_files[0])
 
 
@@ -41,15 +43,34 @@ def java_compile(batName):
 if __name__ == "__main__":
    # cs_compile("myTest")
    # cs_compile("points")
-    java_compile("compile8")
+    #java_compile("compile8")
+    '''
+    launcher.instrumentation_time=True
     benchmarks_info = [
      #   ["executeWithWeaver.bat" , 500000],
+#2 clases 
+#27 classes 137 methods
+["executeWithWeaver.bat" , 500000],
 
-["..\..\Wiggle_Adapted\executeWithWeaver.bat" , 500000],
-        ["executeWithWeaver.bat" , 500000]
+["executeWithEulerBig.bat" , 500000],
+["pdgTest.bat" , 500000],
                         ]
 
     run_startup_ins(benchmarks_info)
+    '''
+    dbRefresh=False
+    launcher.instrumentation_time=False
+    benchmarks_info = [
+
+    ["executeQuery.bat" , 500000],
+    ["executeQuery1.bat" , 500000],
+    ["executeQuery2.bat" , 500000],
+    ["executeQuery3.bat" , 500000],
+    ["executeQuery4.bat" , 500000],
+    ["executeQuery5.bat" , 500000]
+                        ]
+
+    run_startup(benchmarks_info)
     #run_steady(benchmarks_info)
 
    # run_startup(benchmarks_info)
