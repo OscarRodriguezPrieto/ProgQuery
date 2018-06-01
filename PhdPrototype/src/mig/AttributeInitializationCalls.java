@@ -5,10 +5,6 @@ import java.util.List;
 
 import org.neo4j.graphdb.Node;
 
-import com.sun.source.tree.VariableTree;
-
-import database.DatabaseFachade;
-
 public class AttributeInitializationCalls {
 
 	public static AttributeInitializationCalls CURRENT_CLASS_INFO;

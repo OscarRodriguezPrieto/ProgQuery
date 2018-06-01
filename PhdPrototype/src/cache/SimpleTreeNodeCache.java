@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.neo4j.graphdb.Node;
 
-import com.sun.source.tree.Tree;
-
 import database.nodes.NodeUtils;
 
 public class SimpleTreeNodeCache<K> {

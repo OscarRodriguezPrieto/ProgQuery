@@ -1,11 +1,5 @@
 package examples.CFG;
 
-import javax.tools.ToolProvider;
-
-import org.neo4j.cypher.internal.compiler.v2_2.ast.convert.commands.ExpressionConverters.GetDegreeConverter;
-
-import scala.util.control.Exception;
-
 public class BreakTest {
 
 	public static void main(final String[] args) {

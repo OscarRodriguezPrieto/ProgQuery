@@ -69,7 +69,8 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 				classCounter.remove(u);
 				firstClass = true;
 				counter = 0;
-
+				// System.out.println("AFTER ANALYZE");
+				// System.out.println(ast.mm + "\n" + ast.b + "\n" + ast.s1);
 				transaction.success();
 				transaction.close();
 
@@ -81,7 +82,6 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 	}
 
 	private void firstScan(CompilationUnitTree u, Tree typeDeclaration) {
-
 		JavacInfo.setJavacInfo(new JavacInfo(u, task));
 		DatabaseFachade.setDB(graphDb);
 
@@ -97,7 +97,6 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 	}
 
 	private void scan(Tree typeDeclaration, boolean first) {
-
 		if (DEBUG) {
 			System.err.println("-*-*-*-*-*-*-* NEW TYPE DECLARATION AND VISITOR-*-*-*-*-*-*-*");
 			System.err.println(cu.getSourceFile().getName());
@@ -115,7 +114,10 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		if (arg0.getKind() == Kind.GENERATE && started) {
 
 			if (classCounter.size() == 0) {
+				// System.out.println("BEFORE CFG");
+				// System.out.println(ast.mm + "\n" + ast.b + "\n" + ast.s1);
 				cfgAnalysis();
+				dynamicMethodCallAnalysis();
 				interproceduralPDGAnalysis();
 				shutdownDatabase();
 				started = false;
@@ -141,6 +143,14 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		transaction.success();
 		transaction.close();
 
+	}
+
+	private void dynamicMethodCallAnalysis()
+	{
+		Transaction transaction = DatabaseFachade.beginTx();
+		ast.doDynamicMethodCallAnalysis();
+		transaction.success();
+		transaction.close();
 	}
 
 	public void shutdownDatabase() {

@@ -3,15 +3,13 @@ package test.old;
 import java.util.Collections;
 import java.util.List;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 //import org.neo4j.kernel.logging.BufferingLogger;
-import org.neo4j.test.TestGraphDatabaseFactory;
 import org.neo4j.graphdb.Result;
-
+import org.neo4j.test.TestGraphDatabaseFactory;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.api.JavacTaskImpl;
