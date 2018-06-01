@@ -3,22 +3,19 @@ package tests;
 import java.util.Collections;
 import java.util.List;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.cypher.ExecutionEngine;
-import org.neo4j.cypher.ExecutionResult;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Result;
 //import org.neo4j.kernel.logging.BufferingLogger;
 import org.neo4j.test.TestGraphDatabaseFactory;
-import org.neo4j.graphdb.Result;
-
-import tests.utils.TestUtils;
-import visitors.WiggleVisitor;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.api.JavacTaskImpl;
+
+import test.utils.CompilerUtils;
+import visitors.WiggleVisitor;
 
 
 public class TypeHierarchyTest {
@@ -44,7 +41,7 @@ public class TypeHierarchyTest {
 				   + "static class C extends B{}\n"
 				   + "}";
 
-		JavacTaskImpl task = TestUtils.getTask(src);
+		JavacTaskImpl task = CompilerUtils.getTask(src);
 
 		List<? extends CompilationUnitTree> parse = (List<? extends CompilationUnitTree>) task.parse();
 		task.analyze(); // attribute with symbols?
@@ -78,7 +75,7 @@ public class TypeHierarchyTest {
 				   + "static class Y extends Z{}\n"
 				   + "}";
 
-		JavacTaskImpl task = TestUtils.getTask(src, src2);
+		JavacTaskImpl task = CompilerUtils.getTask(src, src2);
 
 		List<? extends CompilationUnitTree> parse = (List<? extends CompilationUnitTree>) task.parse();
 		task.analyze(); // attribute with symbols?

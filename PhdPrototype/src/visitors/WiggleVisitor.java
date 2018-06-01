@@ -9,12 +9,60 @@ import javax.lang.model.util.Types;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 
-import utils.Pair;
-
-import com.sun.source.tree.*;
+import com.sun.source.tree.AnnotationTree;
+import com.sun.source.tree.ArrayAccessTree;
+import com.sun.source.tree.ArrayTypeTree;
+import com.sun.source.tree.AssertTree;
+import com.sun.source.tree.AssignmentTree;
+import com.sun.source.tree.BinaryTree;
+import com.sun.source.tree.BlockTree;
+import com.sun.source.tree.BreakTree;
+import com.sun.source.tree.CaseTree;
+import com.sun.source.tree.CatchTree;
+import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.CompoundAssignmentTree;
+import com.sun.source.tree.ConditionalExpressionTree;
+import com.sun.source.tree.ContinueTree;
+import com.sun.source.tree.DoWhileLoopTree;
+import com.sun.source.tree.EmptyStatementTree;
+import com.sun.source.tree.EnhancedForLoopTree;
+import com.sun.source.tree.ExpressionStatementTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ForLoopTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.IfTree;
+import com.sun.source.tree.ImportTree;
+import com.sun.source.tree.InstanceOfTree;
+import com.sun.source.tree.LabeledStatementTree;
+import com.sun.source.tree.LineMap;
+import com.sun.source.tree.LiteralTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.ModifiersTree;
+import com.sun.source.tree.NewArrayTree;
+import com.sun.source.tree.NewClassTree;
+import com.sun.source.tree.ParameterizedTypeTree;
+import com.sun.source.tree.ParenthesizedTree;
+import com.sun.source.tree.PrimitiveTypeTree;
+import com.sun.source.tree.ReturnTree;
+import com.sun.source.tree.SwitchTree;
+import com.sun.source.tree.SynchronizedTree;
+import com.sun.source.tree.ThrowTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.tree.Tree.Kind;
+import com.sun.source.tree.TryTree;
+import com.sun.source.tree.TypeCastTree;
+import com.sun.source.tree.TypeParameterTree;
+import com.sun.source.tree.UnaryTree;
+import com.sun.source.tree.UnionTypeTree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WhileLoopTree;
+import com.sun.source.tree.WildcardTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
@@ -22,11 +70,13 @@ import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.TreeInfo;
 import com.sun.tools.javac.tree.JCTree.JCExpression;
 import com.sun.tools.javac.tree.JCTree.LetExpr;
+import com.sun.tools.javac.tree.TreeInfo;
 
+import database.relations.CGRelationTypes;
 import database.relations.RelationTypes;
+import utils.Pair;
 
 public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationTypes>> {
 	private static final boolean DEBUG = false;
@@ -38,7 +88,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 	private Map<String, Node> methodTypeCache = new HashMap<>();
 	private final SourcePositions sourcePositions;
 
-	private Map<Tree, Pair<Node, RelationTypes>> todo = new HashMap<>();
+	private Map<Tree, Pair<Node, RelationshipType>> todo = new HashMap<>();
 	private final Trees trees;
 	private final Map<Tree, Node> treeToNodeCache = new HashMap<>();
 	private final Types types;
@@ -95,7 +145,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 					Node superTypeNode = treeToNodeCache.get(superClassTree);
 					baseClassNode.createRelationshipTo(superTypeNode, r);
 				} else {
-					Pair<Node, RelationTypes> todoTuple = Pair.create(baseClassNode, r);
+					Pair<Node, RelationshipType> todoTuple = Pair.create(baseClassNode, r);
 					todo.put(superClassTree, todoTuple);
 				}
 			}
@@ -288,7 +338,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 		// any connections todo?
 		if (todo.containsKey(classTree)) {
-			Pair<Node, RelationTypes> pair = todo.get(classTree);
+			Pair<Node, RelationshipType> pair = todo.get(classTree);
 			pair.getFirst().createRelationshipTo(baseClassNode, pair.getSecond());
 			todo.remove(classTree);
 
@@ -343,7 +393,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 			tx.success();
 		} finally {
-			tx.finish();
+			tx.close();
 			// System.out.println("Visited CU and commited");
 		}
 
@@ -542,7 +592,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 		// any calls relations todo?
 		if (todo.containsKey(methodTree)) {
-			Pair<Node, RelationTypes> pair = todo.get(methodTree);
+			Pair<Node, RelationshipType> pair = todo.get(methodTree);
 			pair.getFirst().createRelationshipTo(methodNode, pair.getSecond());
 			todo.remove(methodTree);
 
@@ -639,11 +689,11 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 					// System.out.println("--\n" + e.toString() + "--\n");
 					if (treeToNodeCache.containsKey(e)) {
 						Node methodGettingCalledNode = treeToNodeCache.get(e);
-						methodDeclNode.createRelationshipTo(methodGettingCalledNode, RelationTypes.CALLS);
+						methodDeclNode.createRelationshipTo(methodGettingCalledNode, CGRelationTypes.CALLS);
 					} else if (e == methodDecl) {
-						methodDeclNode.createRelationshipTo(methodDeclNode, RelationTypes.CALLS);
+						methodDeclNode.createRelationshipTo(methodDeclNode, CGRelationTypes.CALLS);
 					} else {
-						Pair<Node, RelationTypes> todoTuple = Pair.create(methodDeclNode, RelationTypes.CALLS);
+						Pair<Node, RelationshipType> todoTuple = Pair.create(methodDeclNode, CGRelationTypes.CALLS);
 						todo.put(e, todoTuple);
 					}
 
@@ -666,7 +716,7 @@ public class WiggleVisitor extends TreePathScanner<Void, Pair<Tree, RelationType
 
 					// if(methodType == null)
 					// System.out.println("methodType is null!!!");
-					methodDeclNode.createRelationshipTo(methodType, RelationTypes.CALLS);
+					methodDeclNode.createRelationshipTo(methodType, CGRelationTypes.CALLS);
 				}
 			}
 		}

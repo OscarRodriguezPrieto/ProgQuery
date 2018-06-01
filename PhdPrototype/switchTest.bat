@@ -1,2 +1,2 @@
-javac -cp bin;lib/*;build/libs/* -Xplugin:WiggleIndexerPlugin -d bon testClasses\CFG\Switch.java
+javac -cp lib/*;build/libs/*;build/libs/neo4j/*; -Xplugin:WiggleIndexerPlugin -d bon testClasses\CFG\Switch.java
 pause
