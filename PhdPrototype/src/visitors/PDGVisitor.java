@@ -157,11 +157,10 @@ public class PDGVisitor {
 		// With this line we create a this ref node per class, regardless of it
 		// has relations or not. The other option is including this declaration
 		// inside the ifs
+		if (!lastMethodDecVisited.hasLabel(NodeTypes.ATTR_DEC)) {
 
-		if (!lastMethodDecVisited.getProperty("nodeType").toString().contentEquals("ATTR_DEC")) {
-			boolean isStatic = lastMethodDecVisited
-					.getSingleRelationship(RelationTypes.HAS_METHODDECL_MODIFIERS, Direction.OUTGOING).getEndNode()
-					.getProperty("flags").toString().contains("static");
+			boolean isStatic = !lastMethodDecVisited.hasLabel(NodeTypes.CONSTRUCTOR_DEC)
+					&& ((boolean) lastMethodDecVisited.getProperty("isStatic"));
 			Relationship thisRel = getOrCreateThisNode(currentClassDec);
 			if (!isStatic)
 				thisRefsOfMethods.put(lastMethodDecVisited, thisRel.getEndNode());
@@ -242,16 +241,15 @@ public class PDGVisitor {
 
 		if (relType == PDGRelationTypes.USED_BY)
 			return;
-		String nodeType = paramDec.getProperty("nodeType").toString();
 
 		// With a strategy pattern I can skip this comprobation after register a
 		// state change on this
-		if (nodeType.contentEquals("THIS_REF") && thisRelationsOnThisMethod != PDGRelationTypes.STATE_MODIFIED_BY) {
+		if (paramDec.hasLabel(NodeTypes.THIS_REF) && thisRelationsOnThisMethod != PDGRelationTypes.STATE_MODIFIED_BY) {
 			thisRelationsOnThisMethod = (boolean) assign.getProperty("mustBeExecuted")
 					? PDGRelationTypes.STATE_MODIFIED_BY : PDGRelationTypes.STATE_MAY_BE_MODIFIED;
 			return;
 		}
-		if (!nodeType.contentEquals(NodeTypes.PARAMETER_DEC.toString()))
+		if (!paramDec.hasLabel(NodeTypes.PARAMETER_DEC))
 			return;
 		if (!paramsToOrderedAssignments.containsKey(paramDec))
 			paramsToOrderedAssignments.put(paramDec, new ArrayList<Pair<Node, PDGRelationTypes>>());
@@ -296,7 +294,7 @@ public class PDGVisitor {
 			end = concrete;
 		else {
 			end = lastAssignment;
-			if (concrete.getProperty("nodeType").toString().contentEquals("IDENTIFIER"))
+			if (concrete.hasLabel(NodeTypes.IDENTIFIER))
 				if (dec == null)
 					list.add(decNode -> identificationForLeftAssignExprs.put(concrete, decNode));
 				else
@@ -368,7 +366,7 @@ public class PDGVisitor {
 							return getOrCreateThisNode(currentClassDec).getEndNode();
 						}
 
-					} else if (nodeDec.getProperty("nodeType").toString().contentEquals("ATTR_DEC"))
+					} else if (nodeDec.hasLabel(NodeTypes.ATTR_DEC))
 						return getOrCreateThisNode(currentClassDec).getEndNode();
 					return null;
 
@@ -393,7 +391,8 @@ public class PDGVisitor {
 		// This takes into account the case of Class.this inside of a inner
 		// class
 		addRels(((JCFieldAccess) memberSelectTree).sym, memberSelectNode, t.getSecond(),
-				() -> DefinitionCache.getOrCreateTypeDec(JavacInfo.getSymbolFromTree(memberSelectTree.getExpression())),
+				() -> DefinitionCache.getOrCreateTypeDec(
+						(ClassSymbol) JavacInfo.getSymbolFromTree(memberSelectTree.getExpression())),
 				(Boolean hasDec, Node nodeDec, Boolean isNotThis, Symbol s) -> null);
 	}
 

@@ -3,10 +3,13 @@ package examples.classesDependencies;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import examples.Constructores;
 import examples.OtherClass;
 
 public class ClassUse implements Interface {
-
+	Constructores getCOnstructores() {
+		return new Constructores();
+	}
 	private ArrayList<String> l;
 
 	public int m() {

@@ -1,1 +1,1 @@
-java -cp bin;build\libs\* querys.MainQuery > query.txt
+java -cp src;build\libs\*;build\libs\neo4j\*; database.querys.RuleDetectionQueries 0 > temp/output.txt

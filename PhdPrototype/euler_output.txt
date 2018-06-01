@@ -1,0 +1,11572 @@
+
+C:\Users\Oscar\Desktop\Oskar\Tesis\BigCodeProject\PhdPrototype>javac -cp C:\Users\Oscar\Desktop\java\lib\*;src;build\libs\neo4j\*; -Xplugin:WiggleIndexerPlugin -d bon  C:\Users\Oscar\Desktop\java\*.java 
+PUTTING 
+:
+super();
+Node[1115391]
+PUTTING 
+:
+assertEquals("233168", new p001().run());
+Node[1115401]
+PUTTING 
+:
+assertEquals("4613732", new p002().run());
+Node[1115417]
+PUTTING 
+:
+assertEquals("6857", new p003().run());
+Node[1115432]
+PUTTING 
+:
+assertEquals("906609", new p004().run());
+Node[1115447]
+PUTTING 
+:
+assertEquals("232792560", new p005().run());
+Node[1115462]
+PUTTING 
+:
+assertEquals("25164150", new p006().run());
+Node[1115477]
+PUTTING 
+:
+assertEquals("104743", new p007().run());
+Node[1115492]
+PUTTING 
+:
+assertEquals("23514624000", new p008().run());
+Node[1115507]
+PUTTING 
+:
+assertEquals("31875000", new p009().run());
+Node[1115522]
+PUTTING 
+:
+assertEquals("142913828922", new p010().run());
+Node[1115537]
+PUTTING 
+:
+assertEquals("70600674", new p011().run());
+Node[1115552]
+PUTTING 
+:
+assertEquals("76576500", new p012().run());
+Node[1115567]
+PUTTING 
+:
+assertEquals("5537376230", new p013().run());
+Node[1115582]
+PUTTING 
+:
+assertEquals("837799", new p014().run());
+Node[1115597]
+PUTTING 
+:
+assertEquals("137846528820", new p015().run());
+Node[1115612]
+PUTTING 
+:
+assertEquals("1366", new p016().run());
+Node[1115627]
+PUTTING 
+:
+assertEquals("21124", new p017().run());
+Node[1115642]
+PUTTING 
+:
+assertEquals("1074", new p018().run());
+Node[1115657]
+PUTTING 
+:
+assertEquals("171", new p019().run());
+Node[1115672]
+PUTTING 
+:
+assertEquals("648", new p020().run());
+Node[1115687]
+PUTTING 
+:
+assertEquals("31626", new p021().run());
+Node[1115702]
+PUTTING 
+:
+assertEquals("871198282", new p022().run());
+Node[1115717]
+PUTTING 
+:
+assertEquals("4179871", new p023().run());
+Node[1115732]
+PUTTING 
+:
+assertEquals("2783915460", new p024().run());
+Node[1115747]
+PUTTING 
+:
+assertEquals("4782", new p025().run());
+Node[1115762]
+PUTTING 
+:
+assertEquals("983", new p026().run());
+Node[1115777]
+PUTTING 
+:
+assertEquals("-59231", new p027().run());
+Node[1115792]
+PUTTING 
+:
+assertEquals("669171001", new p028().run());
+Node[1115807]
+PUTTING 
+:
+assertEquals("9183", new p029().run());
+Node[1115822]
+PUTTING 
+:
+assertEquals("443839", new p030().run());
+Node[1115837]
+PUTTING 
+:
+assertEquals("73682", new p031().run());
+Node[1115852]
+PUTTING 
+:
+assertEquals("45228", new p032().run());
+Node[1115867]
+PUTTING 
+:
+assertEquals("100", new p033().run());
+Node[1115882]
+PUTTING 
+:
+assertEquals("40730", new p034().run());
+Node[1115897]
+PUTTING 
+:
+assertEquals("55", new p035().run());
+Node[1115912]
+PUTTING 
+:
+assertEquals("872187", new p036().run());
+Node[1115927]
+PUTTING 
+:
+assertEquals("748317", new p037().run());
+Node[1115942]
+PUTTING 
+:
+assertEquals("932718654", new p038().run());
+Node[1115957]
+PUTTING 
+:
+assertEquals("840", new p039().run());
+Node[1115972]
+PUTTING 
+:
+assertEquals("210", new p040().run());
+Node[1115987]
+PUTTING 
+:
+assertEquals("7652413", new p041().run());
+Node[1116002]
+PUTTING 
+:
+assertEquals("162", new p042().run());
+Node[1116017]
+PUTTING 
+:
+assertEquals("16695334890", new p043().run());
+Node[1116032]
+PUTTING 
+:
+assertEquals("5482660", new p044().run());
+Node[1116047]
+PUTTING 
+:
+assertEquals("1533776805", new p045().run());
+Node[1116062]
+PUTTING 
+:
+assertEquals("5777", new p046().run());
+Node[1116077]
+PUTTING 
+:
+assertEquals("134043", new p047().run());
+Node[1116092]
+PUTTING 
+:
+assertEquals("9110846700", new p048().run());
+Node[1116107]
+PUTTING 
+:
+assertEquals("296962999629", new p049().run());
+Node[1116122]
+PUTTING 
+:
+assertEquals("997651", new p050().run());
+Node[1116137]
+PUTTING 
+:
+assertEquals("121313", new p051().run());
+Node[1116152]
+PUTTING 
+:
+assertEquals("142857", new p052().run());
+Node[1116167]
+PUTTING 
+:
+assertEquals("4075", new p053().run());
+Node[1116182]
+PUTTING 
+:
+assertEquals("376", new p054().run());
+Node[1116197]
+PUTTING 
+:
+assertEquals("249", new p055().run());
+Node[1116212]
+PUTTING 
+:
+assertEquals("972", new p056().run());
+Node[1116227]
+PUTTING 
+:
+assertEquals("153", new p057().run());
+Node[1116242]
+PUTTING 
+:
+assertEquals("26241", new p058().run());
+Node[1116257]
+PUTTING 
+:
+assertEquals("107359", new p059().run());
+Node[1116272]
+PUTTING 
+:
+assertEquals("26033", new p060().run());
+Node[1116287]
+PUTTING 
+:
+assertEquals("28684", new p061().run());
+Node[1116302]
+PUTTING 
+:
+assertEquals("127035954683", new p062().run());
+Node[1116317]
+PUTTING 
+:
+assertEquals("49", new p063().run());
+Node[1116332]
+PUTTING 
+:
+assertEquals("1322", new p064().run());
+Node[1116347]
+PUTTING 
+:
+assertEquals("272", new p065().run());
+Node[1116362]
+PUTTING 
+:
+assertEquals("661", new p066().run());
+Node[1116377]
+PUTTING 
+:
+assertEquals("7273", new p067().run());
+Node[1116392]
+PUTTING 
+:
+assertEquals("6531031914842725", new p068().run());
+Node[1116407]
+PUTTING 
+:
+assertEquals("510510", new p069().run());
+Node[1116422]
+PUTTING 
+:
+assertEquals("8319823", new p070().run());
+Node[1116437]
+PUTTING 
+:
+assertEquals("428570", new p071().run());
+Node[1116452]
+PUTTING 
+:
+assertEquals("303963552391", new p072().run());
+Node[1116467]
+PUTTING 
+:
+assertEquals("7295372", new p073().run());
+Node[1116482]
+PUTTING 
+:
+assertEquals("402", new p074().run());
+Node[1116497]
+PUTTING 
+:
+assertEquals("161667", new p075().run());
+Node[1116512]
+PUTTING 
+:
+assertEquals("190569291", new p076().run());
+Node[1116527]
+PUTTING 
+:
+assertEquals("71", new p077().run());
+Node[1116542]
+PUTTING 
+:
+assertEquals("55374", new p078().run());
+Node[1116557]
+PUTTING 
+:
+assertEquals("73162890", new p079().run());
+Node[1116572]
+PUTTING 
+:
+assertEquals("40886", new p080().run());
+Node[1116587]
+PUTTING 
+:
+assertEquals("427337", new p081().run());
+Node[1116602]
+PUTTING 
+:
+assertEquals("260324", new p082().run());
+Node[1116617]
+PUTTING 
+:
+assertEquals("425185", new p083().run());
+Node[1116632]
+PUTTING 
+:
+assertEquals("101524", new p084().run());
+Node[1116647]
+PUTTING 
+:
+assertEquals("2772", new p085().run());
+Node[1116662]
+PUTTING 
+:
+assertEquals("1818", new p086().run());
+Node[1116677]
+PUTTING 
+:
+assertEquals("1097343", new p087().run());
+Node[1116692]
+PUTTING 
+:
+assertEquals("7587457", new p088().run());
+Node[1116707]
+PUTTING 
+:
+assertEquals("743", new p089().run());
+Node[1116722]
+PUTTING 
+:
+assertEquals("1217", new p090().run());
+Node[1116737]
+PUTTING 
+:
+assertEquals("14234", new p091().run());
+Node[1116752]
+PUTTING 
+:
+assertEquals("8581146", new p092().run());
+Node[1116767]
+PUTTING 
+:
+assertEquals("1258", new p093().run());
+Node[1116782]
+PUTTING 
+:
+assertEquals("518408346", new p094().run());
+Node[1116797]
+PUTTING 
+:
+assertEquals("14316", new p095().run());
+Node[1116812]
+PUTTING 
+:
+assertEquals("24702", new p096().run());
+Node[1116827]
+PUTTING 
+:
+assertEquals("8739992577", new p097().run());
+Node[1116842]
+PUTTING 
+:
+assertEquals("18769", new p098().run());
+Node[1116857]
+PUTTING 
+:
+assertEquals("709", new p099().run());
+Node[1116872]
+PUTTING 
+:
+assertEquals("756872327473", new p100().run());
+Node[1116887]
+PUTTING 
+:
+assertEquals("37076114526", new p101().run());
+Node[1116902]
+PUTTING 
+:
+assertEquals("228", new p102().run());
+Node[1116917]
+PUTTING 
+:
+assertEquals("329468", new p104().run());
+Node[1116932]
+PUTTING 
+:
+assertEquals("73702", new p105().run());
+Node[1116947]
+PUTTING 
+:
+assertEquals("259679", new p107().run());
+Node[1116962]
+PUTTING 
+:
+assertEquals("180180", new p108().run());
+Node[1116977]
+PUTTING 
+:
+assertEquals("38182", new p109().run());
+Node[1116992]
+PUTTING 
+:
+assertEquals("612407567715", new p111().run());
+Node[1117007]
+PUTTING 
+:
+assertEquals("1587000", new p112().run());
+Node[1117022]
+PUTTING 
+:
+assertEquals("51161058134250", new p113().run());
+Node[1117037]
+PUTTING 
+:
+assertEquals("16475640049", new p114().run());
+Node[1117052]
+PUTTING 
+:
+assertEquals("168", new p115().run());
+Node[1117067]
+PUTTING 
+:
+assertEquals("20492570929", new p116().run());
+Node[1117082]
+PUTTING 
+:
+assertEquals("100808458960497", new p117().run());
+Node[1117097]
+PUTTING 
+:
+assertEquals("44680", new p118().run());
+Node[1117112]
+PUTTING 
+:
+assertEquals("248155780267521", new p119().run());
+Node[1117127]
+PUTTING 
+:
+assertEquals("333082500", new p120().run());
+Node[1117142]
+PUTTING 
+:
+assertEquals("2269", new p121().run());
+Node[1117157]
+PUTTING 
+:
+assertEquals("1582", new p122().run());
+Node[1117172]
+PUTTING 
+:
+assertEquals("21035", new p123().run());
+Node[1117187]
+PUTTING 
+:
+assertEquals("21417", new p124().run());
+Node[1117202]
+PUTTING 
+:
+assertEquals("2906969179", new p125().run());
+Node[1117217]
+PUTTING 
+:
+assertEquals("18407904", new p127().run());
+Node[1117232]
+PUTTING 
+:
+assertEquals("14516824220", new p128().run());
+Node[1117247]
+PUTTING 
+:
+assertEquals("1000023", new p129().run());
+Node[1117262]
+PUTTING 
+:
+assertEquals("149253", new p130().run());
+Node[1117277]
+PUTTING 
+:
+assertEquals("843296", new p132().run());
+Node[1117292]
+PUTTING 
+:
+assertEquals("453647705", new p133().run());
+Node[1117307]
+PUTTING 
+:
+assertEquals("18613426663617118", new p134().run());
+Node[1117322]
+PUTTING 
+:
+assertEquals("4989", new p135().run());
+Node[1117337]
+PUTTING 
+:
+assertEquals("10057761", new p139().run());
+Node[1117352]
+PUTTING 
+:
+assertEquals("1006193", new p142().run());
+Node[1117367]
+PUTTING 
+:
+assertEquals("608720", new p145().run());
+Node[1117382]
+PUTTING 
+:
+assertEquals("676333270", new p146().run());
+Node[1117397]
+PUTTING 
+:
+assertEquals("52852124", new p149().run());
+Node[1117412]
+PUTTING 
+:
+assertEquals("-271248680", new p150().run());
+Node[1117427]
+PUTTING 
+:
+assertEquals("0.464399", new p151().run());
+Node[1117442]
+PUTTING 
+:
+assertEquals("3857447", new p155().run());
+Node[1117457]
+PUTTING 
+:
+assertEquals("16576", new p160().run());
+Node[1117472]
+PUTTING 
+:
+assertEquals("3D58725572C62302", new p162().run());
+Node[1117487]
+PUTTING 
+:
+assertEquals("378158756814587", new p164().run());
+Node[1117502]
+PUTTING 
+:
+assertEquals("7130034", new p166().run());
+Node[1117517]
+PUTTING 
+:
+assertEquals("178653872807", new p169().run());
+Node[1117532]
+PUTTING 
+:
+assertEquals("142989277", new p171().run());
+Node[1117547]
+PUTTING 
+:
+assertEquals("227485267000992000", new p172().run());
+Node[1117562]
+PUTTING 
+:
+assertEquals("1572729", new p173().run());
+Node[1117577]
+PUTTING 
+:
+assertEquals("209566", new p174().run());
+Node[1117592]
+PUTTING 
+:
+assertEquals("126461847755", new p178().run());
+Node[1117607]
+PUTTING 
+:
+assertEquals("986262", new p179().run());
+Node[1117622]
+PUTTING 
+:
+assertEquals("399788195976", new p182().run());
+Node[1117637]
+PUTTING 
+:
+assertEquals("2325629", new p186().run());
+Node[1117652]
+PUTTING 
+:
+assertEquals("17427258", new p187().run());
+Node[1117667]
+PUTTING 
+:
+assertEquals("95962097", new p188().run());
+Node[1117682]
+PUTTING 
+:
+assertEquals("1918080160", new p191().run());
+Node[1117697]
+PUTTING 
+:
+assertEquals("1.710637717", new p197().run());
+Node[1117712]
+PUTTING 
+:
+assertEquals("34029210557338", new p203().run());
+Node[1117727]
+PUTTING 
+:
+assertEquals("2944730", new p204().run());
+Node[1117742]
+PUTTING 
+:
+assertEquals("0.5731441", new p205().run());
+Node[1117757]
+PUTTING 
+:
+assertEquals("1389019170", new p206().run());
+Node[1117772]
+PUTTING 
+:
+assertEquals("331951449665644800", new p208().run());
+Node[1117787]
+PUTTING 
+:
+assertEquals("1922364685", new p211().run());
+Node[1117802]
+PUTTING 
+:
+assertEquals("1677366278943", new p214().run());
+Node[1117817]
+PUTTING 
+:
+assertEquals("806844323190414", new p215().run());
+Node[1117832]
+PUTTING 
+:
+assertEquals("5437849", new p216().run());
+Node[1117847]
+PUTTING 
+:
+assertEquals("0", new p218().run());
+Node[1117862]
+PUTTING 
+:
+assertEquals("1590933", new p222().run());
+Node[1117877]
+PUTTING 
+:
+assertEquals("2009", new p225().run());
+Node[1117892]
+PUTTING 
+:
+assertEquals("7526965179680", new p231().run());
+Node[1117907]
+PUTTING 
+:
+assertEquals("892371480", new p243().run());
+Node[1117922]
+PUTTING 
+:
+assertEquals("9275262564250418", new p249().run());
+Node[1117937]
+PUTTING 
+:
+assertEquals("1425480602091519", new p250().run());
+Node[1117952]
+PUTTING 
+:
+assertEquals("209110240768", new p265().run());
+Node[1117967]
+PUTTING 
+:
+assertEquals("0.999992836187", new p267().run());
+Node[1117982]
+PUTTING 
+:
+assertEquals("4617456485273129588", new p271().run());
+Node[1117997]
+PUTTING 
+:
+assertEquals("430.088247", new p280().run());
+Node[1118012]
+PUTTING 
+:
+assertEquals("2178309", new p301().run());
+Node[1118027]
+PUTTING 
+:
+assertEquals("1111981904675169", new p303().run());
+Node[1118042]
+PUTTING 
+:
+assertEquals("283988410192", new p304().run());
+Node[1118057]
+PUTTING 
+:
+assertEquals("13625242", new p315().run());
+Node[1118072]
+PUTTING 
+:
+assertEquals("6.3551758451", new p323().run());
+Node[1118087]
+PUTTING 
+:
+assertEquals("199740353/29386561536000", new p329().run());
+Node[1118102]
+PUTTING 
+:
+assertEquals("13938", new p345().run());
+Node[1118117]
+PUTTING 
+:
+assertEquals("336108797689259276", new p346().run());
+Node[1118132]
+PUTTING 
+:
+assertEquals("11109800204052", new p347().run());
+Node[1118147]
+PUTTING 
+:
+assertEquals("1004195061", new p348().run());
+Node[1118162]
+PUTTING 
+:
+assertEquals("1739023853137", new p357().run());
+Node[1118177]
+PUTTING 
+:
+assertEquals("139602943319822", new p381().run());
+Node[1118192]
+PUTTING 
+:
+assertEquals("696067597313468", new p387().run());
+Node[1118207]
+PUTTING 
+:
+assertEquals("281632621", new p401().run());
+Node[1118222]
+PUTTING 
+:
+assertEquals("39782849136421", new p407().run());
+Node[1118237]
+PUTTING 
+:
+assertEquals("446572970925740", new p417().run());
+Node[1118252]
+PUTTING 
+:
+assertEquals("46479497324", new p425().run());
+Node[1118267]
+PUTTING 
+:
+assertEquals("98792821", new p429().run());
+Node[1118282]
+PUTTING 
+:
+assertEquals("23.386029052", new p431().run());
+Node[1118297]
+PUTTING 
+:
+assertEquals("326624372659664", new p433().run());
+Node[1118312]
+PUTTING 
+:
+assertEquals("153651073760956", new p451().run());
+Node[1118327]
+PUTTING 
+:
+assertEquals("6.818741802", new p493().run());
+Node[1118342]
+PUTTING 
+:
+assertEquals("35407281", new p500().run());
+Node[1118357]
+PUTTING 
+:
+assertEquals("100315739184392", new p518().run());
+Node[1118372]
+PUTTING 
+:
+assertEquals("476001479068717", new p549().run());
+Node[1118387]
+PUTTING 
+:
+assertEquals("2240", new p587().run());
+Node[1118402]
+PUTTING 
+:
+super();
+Node[1118435]
+PUTTING 
+:
+numerator = numer;
+Node[1118439]
+PUTTING 
+:
+denominator = BigInteger.ONE;
+Node[1118443]
+PUTTING 
+:
+super();
+Node[1118454]
+PUTTING 
+:
+numer = numer.negate();
+Node[1118478]
+PUTTING 
+:
+denom = denom.negate();
+Node[1118485]
+PUTTING 
+:
+numer = numer.divide(gcd);
+Node[1118509]
+PUTTING 
+:
+denom = denom.divide(gcd);
+Node[1118517]
+PUTTING 
+:
+numerator = numer;
+Node[1118524]
+PUTTING 
+:
+denominator = denom;
+Node[1118528]
+PUTTING 
+:
+super();
+Node[1118696]
+PUTTING 
+:
+super();
+Node[1118705]
+PUTTING 
+:
+super();
+Node[1118712]
+PUTTING 
+:
+y |= i;
+Node[1118788]
+PUTTING 
+:
+y ^= i;
+Node[1118803]
+PUTTING 
+:
+i >>>= 1;
+Node[1118807]
+PUTTING 
+:
+y |= i;
+Node[1118842]
+PUTTING 
+:
+y ^= i;
+Node[1118857]
+PUTTING 
+:
+i >>>= 1;
+Node[1118861]
+PUTTING 
+:
+y = y.setBit(i);
+Node[1118905]
+PUTTING 
+:
+y = y.clearBit(i);
+Node[1118924]
+PUTTING 
+:
+i--;
+Node[1118932]
+PUTTING 
+:
+z *= x;
+Node[1119012]
+PUTTING 
+:
+i++;
+Node[1119016]
+PUTTING 
+:
+z = (int)((long)z * x % m);
+Node[1119081]
+PUTTING 
+:
+x = (int)((long)x * x % m);
+Node[1119094]
+PUTTING 
+:
+y >>>= 1;
+Node[1119107]
+PUTTING 
+:
+x = m;
+Node[1119139]
+PUTTING 
+:
+x = y;
+Node[1119173]
+PUTTING 
+:
+y = z;
+Node[1119177]
+PUTTING 
+:
+a = b;
+Node[1119181]
+PUTTING 
+:
+b = c;
+Node[1119185]
+PUTTING 
+:
+prod = prod.multiply(BigInteger.valueOf(i));
+Node[1119234]
+PUTTING 
+:
+i++;
+Node[1119245]
+PUTTING 
+:
+product = product.multiply(BigInteger.valueOf(n - i));
+Node[1119282]
+PUTTING 
+:
+i++;
+Node[1119294]
+PUTTING 
+:
+x = y;
+Node[1119336]
+PUTTING 
+:
+y = z;
+Node[1119340]
+PUTTING 
+:
+i += 2;
+Node[1119412]
+PUTTING 
+:
+result[2] = true;
+Node[1119447]
+PUTTING 
+:
+result[i] = true;
+Node[1119461]
+PUTTING 
+:
+i += 2;
+Node[1119467]
+PUTTING 
+:
+result[j] = false;
+Node[1119508]
+PUTTING 
+:
+j += inc;
+Node[1119514]
+PUTTING 
+:
+i += 2;
+Node[1119518]
+PUTTING 
+:
+count++;
+Node[1119549]
+PUTTING 
+:
+result[j] = i;
+Node[1119579]
+PUTTING 
+:
+j++;
+Node[1119585]
+PUTTING 
+:
+i++;
+Node[1119588]
+PUTTING 
+:
+result[i] = i;
+Node[1119632]
+PUTTING 
+:
+result[j] = i;
+Node[1119662]
+PUTTING 
+:
+j += i;
+Node[1119668]
+PUTTING 
+:
+i++;
+Node[1119672]
+PUTTING 
+:
+p *= i - 1;
+Node[1119719]
+PUTTING 
+:
+n /= i;
+Node[1119725]
+PUTTING 
+:
+p *= i;
+Node[1119737]
+PUTTING 
+:
+n /= i;
+Node[1119741]
+PUTTING 
+:
+end = Library.sqrt(n);
+Node[1119745]
+PUTTING 
+:
+i++;
+Node[1119752]
+PUTTING 
+:
+p *= n - 1;
+Node[1119760]
+PUTTING 
+:
+result[i] = i;
+Node[1119800]
+PUTTING 
+:
+i++;
+Node[1119806]
+PUTTING 
+:
+result[j] -= result[j] / i;
+Node[1119834]
+PUTTING 
+:
+j += i;
+Node[1119844]
+PUTTING 
+:
+i++;
+Node[1119848]
+PUTTING 
+:
+i--;
+Node[1119881]
+PUTTING 
+:
+j--;
+Node[1119910]
+PUTTING 
+:
+arr[i - 1] = arr[j];
+Node[1119921]
+PUTTING 
+:
+arr[j] = temp;
+Node[1119931]
+PUTTING 
+:
+arr[i] = arr[j];
+Node[1119955]
+PUTTING 
+:
+arr[j] = temp;
+Node[1119963]
+PUTTING 
+:
+i++;
+Node[1119969]
+PUTTING 
+:
+j--;
+Node[1119972]
+PUTTING 
+:
+super();
+Node[1119980]
+PUTTING 
+:
+super();
+Node[1119999]
+PUTTING 
+:
+assertEquals("", Library.reverse(""));
+Node[1120008]
+PUTTING 
+:
+assertEquals("a", Library.reverse("a"));
+Node[1120016]
+PUTTING 
+:
+assertEquals("ba", Library.reverse("ab"));
+Node[1120024]
+PUTTING 
+:
+assertEquals("001", Library.reverse("100"));
+Node[1120032]
+PUTTING 
+:
+assertEquals("a0a", Library.reverse("a0a"));
+Node[1120040]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(""));
+Node[1120053]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("a"));
+Node[1120061]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("aa"));
+Node[1120068]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("aaa"));
+Node[1120075]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("aaaa"));
+Node[1120082]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("aba"));
+Node[1120089]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("abba"));
+Node[1120096]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("abbba"));
+Node[1120103]
+PUTTING 
+:
+assertTrue(Library.isPalindrome("acbca"));
+Node[1120110]
+PUTTING 
+:
+assertFalse(Library.isPalindrome("ab"));
+Node[1120117]
+PUTTING 
+:
+assertFalse(Library.isPalindrome("ba"));
+Node[1120125]
+PUTTING 
+:
+assertFalse(Library.isPalindrome("aaba"));
+Node[1120132]
+PUTTING 
+:
+assertFalse(Library.isPalindrome("abcd"));
+Node[1120139]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(0));
+Node[1120151]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(1));
+Node[1120158]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(5));
+Node[1120165]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(11));
+Node[1120172]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(33));
+Node[1120179]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(101));
+Node[1120186]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(151));
+Node[1120193]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(737));
+Node[1120200]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(2222));
+Node[1120207]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(5665));
+Node[1120214]
+PUTTING 
+:
+assertTrue(Library.isPalindrome(2147447412));
+Node[1120221]
+PUTTING 
+:
+assertFalse(Library.isPalindrome(12));
+Node[1120228]
+PUTTING 
+:
+assertFalse(Library.isPalindrome(43));
+Node[1120235]
+PUTTING 
+:
+assertFalse(Library.isPalindrome(220));
+Node[1120242]
+PUTTING 
+:
+assertFalse(Library.isPalindrome(1010));
+Node[1120249]
+PUTTING 
+:
+assertFalse(Library.isPalindrome(2147483647));
+Node[1120256]
+PUTTING 
+:
+assertEquals(0, Library.sqrt(0));
+Node[1120268]
+PUTTING 
+:
+assertEquals(1, Library.sqrt(1));
+Node[1120277]
+PUTTING 
+:
+assertEquals(1, Library.sqrt(2));
+Node[1120285]
+PUTTING 
+:
+assertEquals(1, Library.sqrt(3));
+Node[1120293]
+PUTTING 
+:
+assertEquals(2, Library.sqrt(4));
+Node[1120301]
+PUTTING 
+:
+assertEquals(2, Library.sqrt(5));
+Node[1120309]
+PUTTING 
+:
+assertEquals(2, Library.sqrt(8));
+Node[1120317]
+PUTTING 
+:
+assertEquals(3, Library.sqrt(9));
+Node[1120325]
+PUTTING 
+:
+assertEquals(3, Library.sqrt(10));
+Node[1120333]
+PUTTING 
+:
+assertEquals(18, Library.sqrt(360));
+Node[1120341]
+PUTTING 
+:
+assertEquals(19, Library.sqrt(361));
+Node[1120349]
+PUTTING 
+:
+assertEquals(19, Library.sqrt(362));
+Node[1120357]
+PUTTING 
+:
+assertEquals(256, Library.sqrt(65536));
+Node[1120365]
+PUTTING 
+:
+assertEquals(32768, Library.sqrt(1073741824));
+Node[1120373]
+PUTTING 
+:
+assertEquals(46340, Library.sqrt(2147483647));
+Node[1120381]
+PUTTING 
+:
+assertTrue(0 <= y && y <= x);
+Node[1120423]
+PUTTING 
+:
+assertTrue((long)y * y <= x && x < (y + 1L) * (y + 1L));
+Node[1120433]
+PUTTING 
+:
+i++;
+Node[1120455]
+PUTTING 
+:
+Library.sqrt(-1);
+Node[1120467]
+PUTTING 
+:
+Library.sqrt(-300000);
+Node[1120481]
+PUTTING 
+:
+Library.sqrt(Integer.MIN_VALUE);
+Node[1120495]
+PUTTING 
+:
+assertEquals(0L, Library.sqrt(0L));
+Node[1120506]
+PUTTING 
+:
+assertEquals(1L, Library.sqrt(1L));
+Node[1120514]
+PUTTING 
+:
+assertEquals(1L, Library.sqrt(2L));
+Node[1120522]
+PUTTING 
+:
+assertEquals(1L, Library.sqrt(3L));
+Node[1120530]
+PUTTING 
+:
+assertEquals(2L, Library.sqrt(4L));
+Node[1120538]
+PUTTING 
+:
+assertEquals(2L, Library.sqrt(5L));
+Node[1120546]
+PUTTING 
+:
+assertEquals(2L, Library.sqrt(8L));
+Node[1120554]
+PUTTING 
+:
+assertEquals(3L, Library.sqrt(9L));
+Node[1120562]
+PUTTING 
+:
+assertEquals(3L, Library.sqrt(10L));
+Node[1120570]
+PUTTING 
+:
+assertEquals(18L, Library.sqrt(360L));
+Node[1120578]
+PUTTING 
+:
+assertEquals(19L, Library.sqrt(361L));
+Node[1120586]
+PUTTING 
+:
+assertEquals(19L, Library.sqrt(362L));
+Node[1120594]
+PUTTING 
+:
+assertEquals(256L, Library.sqrt(65536L));
+Node[1120602]
+PUTTING 
+:
+assertEquals(32768L, Library.sqrt(1073741824L));
+Node[1120610]
+PUTTING 
+:
+assertEquals(46340L, Library.sqrt(2147483648L));
+Node[1120618]
+PUTTING 
+:
+assertEquals(2645751L, Library.sqrt(7000000000000L));
+Node[1120626]
+PUTTING 
+:
+assertEquals(3037000499L, Library.sqrt(9223372036854775807L));
+Node[1120634]
+PUTTING 
+:
+assertTrue(0 <= y && y <= x);
+Node[1120676]
+PUTTING 
+:
+assertTrue(y <= x / y && x / (y + 1) < y + 1);
+Node[1120691]
+PUTTING 
+:
+i++;
+Node[1120710]
+PUTTING 
+:
+Library.sqrt(-1);
+Node[1120722]
+PUTTING 
+:
+Library.sqrt(-3000000000L);
+Node[1120736]
+PUTTING 
+:
+Library.sqrt(Long.MIN_VALUE);
+Node[1120750]
+PUTTING 
+:
+assertTrue(Library.isSquare(0));
+Node[1120761]
+PUTTING 
+:
+assertTrue(Library.isSquare(1));
+Node[1120768]
+PUTTING 
+:
+assertTrue(Library.isSquare(4));
+Node[1120775]
+PUTTING 
+:
+assertTrue(Library.isSquare(9));
+Node[1120782]
+PUTTING 
+:
+assertTrue(Library.isSquare(16));
+Node[1120789]
+PUTTING 
+:
+assertTrue(Library.isSquare(25));
+Node[1120796]
+PUTTING 
+:
+assertTrue(Library.isSquare(36));
+Node[1120803]
+PUTTING 
+:
+assertTrue(Library.isSquare(100));
+Node[1120810]
+PUTTING 
+:
+assertTrue(Library.isSquare(65536));
+Node[1120817]
+PUTTING 
+:
+assertTrue(Library.isSquare(2147302921));
+Node[1120824]
+PUTTING 
+:
+assertTrue(Library.isSquare(2147395600));
+Node[1120831]
+PUTTING 
+:
+assertFalse(Library.isSquare(Integer.MIN_VALUE));
+Node[1120838]
+PUTTING 
+:
+assertFalse(Library.isSquare(Integer.MIN_VALUE + 1));
+Node[1120846]
+PUTTING 
+:
+assertFalse(Library.isSquare(-8654038));
+Node[1120856]
+PUTTING 
+:
+assertFalse(Library.isSquare(-300));
+Node[1120863]
+PUTTING 
+:
+assertFalse(Library.isSquare(-4));
+Node[1120870]
+PUTTING 
+:
+assertFalse(Library.isSquare(-1));
+Node[1120877]
+PUTTING 
+:
+assertFalse(Library.isSquare(2));
+Node[1120884]
+PUTTING 
+:
+assertFalse(Library.isSquare(3));
+Node[1120891]
+PUTTING 
+:
+assertFalse(Library.isSquare(5));
+Node[1120898]
+PUTTING 
+:
+assertFalse(Library.isSquare(6));
+Node[1120905]
+PUTTING 
+:
+assertFalse(Library.isSquare(7));
+Node[1120912]
+PUTTING 
+:
+assertFalse(Library.isSquare(8));
+Node[1120919]
+PUTTING 
+:
+assertFalse(Library.isSquare(120));
+Node[1120926]
+PUTTING 
+:
+assertFalse(Library.isSquare(9999));
+Node[1120933]
+PUTTING 
+:
+assertFalse(Library.isSquare(Integer.MAX_VALUE - 1));
+Node[1120940]
+PUTTING 
+:
+assertFalse(Library.isSquare(Integer.MAX_VALUE));
+Node[1120950]
+PUTTING 
+:
+assertEquals(0, Library.powMod(0, 0, 1));
+Node[1120963]
+PUTTING 
+:
+assertEquals(0, Library.powMod(1, 0, 1));
+Node[1120973]
+PUTTING 
+:
+assertEquals(0, Library.powMod(0, 1, 1));
+Node[1120983]
+PUTTING 
+:
+assertEquals(0, Library.powMod(1, 1, 1));
+Node[1120993]
+PUTTING 
+:
+assertEquals(0, Library.powMod(2, 3, 1));
+Node[1121003]
+PUTTING 
+:
+assertEquals(1, Library.powMod(0, 0, 2));
+Node[1121013]
+PUTTING 
+:
+assertEquals(1, Library.powMod(1, 0, 2));
+Node[1121023]
+PUTTING 
+:
+assertEquals(1, Library.powMod(2, 0, 2));
+Node[1121033]
+PUTTING 
+:
+assertEquals(0, Library.powMod(0, 1, 2));
+Node[1121043]
+PUTTING 
+:
+assertEquals(1, Library.powMod(1, 1, 2));
+Node[1121053]
+PUTTING 
+:
+assertEquals(0, Library.powMod(2, 1, 2));
+Node[1121063]
+PUTTING 
+:
+assertEquals(0, Library.powMod(0, 2, 2));
+Node[1121073]
+PUTTING 
+:
+assertEquals(1, Library.powMod(1, 2, 2));
+Node[1121083]
+PUTTING 
+:
+assertEquals(0, Library.powMod(2, 2, 2));
+Node[1121093]
+PUTTING 
+:
+assertEquals(1, Library.powMod(2, 2, 3));
+Node[1121103]
+PUTTING 
+:
+assertEquals(4, Library.powMod(4, 3, 5));
+Node[1121113]
+PUTTING 
+:
+assertEquals(3, Library.powMod(7, 7, 10));
+Node[1121123]
+PUTTING 
+:
+assertEquals(326216098, Library.powMod(78051657, 234602, 456087413));
+Node[1121133]
+PUTTING 
+:
+assertEquals(1488576545, Library.powMod(2147480000, 2147483645, 2147483647));
+Node[1121143]
+PUTTING 
+:
+assertEquals(cs[2], Library.reciprocalMod(cs[0], cs[1]));
+Node[1121273]
+PUTTING 
+:
+Library.reciprocalMod(cs[0], cs[1]);
+Node[1121347]
+PUTTING 
+:
+Assert.fail();
+Node[1121357]
+PUTTING 
+:
+assertTrue(1 <= y && y < mod);
+Node[1121424]
+PUTTING 
+:
+assertEquals(1, (long)x * y % mod);
+Node[1121434]
+PUTTING 
+:
+assertEquals(x, Library.reciprocalMod(y, mod));
+Node[1121445]
+PUTTING 
+:
+Library.reciprocalMod(x, mod);
+Node[1121457]
+PUTTING 
+:
+Assert.fail();
+Node[1121463]
+PUTTING 
+:
+i++;
+Node[1121471]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.factorial(0));
+Node[1121479]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.factorial(1));
+Node[1121490]
+PUTTING 
+:
+assertEquals(new BigInteger("2"), Library.factorial(2));
+Node[1121500]
+PUTTING 
+:
+assertEquals(new BigInteger("6"), Library.factorial(3));
+Node[1121510]
+PUTTING 
+:
+assertEquals(new BigInteger("24"), Library.factorial(4));
+Node[1121520]
+PUTTING 
+:
+assertEquals(new BigInteger("120"), Library.factorial(5));
+Node[1121530]
+PUTTING 
+:
+assertEquals(new BigInteger("720"), Library.factorial(6));
+Node[1121540]
+PUTTING 
+:
+assertEquals(new BigInteger("6227020800"), Library.factorial(13));
+Node[1121550]
+PUTTING 
+:
+assertEquals(new BigInteger("51090942171709440000"), Library.factorial(21));
+Node[1121560]
+PUTTING 
+:
+assertEquals(new BigInteger("265252859812191058636308480000000"), Library.factorial(30));
+Node[1121570]
+PUTTING 
+:
+Library.factorial(-1);
+Node[1121589]
+PUTTING 
+:
+Library.factorial(-563);
+Node[1121603]
+PUTTING 
+:
+Library.factorial(Integer.MIN_VALUE);
+Node[1121617]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.binomial(0, 0));
+Node[1121628]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.binomial(1, 0));
+Node[1121639]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.binomial(1, 1));
+Node[1121650]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.binomial(2, 0));
+Node[1121661]
+PUTTING 
+:
+assertEquals(new BigInteger("2"), Library.binomial(2, 1));
+Node[1121672]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.binomial(2, 2));
+Node[1121683]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.binomial(3, 0));
+Node[1121694]
+PUTTING 
+:
+assertEquals(new BigInteger("3"), Library.binomial(3, 1));
+Node[1121705]
+PUTTING 
+:
+assertEquals(new BigInteger("3"), Library.binomial(3, 2));
+Node[1121716]
+PUTTING 
+:
+assertEquals(new BigInteger("1"), Library.binomial(3, 3));
+Node[1121727]
+PUTTING 
+:
+assertEquals(new BigInteger("35"), Library.binomial(7, 4));
+Node[1121738]
+PUTTING 
+:
+assertEquals(new BigInteger("120"), Library.binomial(10, 7));
+Node[1121749]
+PUTTING 
+:
+assertEquals(new BigInteger("21"), Library.binomial(21, 20));
+Node[1121760]
+PUTTING 
+:
+assertEquals(new BigInteger("88749815264600"), Library.binomial(50, 28));
+Node[1121771]
+PUTTING 
+:
+assertEquals(0, Library.gcd(0, 0));
+Node[1121787]
+PUTTING 
+:
+assertEquals(1, Library.gcd(0, 1));
+Node[1121796]
+PUTTING 
+:
+assertEquals(1, Library.gcd(1, 0));
+Node[1121805]
+PUTTING 
+:
+assertEquals(6, Library.gcd(0, 6));
+Node[1121814]
+PUTTING 
+:
+assertEquals(6, Library.gcd(6, 0));
+Node[1121823]
+PUTTING 
+:
+assertEquals(1, Library.gcd(1, 1));
+Node[1121832]
+PUTTING 
+:
+assertEquals(2, Library.gcd(2, 2));
+Node[1121841]
+PUTTING 
+:
+assertEquals(1, Library.gcd(2, 3));
+Node[1121850]
+PUTTING 
+:
+assertEquals(1, Library.gcd(10, 3));
+Node[1121859]
+PUTTING 
+:
+assertEquals(3, Library.gcd(9, 3));
+Node[1121868]
+PUTTING 
+:
+assertEquals(2, Library.gcd(6, 4));
+Node[1121877]
+PUTTING 
+:
+assertEquals(2, Library.gcd(18, 14));
+Node[1121886]
+PUTTING 
+:
+assertEquals(300, Library.gcd(44100, 48000));
+Node[1121895]
+PUTTING 
+:
+assertEquals(2147483647, Library.gcd(0, 2147483647));
+Node[1121904]
+PUTTING 
+:
+assertEquals(2147483647, Library.gcd(2147483647, 2147483647));
+Node[1121913]
+PUTTING 
+:
+assertEquals(1, Library.gcd(2147483646, 2147483647));
+Node[1121922]
+PUTTING 
+:
+assertEquals(y, z);
+Node[1121978]
+PUTTING 
+:
+assertEquals(x, z);
+Node[1121988]
+PUTTING 
+:
+assertTrue(0 < z && z <= x && z <= y && x % z == 0 && y % z == 0);
+Node[1121993]
+PUTTING 
+:
+i++;
+Node[1122019]
+PUTTING 
+:
+assertFalse(Library.isPrime(0));
+Node[1122027]
+PUTTING 
+:
+assertFalse(Library.isPrime(1));
+Node[1122034]
+PUTTING 
+:
+assertTrue(Library.isPrime(2));
+Node[1122041]
+PUTTING 
+:
+assertTrue(Library.isPrime(3));
+Node[1122048]
+PUTTING 
+:
+assertFalse(Library.isPrime(4));
+Node[1122055]
+PUTTING 
+:
+assertTrue(Library.isPrime(5));
+Node[1122062]
+PUTTING 
+:
+assertFalse(Library.isPrime(6));
+Node[1122069]
+PUTTING 
+:
+assertTrue(Library.isPrime(7));
+Node[1122076]
+PUTTING 
+:
+assertFalse(Library.isPrime(8));
+Node[1122083]
+PUTTING 
+:
+assertFalse(Library.isPrime(9));
+Node[1122090]
+PUTTING 
+:
+assertFalse(Library.isPrime(10));
+Node[1122097]
+PUTTING 
+:
+assertTrue(Library.isPrime(11));
+Node[1122104]
+PUTTING 
+:
+assertFalse(Library.isPrime(12));
+Node[1122111]
+PUTTING 
+:
+assertTrue(Library.isPrime(13));
+Node[1122118]
+PUTTING 
+:
+assertFalse(Library.isPrime(14));
+Node[1122125]
+PUTTING 
+:
+assertFalse(Library.isPrime(15));
+Node[1122132]
+PUTTING 
+:
+assertFalse(Library.isPrime(16));
+Node[1122139]
+PUTTING 
+:
+assertTrue(Library.isPrime(17));
+Node[1122146]
+PUTTING 
+:
+assertFalse(Library.isPrime(18));
+Node[1122153]
+PUTTING 
+:
+assertTrue(Library.isPrime(19));
+Node[1122160]
+PUTTING 
+:
+assertFalse(Library.isPrime(20));
+Node[1122167]
+PUTTING 
+:
+Library.isPrime(-1);
+Node[1122183]
+PUTTING 
+:
+Library.isPrime(-3000);
+Node[1122197]
+PUTTING 
+:
+assertEquals(Library.isPrime(i), isPrime[i]);
+Node[1122224]
+PUTTING 
+:
+i++;
+Node[1122234]
+PUTTING 
+:
+Library.listPrimality(-1);
+Node[1122246]
+PUTTING 
+:
+Library.listPrimality(-3000);
+Node[1122260]
+PUTTING 
+:
+assertTrue(primes[i] < primes[i + 1]);
+Node[1122293]
+PUTTING 
+:
+i++;
+Node[1122305]
+PUTTING 
+:
+assertEquals(Library.isPrime(i), Arrays.binarySearch(primes, i) >= 0);
+Node[1122316]
+PUTTING 
+:
+i++;
+Node[1122331]
+PUTTING 
+:
+Library.listPrimes(-1);
+Node[1122343]
+PUTTING 
+:
+Library.listPrimes(-3000);
+Node[1122357]
+PUTTING 
+:
+assertEquals(1, Library.totient(1));
+Node[1122367]
+PUTTING 
+:
+assertEquals(1, Library.totient(2));
+Node[1122375]
+PUTTING 
+:
+assertEquals(2, Library.totient(3));
+Node[1122383]
+PUTTING 
+:
+assertEquals(2, Library.totient(4));
+Node[1122391]
+PUTTING 
+:
+assertEquals(4, Library.totient(5));
+Node[1122399]
+PUTTING 
+:
+assertEquals(2, Library.totient(6));
+Node[1122407]
+PUTTING 
+:
+assertEquals(6, Library.totient(7));
+Node[1122415]
+PUTTING 
+:
+assertEquals(4, Library.totient(8));
+Node[1122423]
+PUTTING 
+:
+assertEquals(6, Library.totient(9));
+Node[1122431]
+PUTTING 
+:
+assertEquals(4, Library.totient(10));
+Node[1122439]
+PUTTING 
+:
+assertEquals(10, Library.totient(11));
+Node[1122447]
+PUTTING 
+:
+assertEquals(4, Library.totient(12));
+Node[1122455]
+PUTTING 
+:
+assertEquals(12, Library.totient(13));
+Node[1122463]
+PUTTING 
+:
+assertEquals(6, Library.totient(14));
+Node[1122471]
+PUTTING 
+:
+assertEquals(8, Library.totient(15));
+Node[1122479]
+PUTTING 
+:
+assertEquals(8, Library.totient(16));
+Node[1122487]
+PUTTING 
+:
+assertEquals(16, Library.totient(17));
+Node[1122495]
+PUTTING 
+:
+assertEquals(6, Library.totient(18));
+Node[1122503]
+PUTTING 
+:
+assertEquals(18, Library.totient(19));
+Node[1122511]
+PUTTING 
+:
+assertEquals(8, Library.totient(20));
+Node[1122519]
+PUTTING 
+:
+tot++;
+Node[1122576]
+PUTTING 
+:
+j++;
+Node[1122579]
+PUTTING 
+:
+assertEquals(tot, Library.totient(n));
+Node[1122582]
+PUTTING 
+:
+i++;
+Node[1122590]
+PUTTING 
+:
+Library.totient(-1);
+Node[1122602]
+PUTTING 
+:
+Library.totient(-3000);
+Node[1122616]
+PUTTING 
+:
+assertEquals(Library.totient(i), totients[i]);
+Node[1122643]
+PUTTING 
+:
+i++;
+Node[1122653]
+PUTTING 
+:
+Library.listTotients(-1);
+Node[1122665]
+PUTTING 
+:
+Library.listTotients(-3000);
+Node[1122679]
+PUTTING 
+:
+assertFalse(Library.nextPermutation(new int[0]));
+Node[1122692]
+PUTTING 
+:
+arr = new int[]{0, 0, 1};
+Node[1122701]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122709]
+PUTTING 
+:
+assertArrayEquals(new int[]{0, 1, 0}, arr);
+Node[1122716]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122726]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 0, 0}, arr);
+Node[1122733]
+PUTTING 
+:
+assertFalse(Library.nextPermutation(arr));
+Node[1122742]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 0, 0}, arr);
+Node[1122749]
+PUTTING 
+:
+arr = new int[]{1, 2, 3, 5, 9};
+Node[1122758]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122768]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 2, 3, 9, 5}, arr);
+Node[1122775]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122786]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 2, 5, 3, 9}, arr);
+Node[1122793]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122804]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 2, 5, 9, 3}, arr);
+Node[1122811]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122822]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 2, 9, 3, 5}, arr);
+Node[1122829]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122840]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 2, 9, 5, 3}, arr);
+Node[1122847]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122858]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 3, 2, 5, 9}, arr);
+Node[1122865]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122876]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 3, 2, 9, 5}, arr);
+Node[1122883]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122894]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 3, 5, 2, 9}, arr);
+Node[1122901]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122912]
+PUTTING 
+:
+assertArrayEquals(new int[]{1, 3, 5, 9, 2}, arr);
+Node[1122919]
+PUTTING 
+:
+assertTrue(Library.nextPermutation(arr));
+Node[1122938]
+PUTTING 
+:
+i++;
+Node[1122945]
+PUTTING 
+:
+assertFalse(Library.nextPermutation(arr));
+Node[1122948]
+PUTTING 
+:
+assertArrayEquals(new int[]{9, 5, 3, 2, 1}, arr);
+Node[1122955]
+PUTTING 
+:
+super();
+Node[1122977]
+PUTTING 
+:
+System.out.println(new p001().run());
+Node[1122987]
+PUTTING 
+:
+sum += i;
+Node[1123026]
+PUTTING 
+:
+i++;
+Node[1123030]
+PUTTING 
+:
+super();
+Node[1123043]
+PUTTING 
+:
+System.out.println(new p002().run());
+Node[1123053]
+PUTTING 
+:
+sum += x;
+Node[1123090]
+PUTTING 
+:
+x = y;
+Node[1123100]
+PUTTING 
+:
+y = z;
+Node[1123104]
+PUTTING 
+:
+super();
+Node[1123118]
+PUTTING 
+:
+System.out.println(new p003().run());
+Node[1123128]
+PUTTING 
+:
+n /= p;
+Node[1123160]
+PUTTING 
+:
+i++;
+Node[1123208]
+PUTTING 
+:
+super();
+Node[1123218]
+PUTTING 
+:
+System.out.println(new p004().run());
+Node[1123228]
+PUTTING 
+:
+maxPalin = prod;
+Node[1123278]
+PUTTING 
+:
+j++;
+Node[1123282]
+PUTTING 
+:
+i++;
+Node[1123285]
+PUTTING 
+:
+super();
+Node[1123299]
+PUTTING 
+:
+System.out.println(new p005().run());
+Node[1123309]
+PUTTING 
+:
+allLcm = lcm(BigInteger.valueOf(i), allLcm);
+Node[1123334]
+PUTTING 
+:
+i++;
+Node[1123345]
+PUTTING 
+:
+super();
+Node[1123376]
+PUTTING 
+:
+System.out.println(new p006().run());
+Node[1123386]
+PUTTING 
+:
+sum += i;
+Node[1123419]
+PUTTING 
+:
+sum2 += i * i;
+Node[1123423]
+PUTTING 
+:
+i++;
+Node[1123429]
+PUTTING 
+:
+super();
+Node[1123446]
+PUTTING 
+:
+System.out.println(new p007().run());
+Node[1123456]
+PUTTING 
+:
+count++;
+Node[1123485]
+PUTTING 
+:
+i++;
+Node[1123498]
+PUTTING 
+:
+super();
+Node[1123506]
+PUTTING 
+:
+System.out.println(new p008().run());
+Node[1123516]
+PUTTING 
+:
+prod *= NUMBER.charAt(i + j) - '0';
+Node[1123558]
+PUTTING 
+:
+j++;
+Node[1123570]
+PUTTING 
+:
+maxProd = Math.max(prod, maxProd);
+Node[1123573]
+PUTTING 
+:
+i++;
+Node[1123582]
+PUTTING 
+:
+super();
+Node[1123603]
+PUTTING 
+:
+System.out.println(new p009().run());
+Node[1123613]
+PUTTING 
+:
+b++;
+Node[1123680]
+PUTTING 
+:
+a++;
+Node[1123683]
+PUTTING 
+:
+super();
+Node[1123696]
+PUTTING 
+:
+System.out.println(new p010().run());
+Node[1123706]
+PUTTING 
+:
+sum += p;
+Node[1123735]
+PUTTING 
+:
+super();
+Node[1123749]
+PUTTING 
+:
+System.out.println(new p011().run());
+Node[1123759]
+PUTTING 
+:
+max = Math.max(product(x, y, 1, 0, CONSECUTIVE), max);
+Node[1123801]
+PUTTING 
+:
+max = Math.max(product(x, y, 0, 1, CONSECUTIVE), max);
+Node[1123817]
+PUTTING 
+:
+max = Math.max(product(x, y, 1, 1, CONSECUTIVE), max);
+Node[1123831]
+PUTTING 
+:
+max = Math.max(product(x, y, 1, -1, CONSECUTIVE), max);
+Node[1123845]
+PUTTING 
+:
+x++;
+Node[1123859]
+PUTTING 
+:
+y++;
+Node[1123862]
+PUTTING 
+:
+prod *= SQUARE[y][x];
+Node[1123919]
+PUTTING 
+:
+i++;
+Node[1123927]
+PUTTING 
+:
+x += dx;
+Node[1123930]
+PUTTING 
+:
+y += dy;
+Node[1123934]
+PUTTING 
+:
+super();
+Node[1124398]
+PUTTING 
+:
+System.out.println(new p012().run());
+Node[1124408]
+PUTTING 
+:
+triangle += i;
+Node[1124442]
+PUTTING 
+:
+i++;
+Node[1124459]
+PUTTING 
+:
+count += 2;
+Node[1124494]
+PUTTING 
+:
+i++;
+Node[1124498]
+PUTTING 
+:
+count++;
+Node[1124508]
+PUTTING 
+:
+super();
+Node[1124519]
+PUTTING 
+:
+System.out.println(new p013().run());
+Node[1124529]
+PUTTING 
+:
+sum = sum.add(new BigInteger(num));
+Node[1124550]
+PUTTING 
+:
+super();
+Node[1124679]
+PUTTING 
+:
+System.out.println(new p014().run());
+Node[1124689]
+PUTTING 
+:
+maxArg = i;
+Node[1124742]
+PUTTING 
+:
+maxChain = chainLen;
+Node[1124746]
+PUTTING 
+:
+i++;
+Node[1124750]
+PUTTING 
+:
+collatzChainLength[index] = collatzChainLengthDirect(n);
+Node[1124816]
+PUTTING 
+:
+super();
+Node[1124881]
+PUTTING 
+:
+System.out.println(new p015().run());
+Node[1124891]
+PUTTING 
+:
+super();
+Node[1124917]
+PUTTING 
+:
+System.out.println(new p016().run());
+Node[1124927]
+PUTTING 
+:
+sum += temp.charAt(i) - '0';
+Node[1124964]
+PUTTING 
+:
+i++;
+Node[1124973]
+PUTTING 
+:
+super();
+Node[1124986]
+PUTTING 
+:
+System.out.println(new p017().run());
+Node[1124996]
+PUTTING 
+:
+sum += toEnglish(i).length();
+Node[1125020]
+PUTTING 
+:
+i++;
+Node[1125029]
+PUTTING 
+:
+super();
+Node[1125196]
+PUTTING 
+:
+System.out.println(new p018().run());
+Node[1125206]
+PUTTING 
+:
+triangle[i][j] += Math.max(triangle[i + 1][j], triangle[i + 1][j + 1]);
+Node[1125241]
+PUTTING 
+:
+j++;
+Node[1125267]
+PUTTING 
+:
+i--;
+Node[1125270]
+PUTTING 
+:
+super();
+Node[1125428]
+PUTTING 
+:
+System.out.println(new p019().run());
+Node[1125438]
+PUTTING 
+:
+count++;
+Node[1125482]
+PUTTING 
+:
+m++;
+Node[1125485]
+PUTTING 
+:
+y++;
+Node[1125488]
+PUTTING 
+:
+m %= 12;
+Node[1125555]
+PUTTING 
+:
+super();
+Node[1125590]
+PUTTING 
+:
+System.out.println(new p020().run());
+Node[1125600]
+PUTTING 
+:
+sum += temp.charAt(i) - '0';
+Node[1125635]
+PUTTING 
+:
+i++;
+Node[1125644]
+PUTTING 
+:
+super();
+Node[1125657]
+PUTTING 
+:
+System.out.println(new p021().run());
+Node[1125667]
+PUTTING 
+:
+sum += i;
+Node[1125698]
+PUTTING 
+:
+i++;
+Node[1125702]
+PUTTING 
+:
+sum += i;
+Node[1125757]
+PUTTING 
+:
+i++;
+Node[1125761]
+PUTTING 
+:
+super();
+Node[1125772]
+PUTTING 
+:
+System.out.println(new p022().run());
+Node[1125782]
+PUTTING 
+:
+Arrays.sort(names);
+Node[1125794]
+PUTTING 
+:
+value += names[i].charAt(j) - 'A' + 1;
+Node[1125830]
+PUTTING 
+:
+j++;
+Node[1125843]
+PUTTING 
+:
+sum += value * (i + 1);
+Node[1125846]
+PUTTING 
+:
+i++;
+Node[1125855]
+PUTTING 
+:
+super();
+Node[1131036]
+PUTTING 
+:
+System.out.println(new p023().run());
+Node[1131046]
+PUTTING 
+:
+isAbundant[i] = isAbundant(i);
+Node[1131080]
+PUTTING 
+:
+i++;
+Node[1131089]
+PUTTING 
+:
+sum += i;
+Node[1131112]
+PUTTING 
+:
+i++;
+Node[1131116]
+PUTTING 
+:
+i++;
+Node[1131151]
+PUTTING 
+:
+sum += i + n / i;
+Node[1131196]
+PUTTING 
+:
+i++;
+Node[1131204]
+PUTTING 
+:
+sum -= end;
+Node[1131214]
+PUTTING 
+:
+super();
+Node[1131227]
+PUTTING 
+:
+System.out.println(new p024().run());
+Node[1131237]
+PUTTING 
+:
+array[i] = i;
+Node[1131265]
+PUTTING 
+:
+i++;
+Node[1131271]
+PUTTING 
+:
+i++;
+Node[1131294]
+PUTTING 
+:
+ans += array[i];
+Node[1131310]
+PUTTING 
+:
+i++;
+Node[1131316]
+PUTTING 
+:
+super();
+Node[1131327]
+PUTTING 
+:
+System.out.println(new p025().run());
+Node[1131337]
+PUTTING 
+:
+prev = cur;
+Node[1131421]
+PUTTING 
+:
+cur = temp;
+Node[1131425]
+PUTTING 
+:
+i++;
+Node[1131429]
+PUTTING 
+:
+super();
+Node[1131439]
+PUTTING 
+:
+System.out.println(new p026().run());
+Node[1131449]
+PUTTING 
+:
+bestNumber = i;
+Node[1131491]
+PUTTING 
+:
+bestLength = len;
+Node[1131495]
+PUTTING 
+:
+i++;
+Node[1131499]
+PUTTING 
+:
+stateToIter.put(state, iter);
+Node[1131548]
+PUTTING 
+:
+state = state * 10 % n;
+Node[1131555]
+PUTTING 
+:
+iter++;
+Node[1131563]
+PUTTING 
+:
+super();
+Node[1131571]
+PUTTING 
+:
+System.out.println(new p027().run());
+Node[1131581]
+PUTTING 
+:
+bestNum = num;
+Node[1131637]
+PUTTING 
+:
+bestA = a;
+Node[1131641]
+PUTTING 
+:
+bestB = b;
+Node[1131645]
+PUTTING 
+:
+b++;
+Node[1131649]
+PUTTING 
+:
+a++;
+Node[1131652]
+PUTTING 
+:
+i++;
+Node[1131700]
+PUTTING 
+:
+super();
+Node[1131708]
+PUTTING 
+:
+System.out.println(new p028().run());
+Node[1131718]
+PUTTING 
+:
+sum += 4 * n * n - 6 * (n - 1);
+Node[1131746]
+PUTTING 
+:
+n += 2;
+Node[1131761]
+PUTTING 
+:
+super();
+Node[1131778]
+PUTTING 
+:
+System.out.println(new p029().run());
+Node[1131788]
+PUTTING 
+:
+generated.add(BigInteger.valueOf(a).pow(b));
+Node[1131826]
+PUTTING 
+:
+b++;
+Node[1131838]
+PUTTING 
+:
+a++;
+Node[1131841]
+PUTTING 
+:
+super();
+Node[1131857]
+PUTTING 
+:
+System.out.println(new p030().run());
+Node[1131867]
+PUTTING 
+:
+sum += i;
+Node[1131900]
+PUTTING 
+:
+i++;
+Node[1131904]
+PUTTING 
+:
+sum += y * y * y * y * y;
+Node[1131933]
+PUTTING 
+:
+x /= 10;
+Node[1131945]
+PUTTING 
+:
+super();
+Node[1131956]
+PUTTING 
+:
+System.out.println(new p031().run());
+Node[1131966]
+PUTTING 
+:
+ways[0][0] = 1;
+Node[1132009]
+PUTTING 
+:
+ways[i + 1][j] = ways[i][j] + (j >= coin ? ways[i + 1][j - coin] : 0);
+Node[1132041]
+PUTTING 
+:
+j++;
+Node[1132071]
+PUTTING 
+:
+i++;
+Node[1132074]
+PUTTING 
+:
+super();
+Node[1132093]
+PUTTING 
+:
+System.out.println(new p032().run());
+Node[1132103]
+PUTTING 
+:
+sum += i;
+Node[1132134]
+PUTTING 
+:
+i++;
+Node[1132138]
+PUTTING 
+:
+i++;
+Node[1132182]
+PUTTING 
+:
+Arrays.sort(temp);
+Node[1132209]
+PUTTING 
+:
+super();
+Node[1132228]
+PUTTING 
+:
+System.out.println(new p033().run());
+Node[1132238]
+PUTTING 
+:
+numer *= n;
+Node[1132326]
+PUTTING 
+:
+denom *= d;
+Node[1132330]
+PUTTING 
+:
+n++;
+Node[1132334]
+PUTTING 
+:
+d++;
+Node[1132337]
+PUTTING 
+:
+super();
+Node[1132356]
+PUTTING 
+:
+System.out.println(new p034().run());
+Node[1132366]
+PUTTING 
+:
+sum += i;
+Node[1132399]
+PUTTING 
+:
+i++;
+Node[1132403]
+PUTTING 
+:
+sum += FACTORIAL[x % 10];
+Node[1132441]
+PUTTING 
+:
+x /= 10;
+Node[1132449]
+PUTTING 
+:
+super();
+Node[1132460]
+PUTTING 
+:
+System.out.println(new p035().run());
+Node[1132470]
+PUTTING 
+:
+count++;
+Node[1132520]
+PUTTING 
+:
+i++;
+Node[1132523]
+PUTTING 
+:
+i++;
+Node[1132576]
+PUTTING 
+:
+super();
+Node[1132586]
+PUTTING 
+:
+System.out.println(new p036().run());
+Node[1132596]
+PUTTING 
+:
+sum += i;
+Node[1132641]
+PUTTING 
+:
+i++;
+Node[1132645]
+PUTTING 
+:
+super();
+Node[1132658]
+PUTTING 
+:
+System.out.println(new p037().run());
+Node[1132668]
+PUTTING 
+:
+sum += n;
+Node[1132704]
+PUTTING 
+:
+count++;
+Node[1132708]
+PUTTING 
+:
+n++;
+Node[1132711]
+PUTTING 
+:
+i *= 10;
+Node[1132746]
+PUTTING 
+:
+n /= 10;
+Node[1132764]
+PUTTING 
+:
+super();
+Node[1132776]
+PUTTING 
+:
+System.out.println(new p038().run());
+Node[1132786]
+PUTTING 
+:
+concat += i * j;
+Node[1132838]
+PUTTING 
+:
+j++;
+Node[1132844]
+PUTTING 
+:
+max = Math.max(Integer.parseInt(concat), max);
+Node[1132853]
+PUTTING 
+:
+i++;
+Node[1132864]
+PUTTING 
+:
+n++;
+Node[1132867]
+PUTTING 
+:
+Arrays.sort(temp);
+Node[1132896]
+PUTTING 
+:
+super();
+Node[1132913]
+PUTTING 
+:
+System.out.println(new p039().run());
+Node[1132923]
+PUTTING 
+:
+maxTriangles = triangles;
+Node[1132965]
+PUTTING 
+:
+maxPerimeter = p;
+Node[1132969]
+PUTTING 
+:
+p++;
+Node[1132973]
+PUTTING 
+:
+count++;
+Node[1133033]
+PUTTING 
+:
+b++;
+Node[1133036]
+PUTTING 
+:
+a++;
+Node[1133039]
+PUTTING 
+:
+super();
+Node[1133049]
+PUTTING 
+:
+System.out.println(new p040().run());
+Node[1133059]
+PUTTING 
+:
+sb.append(i);
+Node[1133085]
+PUTTING 
+:
+i++;
+Node[1133091]
+PUTTING 
+:
+prod *= sb.charAt(Library.pow(10, i) - 1) - '0';
+Node[1133106]
+PUTTING 
+:
+i++;
+Node[1133122]
+PUTTING 
+:
+super();
+Node[1133135]
+PUTTING 
+:
+System.out.println(new p041().run());
+Node[1133145]
+PUTTING 
+:
+digits[i] = i + 1;
+Node[1133182]
+PUTTING 
+:
+i++;
+Node[1133190]
+PUTTING 
+:
+result = toInteger(digits);
+Node[1133208]
+PUTTING 
+:
+n--;
+Node[1133229]
+PUTTING 
+:
+result = result * 10 + x;
+Node[1133250]
+PUTTING 
+:
+super();
+Node[1133265]
+PUTTING 
+:
+System.out.println(new p042().run());
+Node[1133275]
+PUTTING 
+:
+count++;
+Node[1133305]
+PUTTING 
+:
+i++;
+Node[1133349]
+PUTTING 
+:
+sum += c - 'A' + 1;
+Node[1133391]
+PUTTING 
+:
+i++;
+Node[1133399]
+PUTTING 
+:
+super();
+Node[1135200]
+PUTTING 
+:
+System.out.println(new p043().run());
+Node[1135210]
+PUTTING 
+:
+i++;
+Node[1135283]
+PUTTING 
+:
+sum += toInteger(digits, 0, digits.length);
+Node[1135286]
+PUTTING 
+:
+result = result * 10 + digits[i];
+Node[1135329]
+PUTTING 
+:
+i++;
+Node[1135339]
+PUTTING 
+:
+super();
+Node[1135349]
+PUTTING 
+:
+System.out.println(new p044().run());
+Node[1135359]
+PUTTING 
+:
+minD = diff;
+Node[1135449]
+PUTTING 
+:
+j--;
+Node[1135453]
+PUTTING 
+:
+i++;
+Node[1135456]
+PUTTING 
+:
+super();
+Node[1135534]
+PUTTING 
+:
+System.out.println(new p045().run());
+Node[1135544]
+PUTTING 
+:
+i++;
+Node[1135649]
+PUTTING 
+:
+j++;
+Node[1135657]
+PUTTING 
+:
+k++;
+Node[1135665]
+PUTTING 
+:
+super();
+Node[1135673]
+PUTTING 
+:
+System.out.println(new p046().run());
+Node[1135683]
+PUTTING 
+:
+i += 2;
+Node[1135713]
+PUTTING 
+:
+i++;
+Node[1135763]
+PUTTING 
+:
+super();
+Node[1135773]
+PUTTING 
+:
+System.out.println(new p047().run());
+Node[1135783]
+PUTTING 
+:
+i++;
+Node[1135832]
+PUTTING 
+:
+n /= i;
+Node[1135881]
+PUTTING 
+:
+count++;
+Node[1135891]
+PUTTING 
+:
+end = Library.sqrt(n);
+Node[1135894]
+PUTTING 
+:
+i++;
+Node[1135901]
+PUTTING 
+:
+count++;
+Node[1135909]
+PUTTING 
+:
+super();
+Node[1135920]
+PUTTING 
+:
+System.out.println(new p048().run());
+Node[1135930]
+PUTTING 
+:
+sum = sum.add(BigInteger.valueOf(i).modPow(BigInteger.valueOf(i), modulus));
+Node[1135963]
+PUTTING 
+:
+i++;
+Node[1135981]
+PUTTING 
+:
+super();
+Node[1135998]
+PUTTING 
+:
+System.out.println(new p049().run());
+Node[1136008]
+PUTTING 
+:
+step++;
+Node[1136115]
+PUTTING 
+:
+base++;
+Node[1136118]
+PUTTING 
+:
+Arrays.sort(xdigits);
+Node[1136152]
+PUTTING 
+:
+Arrays.sort(ydigits);
+Node[1136157]
+PUTTING 
+:
+super();
+Node[1136174]
+PUTTING 
+:
+System.out.println(new p050().run());
+Node[1136184]
+PUTTING 
+:
+sum += primes[j];
+Node[1136252]
+PUTTING 
+:
+maxSum = sum;
+Node[1136280]
+PUTTING 
+:
+maxRun = j - i;
+Node[1136284]
+PUTTING 
+:
+j++;
+Node[1136290]
+PUTTING 
+:
+i++;
+Node[1136293]
+PUTTING 
+:
+super();
+Node[1136307]
+PUTTING 
+:
+System.out.println(new p051().run());
+Node[1136317]
+PUTTING 
+:
+count++;
+Node[1136411]
+PUTTING 
+:
+digits = addMask(digits, mask);
+Node[1136414]
+PUTTING 
+:
+j++;
+Node[1136422]
+PUTTING 
+:
+digits = doMask(n, mask);
+Node[1136431]
+PUTTING 
+:
+digits = addMask(digits, mask);
+Node[1136467]
+PUTTING 
+:
+j++;
+Node[1136474]
+PUTTING 
+:
+mask++;
+Node[1136477]
+PUTTING 
+:
+i++;
+Node[1136480]
+PUTTING 
+:
+i--;
+Node[1136507]
+PUTTING 
+:
+buf[i] = n % 10;
+Node[1136510]
+PUTTING 
+:
+n /= 10;
+Node[1136518]
+PUTTING 
+:
+result[i] = digits[i] * (~mask >>> i & 1);
+Node[1136561]
+PUTTING 
+:
+i++;
+Node[1136577]
+PUTTING 
+:
+result[i] = digits[i] + (mask >>> i & 1);
+Node[1136608]
+PUTTING 
+:
+i++;
+Node[1136623]
+PUTTING 
+:
+result = result * 10 + x;
+Node[1136642]
+PUTTING 
+:
+super();
+Node[1136658]
+PUTTING 
+:
+System.out.println(new p052().run());
+Node[1136668]
+PUTTING 
+:
+j++;
+Node[1136712]
+PUTTING 
+:
+i++;
+Node[1136720]
+PUTTING 
+:
+Arrays.sort(xdigits);
+Node[1136750]
+PUTTING 
+:
+Arrays.sort(ydigits);
+Node[1136755]
+PUTTING 
+:
+super();
+Node[1136772]
+PUTTING 
+:
+System.out.println(new p053().run());
+Node[1136782]
+PUTTING 
+:
+count++;
+Node[1136836]
+PUTTING 
+:
+r++;
+Node[1136839]
+PUTTING 
+:
+n++;
+Node[1136842]
+PUTTING 
+:
+super();
+Node[1136855]
+PUTTING 
+:
+System.out.println(new p054().run());
+Node[1136865]
+PUTTING 
+:
+player1[i] = new Card(cards[i + 0]);
+Node[1136927]
+PUTTING 
+:
+player2[i] = new Card(cards[i + 5]);
+Node[1136940]
+PUTTING 
+:
+i++;
+Node[1136952]
+PUTTING 
+:
+count++;
+Node[1136965]
+PUTTING 
+:
+rankCounts[card.rank]++;
+Node[1137007]
+PUTTING 
+:
+flushSuit = -1;
+Node[1137019]
+PUTTING 
+:
+rankCountHist[count]++;
+Node[1137034]
+PUTTING 
+:
+result = result << 4 | j;
+Node[1137229]
+PUTTING 
+:
+k++;
+Node[1137237]
+PUTTING 
+:
+count++;
+Node[1137240]
+PUTTING 
+:
+j--;
+Node[1137243]
+PUTTING 
+:
+i--;
+Node[1137246]
+PUTTING 
+:
+j++;
+Node[1137302]
+PUTTING 
+:
+i--;
+Node[1137307]
+PUTTING 
+:
+super();
+Node[1137323]
+PUTTING 
+:
+this.rank = rank;
+Node[1137347]
+PUTTING 
+:
+this.suit = suit;
+Node[1137352]
+PUTTING 
+:
+this("23456789TJQKA".indexOf(str.charAt(0)), "SHCD".indexOf(str.charAt(1)));
+Node[1137361]
+PUTTING 
+:
+super();
+Node[1138429]
+PUTTING 
+:
+System.out.println(new p055().run());
+Node[1138439]
+PUTTING 
+:
+count++;
+Node[1138470]
+PUTTING 
+:
+i++;
+Node[1138473]
+PUTTING 
+:
+temp = temp.add(new BigInteger(Library.reverse(temp.toString())));
+Node[1138502]
+PUTTING 
+:
+i++;
+Node[1138526]
+PUTTING 
+:
+super();
+Node[1138537]
+PUTTING 
+:
+System.out.println(new p056().run());
+Node[1138547]
+PUTTING 
+:
+max = Math.max(digitSum(pow), max);
+Node[1138591]
+PUTTING 
+:
+b++;
+Node[1138602]
+PUTTING 
+:
+a++;
+Node[1138605]
+PUTTING 
+:
+sum += s.charAt(i) - '0';
+Node[1138638]
+PUTTING 
+:
+i++;
+Node[1138647]
+PUTTING 
+:
+super();
+Node[1138658]
+PUTTING 
+:
+System.out.println(new p057().run());
+Node[1138668]
+PUTTING 
+:
+n = d;
+Node[1138716]
+PUTTING 
+:
+d = temp;
+Node[1138720]
+PUTTING 
+:
+count++;
+Node[1138740]
+PUTTING 
+:
+i++;
+Node[1138743]
+PUTTING 
+:
+super();
+Node[1138756]
+PUTTING 
+:
+System.out.println(new p058().run());
+Node[1138766]
+PUTTING 
+:
+numPrimes++;
+Node[1138812]
+PUTTING 
+:
+i++;
+Node[1138815]
+PUTTING 
+:
+n += 2;
+Node[1138838]
+PUTTING 
+:
+super();
+Node[1138847]
+PUTTING 
+:
+System.out.println(new p059().run());
+Node[1138857]
+PUTTING 
+:
+bestKey = key;
+Node[1138945]
+PUTTING 
+:
+bestDecrypted = decrypted;
+Node[1138949]
+PUTTING 
+:
+bestScore = score;
+Node[1138953]
+PUTTING 
+:
+z++;
+Node[1138957]
+PUTTING 
+:
+y++;
+Node[1138960]
+PUTTING 
+:
+x++;
+Node[1138963]
+PUTTING 
+:
+sum += bestDecrypted[i];
+Node[1138979]
+PUTTING 
+:
+i++;
+Node[1138985]
+PUTTING 
+:
+sum += 1;
+Node[1139030]
+PUTTING 
+:
+sum += 2;
+Node[1139043]
+PUTTING 
+:
+sum -= 10;
+Node[1139056]
+PUTTING 
+:
+i++;
+Node[1139060]
+PUTTING 
+:
+plaintext[i] = (byte)(ciphertext[i] ^ key[i % key.length]);
+Node[1139092]
+PUTTING 
+:
+i++;
+Node[1139110]
+PUTTING 
+:
+super();
+Node[1140328]
+PUTTING 
+:
+System.out.println(new p060().run());
+Node[1140338]
+PUTTING 
+:
+isConcatPrimeKnown = new BitSet(primes.length * primes.length);
+Node[1140366]
+PUTTING 
+:
+isConcatPrime = new BitSet(primes.length * primes.length);
+Node[1140377]
+PUTTING 
+:
+sumLimit = sum;
+Node[1140417]
+PUTTING 
+:
+sum += primes[i];
+Node[1140446]
+PUTTING 
+:
+i = 0;
+Node[1140463]
+PUTTING 
+:
+i = prefix[prefix.length - 1] + 1;
+Node[1140467]
+PUTTING 
+:
+appended[appended.length - 1] = i;
+Node[1140524]
+PUTTING 
+:
+i++;
+Node[1140552]
+PUTTING 
+:
+x = primes[x];
+Node[1140585]
+PUTTING 
+:
+y = primes[y];
+Node[1140591]
+PUTTING 
+:
+mult *= 10;
+Node[1140609]
+PUTTING 
+:
+temp /= 10;
+Node[1140613]
+PUTTING 
+:
+isConcatPrimeKnown.set(index);
+Node[1140630]
+PUTTING 
+:
+isConcatPrime.set(index, result);
+Node[1140636]
+PUTTING 
+:
+i += 2;
+Node[1140722]
+PUTTING 
+:
+super();
+Node[1140735]
+PUTTING 
+:
+System.out.println(new p061().run());
+Node[1140745]
+PUTTING 
+:
+numbers = new Set[9][100];
+Node[1140768]
+PUTTING 
+:
+numbers[i][j] = new HashSet<>();
+Node[1140796]
+PUTTING 
+:
+j++;
+Node[1140806]
+PUTTING 
+:
+i++;
+Node[1140809]
+PUTTING 
+:
+numbers[sides][num / 100].add(num);
+Node[1140846]
+PUTTING 
+:
+n++;
+Node[1140857]
+PUTTING 
+:
+sides++;
+Node[1140860]
+PUTTING 
+:
+i++;
+Node[1140903]
+PUTTING 
+:
+sides++;
+Node[1140994]
+PUTTING 
+:
+super();
+Node[1141032]
+PUTTING 
+:
+System.out.println(new p062().run());
+Node[1141042]
+PUTTING 
+:
+min = Math.min(lowest.get(nc), min);
+Node[1141118]
+PUTTING 
+:
+lowest.clear();
+Node[1141143]
+PUTTING 
+:
+counts.clear();
+Node[1141148]
+PUTTING 
+:
+numDigits = numClass.length();
+Node[1141152]
+PUTTING 
+:
+lowest.put(numClass, i);
+Node[1141166]
+PUTTING 
+:
+counts.put(numClass, 0);
+Node[1141172]
+PUTTING 
+:
+counts.put(numClass, counts.get(numClass) + 1);
+Node[1141178]
+PUTTING 
+:
+i++;
+Node[1141189]
+PUTTING 
+:
+Arrays.sort(digits);
+Node[1141208]
+PUTTING 
+:
+super();
+Node[1141236]
+PUTTING 
+:
+System.out.println(new p063().run());
+Node[1141246]
+PUTTING 
+:
+count++;
+Node[1141295]
+PUTTING 
+:
+k++;
+Node[1141298]
+PUTTING 
+:
+n++;
+Node[1141301]
+PUTTING 
+:
+super();
+Node[1141317]
+PUTTING 
+:
+System.out.println(new p064().run());
+Node[1141327]
+PUTTING 
+:
+count++;
+Node[1141368]
+PUTTING 
+:
+i++;
+Node[1141371]
+PUTTING 
+:
+seen.put(val, seen.size());
+Node[1141411]
+PUTTING 
+:
+val = val.subtract(new QuadraticSurd(val.floor(), BigInteger.ZERO, BigInteger.ONE, val.d)).reciprocal();
+Node[1141420]
+PUTTING 
+:
+super();
+Node[1141476]
+PUTTING 
+:
+a = a.negate();
+Node[1141498]
+PUTTING 
+:
+b = b.negate();
+Node[1141504]
+PUTTING 
+:
+c = c.negate();
+Node[1141510]
+PUTTING 
+:
+a = a.divide(gcd);
+Node[1141535]
+PUTTING 
+:
+b = b.divide(gcd);
+Node[1141542]
+PUTTING 
+:
+c = c.divide(gcd);
+Node[1141549]
+PUTTING 
+:
+this.a = a;
+Node[1141556]
+PUTTING 
+:
+this.b = b;
+Node[1141561]
+PUTTING 
+:
+this.c = c;
+Node[1141566]
+PUTTING 
+:
+this.d = d;
+Node[1141571]
+PUTTING 
+:
+temp = temp.add(BigInteger.ONE).negate();
+Node[1141678]
+PUTTING 
+:
+temp = temp.add(a);
+Node[1141688]
+PUTTING 
+:
+temp = temp.subtract(c.subtract(BigInteger.ONE));
+Node[1141702]
+PUTTING 
+:
+super();
+Node[1141801]
+PUTTING 
+:
+System.out.println(new p065().run());
+Node[1141811]
+PUTTING 
+:
+d = n;
+Node[1141858]
+PUTTING 
+:
+n = temp;
+Node[1141862]
+PUTTING 
+:
+i--;
+Node[1141866]
+PUTTING 
+:
+sum += divrem[1].intValue();
+Node[1141892]
+PUTTING 
+:
+n = divrem[0];
+Node[1141900]
+PUTTING 
+:
+super();
+Node[1141950]
+PUTTING 
+:
+System.out.println(new p066().run());
+Node[1141960]
+PUTTING 
+:
+minN = n;
+Node[1142013]
+PUTTING 
+:
+maxX = x;
+Node[1142017]
+PUTTING 
+:
+n++;
+Node[1142021]
+PUTTING 
+:
+temp.addAll(contFrac[0]);
+Node[1142053]
+PUTTING 
+:
+temp.addAll(contFrac[1].subList(0, contFrac[1].size() - 1));
+Node[1142061]
+PUTTING 
+:
+val = new Fraction(val.denominator, val.numerator).add(new Fraction(temp.get(i)));
+Node[1142106]
+PUTTING 
+:
+i--;
+Node[1142123]
+PUTTING 
+:
+seen.put(val, seen.size());
+Node[1142207]
+PUTTING 
+:
+terms.add(flr);
+Node[1142222]
+PUTTING 
+:
+val = val.subtract(new QuadraticSurd(flr, BigInteger.ZERO, BigInteger.ONE, val.d)).reciprocal();
+Node[1142228]
+PUTTING 
+:
+super();
+Node[1142293]
+PUTTING 
+:
+a = a.negate();
+Node[1142315]
+PUTTING 
+:
+b = b.negate();
+Node[1142321]
+PUTTING 
+:
+c = c.negate();
+Node[1142327]
+PUTTING 
+:
+a = a.divide(gcd);
+Node[1142352]
+PUTTING 
+:
+b = b.divide(gcd);
+Node[1142359]
+PUTTING 
+:
+c = c.divide(gcd);
+Node[1142366]
+PUTTING 
+:
+this.a = a;
+Node[1142373]
+PUTTING 
+:
+this.b = b;
+Node[1142378]
+PUTTING 
+:
+this.c = c;
+Node[1142383]
+PUTTING 
+:
+this.d = d;
+Node[1142388]
+PUTTING 
+:
+temp = temp.add(BigInteger.ONE).negate();
+Node[1142495]
+PUTTING 
+:
+temp = temp.add(a);
+Node[1142505]
+PUTTING 
+:
+temp = temp.subtract(c.subtract(BigInteger.ONE));
+Node[1142519]
+PUTTING 
+:
+super();
+Node[1142616]
+PUTTING 
+:
+System.out.println(new p067().run());
+Node[1142626]
+PUTTING 
+:
+triangle[i][j] += Math.max(triangle[i + 1][j], triangle[i + 1][j + 1]);
+Node[1142661]
+PUTTING 
+:
+j++;
+Node[1142687]
+PUTTING 
+:
+i--;
+Node[1142690]
+PUTTING 
+:
+super();
+Node[1147863]
+PUTTING 
+:
+System.out.println(new p068().run());
+Node[1147873]
+PUTTING 
+:
+state[i] = i + 1;
+Node[1147901]
+PUTTING 
+:
+i++;
+Node[1147909]
+PUTTING 
+:
+minOuterIndex = i;
+Node[1148016]
+PUTTING 
+:
+minOuter = state[i];
+Node[1148020]
+PUTTING 
+:
+i++;
+Node[1148026]
+PUTTING 
+:
+s += "" + state[(minOuterIndex + i) % 5] + state[(minOuterIndex + i) % 5 + 5] + state[(minOuterIndex + i + 1) % 5 + 5];
+Node[1148041]
+PUTTING 
+:
+i++;
+Node[1148078]
+PUTTING 
+:
+max = s;
+Node[1148101]
+PUTTING 
+:
+super();
+Node[1148125]
+PUTTING 
+:
+System.out.println(new p069().run());
+Node[1148135]
+PUTTING 
+:
+maxNumer = n;
+Node[1148197]
+PUTTING 
+:
+maxDenom = totients[n];
+Node[1148201]
+PUTTING 
+:
+n++;
+Node[1148207]
+PUTTING 
+:
+super();
+Node[1148221]
+PUTTING 
+:
+System.out.println(new p070().run());
+Node[1148231]
+PUTTING 
+:
+minNumer = n;
+Node[1148305]
+PUTTING 
+:
+minDenom = tot;
+Node[1148309]
+PUTTING 
+:
+n++;
+Node[1148313]
+PUTTING 
+:
+Arrays.sort(xdigits);
+Node[1148357]
+PUTTING 
+:
+Arrays.sort(ydigits);
+Node[1148362]
+PUTTING 
+:
+super();
+Node[1148378]
+PUTTING 
+:
+System.out.println(new p071().run());
+Node[1148388]
+PUTTING 
+:
+n--;
+Node[1148432]
+PUTTING 
+:
+maxN = n;
+Node[1148449]
+PUTTING 
+:
+maxD = d;
+Node[1148453]
+PUTTING 
+:
+d++;
+Node[1148457]
+PUTTING 
+:
+super();
+Node[1148470]
+PUTTING 
+:
+System.out.println(new p072().run());
+Node[1148480]
+PUTTING 
+:
+sum += totients[i];
+Node[1148521]
+PUTTING 
+:
+i++;
+Node[1148527]
+PUTTING 
+:
+super();
+Node[1148540]
+PUTTING 
+:
+System.out.println(new p073().run());
+Node[1148550]
+PUTTING 
+:
+super();
+Node[1148626]
+PUTTING 
+:
+System.out.println(new p074().run());
+Node[1148636]
+PUTTING 
+:
+count++;
+Node[1148677]
+PUTTING 
+:
+i++;
+Node[1148680]
+PUTTING 
+:
+n = factorialize(n);
+Node[1148716]
+PUTTING 
+:
+sum += FACTORIAL[n % 10];
+Node[1148751]
+PUTTING 
+:
+n /= 10;
+Node[1148759]
+PUTTING 
+:
+super();
+Node[1148772]
+PUTTING 
+:
+System.out.println(new p075().run());
+Node[1148782]
+PUTTING 
+:
+triples.add(new IntTriple(a, b, c));
+Node[1148879]
+PUTTING 
+:
+t -= 2;
+Node[1148889]
+PUTTING 
+:
+s += 2;
+Node[1148893]
+PUTTING 
+:
+ways[i] = (byte)Math.min(ways[i] + 1, 2);
+Node[1148931]
+PUTTING 
+:
+i += sum;
+Node[1148947]
+PUTTING 
+:
+count++;
+Node[1148965]
+PUTTING 
+:
+super();
+Node[1148988]
+PUTTING 
+:
+this.a = a;
+Node[1148992]
+PUTTING 
+:
+this.b = b;
+Node[1148997]
+PUTTING 
+:
+this.c = c;
+Node[1149002]
+PUTTING 
+:
+super();
+Node[1149058]
+PUTTING 
+:
+System.out.println(new p076().run());
+Node[1149068]
+PUTTING 
+:
+table[i][j] = BigInteger.ONE;
+Node[1149135]
+PUTTING 
+:
+table[i][j] = BigInteger.ZERO;
+Node[1149149]
+PUTTING 
+:
+table[i][j] = table[i][j + 1];
+Node[1149163]
+PUTTING 
+:
+table[i][j] = table[i][j + 1].add(table[i - j][j]);
+Node[1149177]
+PUTTING 
+:
+j--;
+Node[1149200]
+PUTTING 
+:
+i++;
+Node[1149203]
+PUTTING 
+:
+super();
+Node[1149217]
+PUTTING 
+:
+System.out.println(new p077().run());
+Node[1149227]
+PUTTING 
+:
+limit *= 2;
+Node[1149267]
+PUTTING 
+:
+partitions[0] = 1;
+Node[1149285]
+PUTTING 
+:
+partitions[j] += partitions[j - i];
+Node[1149318]
+PUTTING 
+:
+j++;
+Node[1149328]
+PUTTING 
+:
+i++;
+Node[1149331]
+PUTTING 
+:
+i++;
+Node[1149352]
+PUTTING 
+:
+super();
+Node[1149362]
+PUTTING 
+:
+System.out.println(new p078().run());
+Node[1149372]
+PUTTING 
+:
+limit *= 2;
+Node[1149415]
+PUTTING 
+:
+partitions[0] = 1;
+Node[1149431]
+PUTTING 
+:
+partitions[j] = (partitions[j] + partitions[j - i]) % MODULUS;
+Node[1149454]
+PUTTING 
+:
+j++;
+Node[1149471]
+PUTTING 
+:
+i++;
+Node[1149474]
+PUTTING 
+:
+i++;
+Node[1149495]
+PUTTING 
+:
+super();
+Node[1149505]
+PUTTING 
+:
+System.out.println(new p079().run());
+Node[1149515]
+PUTTING 
+:
+packedSubseqs = new char[SUBSEQS.length * 3];
+Node[1149585]
+PUTTING 
+:
+packedSubseqs[i] = SUBSEQS[i / 3].charAt(i % 3);
+Node[1149603]
+PUTTING 
+:
+i++;
+Node[1149618]
+PUTTING 
+:
+guess++;
+Node[1149666]
+PUTTING 
+:
+len++;
+Node[1149669]
+PUTTING 
+:
+j++;
+Node[1149721]
+PUTTING 
+:
+k++;
+Node[1149724]
+PUTTING 
+:
+i += 3;
+Node[1149734]
+PUTTING 
+:
+result[i] = (char)('0' + (n % 10));
+Node[1149764]
+PUTTING 
+:
+i++;
+Node[1149778]
+PUTTING 
+:
+n /= 10;
+Node[1149781]
+PUTTING 
+:
+result[i] = '0';
+Node[1149798]
+PUTTING 
+:
+i++;
+Node[1149804]
+PUTTING 
+:
+super();
+Node[1149815]
+PUTTING 
+:
+System.out.println(new p080().run());
+Node[1149825]
+PUTTING 
+:
+x = x.multiply(BigInteger.TEN.pow(100 * 2));
+Node[1149857]
+PUTTING 
+:
+sum += s.charAt(j) - '0';
+Node[1149908]
+PUTTING 
+:
+j++;
+Node[1149917]
+PUTTING 
+:
+i++;
+Node[1149920]
+PUTTING 
+:
+i++;
+Node[1149951]
+PUTTING 
+:
+j = 9;
+Node[1149971]
+PUTTING 
+:
+delta = y.shiftLeft(1).add(temp).multiply(temp);
+Node[1149993]
+PUTTING 
+:
+j--;
+Node[1150015]
+PUTTING 
+:
+x = x.subtract(delta);
+Node[1150026]
+PUTTING 
+:
+y = y.add(BigInteger.valueOf(j).multiply(BigInteger.TEN.pow(i)));
+Node[1150033]
+PUTTING 
+:
+i--;
+Node[1150050]
+PUTTING 
+:
+super();
+Node[1150060]
+PUTTING 
+:
+System.out.println(new p081().run());
+Node[1150070]
+PUTTING 
+:
+temp = Math.min(grid[i + 1][j], grid[i][j + 1]);
+Node[1150127]
+PUTTING 
+:
+temp = grid[i + 1][j];
+Node[1150155]
+PUTTING 
+:
+temp = grid[i][j + 1];
+Node[1150175]
+PUTTING 
+:
+temp = 0;
+Node[1150185]
+PUTTING 
+:
+grid[i][j] += temp;
+Node[1150189]
+PUTTING 
+:
+j--;
+Node[1150197]
+PUTTING 
+:
+i--;
+Node[1150200]
+PUTTING 
+:
+super();
+Node[1156703]
+PUTTING 
+:
+System.out.println(new p082().run());
+Node[1156713]
+PUTTING 
+:
+distance = new int[h][w];
+Node[1156748]
+PUTTING 
+:
+distance[y][x] = GRID[y][x] + Math.min(getValue(x - 1, y), getValue(x, y - 1));
+Node[1156772]
+PUTTING 
+:
+y++;
+Node[1156801]
+PUTTING 
+:
+distance[y][x] = Math.min(GRID[y][x] + getValue(x, y + 1), distance[y][x]);
+Node[1156814]
+PUTTING 
+:
+y--;
+Node[1156841]
+PUTTING 
+:
+x++;
+Node[1156844]
+PUTTING 
+:
+min = Math.min(distance[y][w - 1], min);
+Node[1156859]
+PUTTING 
+:
+y++;
+Node[1156873]
+PUTTING 
+:
+super();
+Node[1163412]
+PUTTING 
+:
+System.out.println(new p083().run());
+Node[1163422]
+PUTTING 
+:
+distance = new int[h][w];
+Node[1163457]
+PUTTING 
+:
+Arrays.fill(row, INFINITY);
+Node[1163469]
+PUTTING 
+:
+distance[0][0] = GRID[0][0];
+Node[1163476]
+PUTTING 
+:
+temp = Math.min(getDistance(x - 1, y), temp);
+Node[1163521]
+PUTTING 
+:
+temp = Math.min(getDistance(x + 1, y), temp);
+Node[1163535]
+PUTTING 
+:
+temp = Math.min(getDistance(x, y - 1), temp);
+Node[1163548]
+PUTTING 
+:
+temp = Math.min(getDistance(x, y + 1), temp);
+Node[1163561]
+PUTTING 
+:
+distance[y][x] = Math.min(GRID[y][x] + temp, distance[y][x]);
+Node[1163574]
+PUTTING 
+:
+x++;
+Node[1163596]
+PUTTING 
+:
+y++;
+Node[1163599]
+PUTTING 
+:
+i++;
+Node[1163602]
+PUTTING 
+:
+super();
+Node[1170147]
+PUTTING 
+:
+System.out.println(new p084().run());
+Node[1170157]
+PUTTING 
+:
+consecutiveDoubles++;
+Node[1170234]
+PUTTING 
+:
+consecutiveDoubles = 0;
+Node[1170237]
+PUTTING 
+:
+location = (location + die0 + die1) % 40;
+Node[1170246]
+PUTTING 
+:
+location = 30;
+Node[1170258]
+PUTTING 
+:
+consecutiveDoubles = 0;
+Node[1170262]
+PUTTING 
+:
+location = 0;
+Node[1170283]
+PUTTING 
+:
+location = 10;
+Node[1170290]
+PUTTING 
+:
+location = 11;
+Node[1170297]
+PUTTING 
+:
+location = 24;
+Node[1170304]
+PUTTING 
+:
+location = 39;
+Node[1170311]
+PUTTING 
+:
+location = 5;
+Node[1170318]
+PUTTING 
+:
+location = (location + 5) / 10 % 4 * 10 + 5;
+Node[1170327]
+PUTTING 
+:
+location = location > 12 && location < 28 ? 28 : 12;
+Node[1170345]
+PUTTING 
+:
+location -= 3;
+Node[1170361]
+PUTTING 
+:
+location = 10;
+Node[1170371]
+PUTTING 
+:
+location = 0;
+Node[1170394]
+PUTTING 
+:
+location = 10;
+Node[1170401]
+PUTTING 
+:
+visitCounts[location]++;
+Node[1170411]
+PUTTING 
+:
+i++;
+Node[1170416]
+PUTTING 
+:
+visitCounts[i] = ~visitCounts[i] << 6 | i;
+Node[1170428]
+PUTTING 
+:
+i++;
+Node[1170441]
+PUTTING 
+:
+Arrays.sort(visitCounts);
+Node[1170444]
+PUTTING 
+:
+result += String.format("%02d", visitCounts[i] & 63);
+Node[1170462]
+PUTTING 
+:
+i++;
+Node[1170474]
+PUTTING 
+:
+super();
+Node[1170489]
+PUTTING 
+:
+cards = new int[size];
+Node[1170493]
+PUTTING 
+:
+cards[i] = i;
+Node[1170508]
+PUTTING 
+:
+i++;
+Node[1170514]
+PUTTING 
+:
+index = size;
+Node[1170517]
+PUTTING 
+:
+cards[i] = cards[j];
+Node[1170558]
+PUTTING 
+:
+cards[j] = temp;
+Node[1170566]
+PUTTING 
+:
+i--;
+Node[1170572]
+PUTTING 
+:
+index = 0;
+Node[1170575]
+PUTTING 
+:
+index++;
+Node[1170585]
+PUTTING 
+:
+super();
+Node[1170595]
+PUTTING 
+:
+System.out.println(new p085().run());
+Node[1170605]
+PUTTING 
+:
+bestDiff = diff;
+Node[1170675]
+PUTTING 
+:
+bestArea = w * h;
+Node[1170679]
+PUTTING 
+:
+h++;
+Node[1170685]
+PUTTING 
+:
+w++;
+Node[1170688]
+PUTTING 
+:
+super();
+Node[1170729]
+PUTTING 
+:
+System.out.println(new p086().run());
+Node[1170739]
+PUTTING 
+:
+cumulativeSolutions.add(0);
+Node[1170771]
+PUTTING 
+:
+solutions.add(new HashSet<List<Integer>>());
+Node[1170791]
+PUTTING 
+:
+generateSolutions(limit);
+Node[1170801]
+PUTTING 
+:
+cumulativeSolutions.add(sum);
+Node[1170833]
+PUTTING 
+:
+i++;
+Node[1170848]
+PUTTING 
+:
+limit *= 2;
+Node[1170851]
+PUTTING 
+:
+findSplits(a, b, c, limit);
+Node[1170954]
+PUTTING 
+:
+findSplits(b, a, c, limit);
+Node[1170962]
+PUTTING 
+:
+k++;
+Node[1170969]
+PUTTING 
+:
+t -= 2;
+Node[1170972]
+PUTTING 
+:
+s += 2;
+Node[1170976]
+PUTTING 
+:
+Collections.addAll(soln, x, y, z);
+Node[1171094]
+PUTTING 
+:
+Collections.sort(soln);
+Node[1171103]
+PUTTING 
+:
+solutions.get(max).add(soln);
+Node[1171109]
+PUTTING 
+:
+x++;
+Node[1171117]
+PUTTING 
+:
+super();
+Node[1171127]
+PUTTING 
+:
+System.out.println(new p087().run());
+Node[1171137]
+PUTTING 
+:
+sums.add(0);
+Node[1171172]
+PUTTING 
+:
+q *= p;
+Node[1171211]
+PUTTING 
+:
+j++;
+Node[1171215]
+PUTTING 
+:
+newsums.add(x + r);
+Node[1171242]
+PUTTING 
+:
+sums = newsums;
+Node[1171249]
+PUTTING 
+:
+i++;
+Node[1171253]
+PUTTING 
+:
+super();
+Node[1171271]
+PUTTING 
+:
+System.out.println(new p088().run());
+Node[1171281]
+PUTTING 
+:
+minSumProduct = new int[LIMIT + 1];
+Node[1171300]
+PUTTING 
+:
+Arrays.fill(minSumProduct, Integer.MAX_VALUE);
+Node[1171308]
+PUTTING 
+:
+factorize(i, i, i, 0, 0);
+Node[1171325]
+PUTTING 
+:
+i++;
+Node[1171334]
+PUTTING 
+:
+items.add(minSumProduct[i]);
+Node[1171354]
+PUTTING 
+:
+i++;
+Node[1171361]
+PUTTING 
+:
+sum += n;
+Node[1171372]
+PUTTING 
+:
+terms += n - sum;
+Node[1171408]
+PUTTING 
+:
+minSumProduct[terms] = n;
+Node[1171425]
+PUTTING 
+:
+factorize(n, remain / factor, Math.min(factor, maxFactor), sum + factor, terms + 1);
+Node[1171453]
+PUTTING 
+:
+i++;
+Node[1171471]
+PUTTING 
+:
+super();
+Node[1171479]
+PUTTING 
+:
+System.out.println(new p089().run());
+Node[1171489]
+PUTTING 
+:
+sum += s.length() - romanNumeralLength(parseRomanNumeral(s));
+Node[1171509]
+PUTTING 
+:
+result += (Integer)prefix[1];
+Node[1171609]
+PUTTING 
+:
+s = s.substring(((String)prefix[0]).length());
+Node[1171617]
+PUTTING 
+:
+count += 2;
+Node[1171679]
+PUTTING 
+:
+count += DIGIT_LENGTHS[n % 10];
+Node[1171687]
+PUTTING 
+:
+n /= 10;
+Node[1171695]
+PUTTING 
+:
+super();
+Node[1172711]
+PUTTING 
+:
+System.out.println(new p090().run());
+Node[1172721]
+PUTTING 
+:
+count++;
+Node[1172783]
+PUTTING 
+:
+j++;
+Node[1172786]
+PUTTING 
+:
+i++;
+Node[1172789]
+PUTTING 
+:
+a |= (1 << 6) | (1 << 9);
+Node[1172849]
+PUTTING 
+:
+b |= (1 << 6) | (1 << 9);
+Node[1172872]
+PUTTING 
+:
+super();
+Node[1172947]
+PUTTING 
+:
+System.out.println(new p091().run());
+Node[1172957]
+PUTTING 
+:
+count++;
+Node[1173030]
+PUTTING 
+:
+y2++;
+Node[1173033]
+PUTTING 
+:
+x2++;
+Node[1173036]
+PUTTING 
+:
+y1++;
+Node[1173039]
+PUTTING 
+:
+x1++;
+Node[1173042]
+PUTTING 
+:
+super();
+Node[1173126]
+PUTTING 
+:
+System.out.println(new p092().run());
+Node[1173136]
+PUTTING 
+:
+count++;
+Node[1173175]
+PUTTING 
+:
+i++;
+Node[1173178]
+PUTTING 
+:
+x = nextNumber(x);
+Node[1173207]
+PUTTING 
+:
+sum += (x % 10) * (x % 10);
+Node[1173229]
+PUTTING 
+:
+x /= 10;
+Node[1173241]
+PUTTING 
+:
+super();
+Node[1173256]
+PUTTING 
+:
+System.out.println(new p093().run());
+Node[1173266]
+PUTTING 
+:
+longest = consec;
+Node[1173344]
+PUTTING 
+:
+abcd = a * 1000 + b * 100 + c * 10 + d;
+Node[1173348]
+PUTTING 
+:
+d++;
+Node[1173364]
+PUTTING 
+:
+c++;
+Node[1173367]
+PUTTING 
+:
+b++;
+Node[1173370]
+PUTTING 
+:
+a++;
+Node[1173373]
+PUTTING 
+:
+stack.push(new Fraction(BigInteger.valueOf(op)));
+Node[1173453]
+PUTTING 
+:
+stack.push(left.add(right));
+Node[1173505]
+PUTTING 
+:
+stack.push(left.subtract(right));
+Node[1173516]
+PUTTING 
+:
+stack.push(left.multiply(right));
+Node[1173527]
+PUTTING 
+:
+stack.push(left.divide(right));
+Node[1173547]
+PUTTING 
+:
+j++;
+Node[1173560]
+PUTTING 
+:
+expressible.add(result.numerator.intValue());
+Node[1173590]
+PUTTING 
+:
+i++;
+Node[1173598]
+PUTTING 
+:
+i++;
+Node[1173624]
+PUTTING 
+:
+super();
+Node[1173632]
+PUTTING 
+:
+System.out.println(new p094().run());
+Node[1173642]
+PUTTING 
+:
+sum += p;
+Node[1173758]
+PUTTING 
+:
+sum += p;
+Node[1173785]
+PUTTING 
+:
+sum += p;
+Node[1173812]
+PUTTING 
+:
+sum += p;
+Node[1173839]
+PUTTING 
+:
+t -= 2;
+Node[1173843]
+PUTTING 
+:
+s += 2;
+Node[1173847]
+PUTTING 
+:
+super();
+Node[1173863]
+PUTTING 
+:
+System.out.println(new p095().run());
+Node[1173873]
+PUTTING 
+:
+divisorSum[j] += i;
+Node[1173921]
+PUTTING 
+:
+j += i;
+Node[1173927]
+PUTTING 
+:
+i++;
+Node[1173931]
+PUTTING 
+:
+visited.add(cur);
+Node[1173969]
+PUTTING 
+:
+minChainElem = i;
+Node[1173992]
+PUTTING 
+:
+maxChainLen = count;
+Node[1173996]
+PUTTING 
+:
+cur = next;
+Node[1174012]
+PUTTING 
+:
+count++;
+Node[1174016]
+PUTTING 
+:
+i++;
+Node[1174019]
+PUTTING 
+:
+super();
+Node[1174032]
+PUTTING 
+:
+System.out.println(new p096().run());
+Node[1174042]
+PUTTING 
+:
+sum += Integer.parseInt("" + board[0] + board[1] + board[2]);
+Node[1174092]
+PUTTING 
+:
+i++;
+Node[1174234]
+PUTTING 
+:
+board[index] = digit;
+Node[1174237]
+PUTTING 
+:
+digit++;
+Node[1174253]
+PUTTING 
+:
+board[index] = '0';
+Node[1174256]
+PUTTING 
+:
+super();
+Node[1174325]
+PUTTING 
+:
+System.out.println(new p097().run());
+Node[1174335]
+PUTTING 
+:
+n = n.multiply(BigInteger.valueOf(28433)).mod(modulus);
+Node[1174369]
+PUTTING 
+:
+n = n.add(BigInteger.ONE).mod(modulus);
+Node[1174382]
+PUTTING 
+:
+super();
+Node[1174409]
+PUTTING 
+:
+System.out.println(new p098().run());
+Node[1174419]
+PUTTING 
+:
+anagrams.put(key, new ArrayList<String>());
+Node[1174461]
+PUTTING 
+:
+anagrams.get(key).add(word);
+Node[1174470]
+PUTTING 
+:
+Arrays.fill(assignments, -1);
+Node[1174531]
+PUTTING 
+:
+max = Math.max(maxSquarePair(words.get(i), words.get(j), 0, assignments, new boolean[10]), max);
+Node[1174537]
+PUTTING 
+:
+j++;
+Node[1174560]
+PUTTING 
+:
+i++;
+Node[1174563]
+PUTTING 
+:
+aNum = aNum * 10 + assignments[a.charAt(i)];
+Node[1174634]
+PUTTING 
+:
+bNum = bNum * 10 + assignments[b.charAt(i)];
+Node[1174647]
+PUTTING 
+:
+i++;
+Node[1174660]
+PUTTING 
+:
+isDigitUsed[i] = true;
+Node[1174724]
+PUTTING 
+:
+assignments[a.charAt(index)] = i;
+Node[1174730]
+PUTTING 
+:
+max = Math.max(maxSquarePair(a, b, index + 1, assignments, isDigitUsed), max);
+Node[1174739]
+PUTTING 
+:
+isDigitUsed[i] = false;
+Node[1174755]
+PUTTING 
+:
+assignments[a.charAt(index)] = -1;
+Node[1174761]
+PUTTING 
+:
+i++;
+Node[1174770]
+PUTTING 
+:
+Arrays.sort(c);
+Node[1174787]
+PUTTING 
+:
+super();
+Node[1176593]
+PUTTING 
+:
+System.out.println(new p099().run());
+Node[1176603]
+PUTTING 
+:
+maxVal = DATA[i];
+Node[1176660]
+PUTTING 
+:
+maxIndex = i;
+Node[1176666]
+PUTTING 
+:
+i++;
+Node[1176670]
+PUTTING 
+:
+precision *= 2;
+Node[1176768]
+PUTTING 
+:
+super();
+Node[1176809]
+PUTTING 
+:
+mantissa = BigInteger.valueOf(n);
+Node[1176821]
+PUTTING 
+:
+exponent = 0;
+Node[1176828]
+PUTTING 
+:
+super();
+Node[1176838]
+PUTTING 
+:
+mantissa = man;
+Node[1176841]
+PUTTING 
+:
+exponent = exp;
+Node[1176845]
+PUTTING 
+:
+man = man.add(BigInteger.ONE.shiftLeft(excess));
+Node[1176963]
+PUTTING 
+:
+excess = man.bitLength() - precision;
+Node[1176974]
+PUTTING 
+:
+man = man.shiftRight(excess);
+Node[1176982]
+PUTTING 
+:
+exp += excess;
+Node[1176989]
+PUTTING 
+:
+z = z.multiply(x, precision, roundUp);
+Node[1177042]
+PUTTING 
+:
+x = x.multiply(x, precision, roundUp);
+Node[1177051]
+PUTTING 
+:
+y >>>= 1;
+Node[1177060]
+PUTTING 
+:
+super();
+Node[1180078]
+PUTTING 
+:
+System.out.println(new p100().run());
+Node[1180088]
+PUTTING 
+:
+x = nextx;
+Node[1180227]
+PUTTING 
+:
+y = nexty;
+Node[1180231]
+PUTTING 
+:
+super();
+Node[1180241]
+PUTTING 
+:
+System.out.println(new p101().run());
+Node[1180251]
+PUTTING 
+:
+sum = sum.add(term);
+Node[1180324]
+PUTTING 
+:
+n++;
+Node[1180332]
+PUTTING 
+:
+k++;
+Node[1180335]
+PUTTING 
+:
+product = product.multiply(new Fraction(BigInteger.valueOf(n - j), BigInteger.valueOf(i - j)));
+Node[1180398]
+PUTTING 
+:
+j++;
+Node[1180418]
+PUTTING 
+:
+sum = sum.add(product);
+Node[1180421]
+PUTTING 
+:
+i++;
+Node[1180428]
+PUTTING 
+:
+sum = sum.add(biN.pow(i));
+Node[1180459]
+PUTTING 
+:
+i++;
+Node[1180469]
+PUTTING 
+:
+super();
+Node[1180479]
+PUTTING 
+:
+System.out.println(new p102().run());
+Node[1180489]
+PUTTING 
+:
+count++;
+Node[1180519]
+PUTTING 
+:
+super();
+Node[1187683]
+PUTTING 
+:
+System.out.println(new p104().run());
+Node[1187693]
+PUTTING 
+:
+a = b;
+Node[1187735]
+PUTTING 
+:
+b = c;
+Node[1187739]
+PUTTING 
+:
+i++;
+Node[1187743]
+PUTTING 
+:
+x = x.divide(BigInteger.TEN.pow(Math.max(log10 + 1 - 9, 0)));
+Node[1187820]
+PUTTING 
+:
+Arrays.sort(temp);
+Node[1187868]
+PUTTING 
+:
+super();
+Node[1187982]
+PUTTING 
+:
+System.out.println(new p105().run());
+Node[1187992]
+PUTTING 
+:
+sum += x;
+Node[1188025]
+PUTTING 
+:
+Arrays.fill(minSum, Integer.MAX_VALUE);
+Node[1188068]
+PUTTING 
+:
+sum += set[j];
+Node[1188120]
+PUTTING 
+:
+j++;
+Node[1188126]
+PUTTING 
+:
+minSum[size] = Math.min(sum, minSum[size]);
+Node[1188138]
+PUTTING 
+:
+maxSum[size] = Math.max(sum, maxSum[size]);
+Node[1188150]
+PUTTING 
+:
+i++;
+Node[1188162]
+PUTTING 
+:
+i++;
+Node[1188188]
+PUTTING 
+:
+super();
+Node[1189244]
+PUTTING 
+:
+System.out.println(new p107().run());
+Node[1189254]
+PUTTING 
+:
+i++;
+Node[1189292]
+PUTTING 
+:
+oldWeight += WEIGHTS[i][j];
+Node[1189358]
+PUTTING 
+:
+j++;
+Node[1189366]
+PUTTING 
+:
+i++;
+Node[1189369]
+PUTTING 
+:
+reachable[0] = true;
+Node[1189379]
+PUTTING 
+:
+lowestWeight = WEIGHTS[j][k];
+Node[1189458]
+PUTTING 
+:
+target = k;
+Node[1189466]
+PUTTING 
+:
+k++;
+Node[1189470]
+PUTTING 
+:
+j++;
+Node[1189473]
+PUTTING 
+:
+reachable[target] = true;
+Node[1189485]
+PUTTING 
+:
+newWeight += lowestWeight;
+Node[1189491]
+PUTTING 
+:
+i++;
+Node[1189495]
+PUTTING 
+:
+super();
+Node[1191156]
+PUTTING 
+:
+System.out.println(new p108().run());
+Node[1191166]
+PUTTING 
+:
+n++;
+Node[1191202]
+PUTTING 
+:
+n /= i;
+Node[1191244]
+PUTTING 
+:
+j++;
+Node[1191248]
+PUTTING 
+:
+count *= j * 2 + 1;
+Node[1191257]
+PUTTING 
+:
+end = Library.sqrt(n);
+Node[1191265]
+PUTTING 
+:
+i++;
+Node[1191272]
+PUTTING 
+:
+count *= 3;
+Node[1191280]
+PUTTING 
+:
+super();
+Node[1191294]
+PUTTING 
+:
+System.out.println(new p109().run());
+Node[1191304]
+PUTTING 
+:
+points = new ArrayList<>();
+Node[1191316]
+PUTTING 
+:
+points.add(i * j);
+Node[1191339]
+PUTTING 
+:
+j++;
+Node[1191346]
+PUTTING 
+:
+i++;
+Node[1191349]
+PUTTING 
+:
+points.add(25);
+Node[1191352]
+PUTTING 
+:
+points.add(50);
+Node[1191357]
+PUTTING 
+:
+doublePoints.add(i * 2);
+Node[1191378]
+PUTTING 
+:
+i++;
+Node[1191385]
+PUTTING 
+:
+doublePoints.add(25 * 2);
+Node[1191388]
+PUTTING 
+:
+ways = new int[3][101][points.size()];
+Node[1191395]
+PUTTING 
+:
+Arrays.fill(y, -1);
+Node[1191417]
+PUTTING 
+:
+checkouts += ways(throwz, remainingPoints - p, points.size() - 1);
+Node[1191455]
+PUTTING 
+:
+throwz++;
+Node[1191470]
+PUTTING 
+:
+remainingPoints++;
+Node[1191473]
+PUTTING 
+:
+result = total == 0 ? 1 : 0;
+Node[1191518]
+PUTTING 
+:
+result = 0;
+Node[1191528]
+PUTTING 
+:
+result += ways(throwz, total, maxIndex - 1);
+Node[1191537]
+PUTTING 
+:
+result += ways(throwz - 1, total - points.get(maxIndex), maxIndex);
+Node[1191555]
+PUTTING 
+:
+ways[throwz][total][maxIndex] = result;
+Node[1191570]
+PUTTING 
+:
+super();
+Node[1191594]
+PUTTING 
+:
+System.out.println(new p111().run());
+Node[1191604]
+PUTTING 
+:
+primes = Library.listPrimes((int)Library.sqrt(pow(10, DIGITS)));
+Node[1191623]
+PUTTING 
+:
+Arrays.fill(digits, 0, rep, digit);
+Node[1191691]
+PUTTING 
+:
+d++;
+Node[1191729]
+PUTTING 
+:
+digits[DIGITS - 1 - j] = d;
+Node[1191746]
+PUTTING 
+:
+temp /= 9;
+Node[1191756]
+PUTTING 
+:
+j++;
+Node[1191760]
+PUTTING 
+:
+Arrays.sort(digits);
+Node[1191763]
+PUTTING 
+:
+sum += num;
+Node[1191791]
+PUTTING 
+:
+i++;
+Node[1191800]
+PUTTING 
+:
+total += sum;
+Node[1191809]
+PUTTING 
+:
+rep--;
+Node[1191814]
+PUTTING 
+:
+digit++;
+Node[1191817]
+PUTTING 
+:
+result = result * 10 + x;
+Node[1191860]
+PUTTING 
+:
+z *= x;
+Node[1191889]
+PUTTING 
+:
+i++;
+Node[1191893]
+PUTTING 
+:
+super();
+Node[1191903]
+PUTTING 
+:
+System.out.println(new p112().run());
+Node[1191913]
+PUTTING 
+:
+bouncy++;
+Node[1191941]
+PUTTING 
+:
+i++;
+Node[1191958]
+PUTTING 
+:
+x /= 10;
+Node[1191988]
+PUTTING 
+:
+nondecreasing = false;
+Node[1192009]
+PUTTING 
+:
+nonincreasing = false;
+Node[1192018]
+PUTTING 
+:
+lastDigit = digit;
+Node[1192022]
+PUTTING 
+:
+x /= 10;
+Node[1192026]
+PUTTING 
+:
+super();
+Node[1192042]
+PUTTING 
+:
+System.out.println(new p113().run());
+Node[1192052]
+PUTTING 
+:
+super();
+Node[1192124]
+PUTTING 
+:
+System.out.println(new p114().run());
+Node[1192134]
+PUTTING 
+:
+ways[0] = 1;
+Node[1192159]
+PUTTING 
+:
+ways[1] = 1;
+Node[1192165]
+PUTTING 
+:
+ways[2] = 1;
+Node[1192171]
+PUTTING 
+:
+sum += ways[n - k - 1];
+Node[1192204]
+PUTTING 
+:
+k++;
+Node[1192214]
+PUTTING 
+:
+ways[n] = sum;
+Node[1192217]
+PUTTING 
+:
+n++;
+Node[1192223]
+PUTTING 
+:
+super();
+Node[1192240]
+PUTTING 
+:
+System.out.println(new p115().run());
+Node[1192250]
+PUTTING 
+:
+ways.add(1L);
+Node[1192274]
+PUTTING 
+:
+sum += ways.get(n - k - 1);
+Node[1192302]
+PUTTING 
+:
+k++;
+Node[1192313]
+PUTTING 
+:
+sum++;
+Node[1192321]
+PUTTING 
+:
+ways.add(sum);
+Node[1192324]
+PUTTING 
+:
+n++;
+Node[1192339]
+PUTTING 
+:
+super();
+Node[1192347]
+PUTTING 
+:
+System.out.println(new p116().run());
+Node[1192357]
+PUTTING 
+:
+ways[0] = 1;
+Node[1192408]
+PUTTING 
+:
+ways[n] += ways[n - 1];
+Node[1192423]
+PUTTING 
+:
+ways[n] += ways[n - m];
+Node[1192438]
+PUTTING 
+:
+n++;
+Node[1192448]
+PUTTING 
+:
+super();
+Node[1192462]
+PUTTING 
+:
+System.out.println(new p117().run());
+Node[1192472]
+PUTTING 
+:
+ways[0] = 1;
+Node[1192497]
+PUTTING 
+:
+ways[n] += ways[n - k];
+Node[1192524]
+PUTTING 
+:
+k++;
+Node[1192534]
+PUTTING 
+:
+n++;
+Node[1192537]
+PUTTING 
+:
+super();
+Node[1192552]
+PUTTING 
+:
+System.out.println(new p118().run());
+Node[1192562]
+PUTTING 
+:
+isPrime = Library.listPrimality(10000);
+Node[1192574]
+PUTTING 
+:
+count = 0;
+Node[1192581]
+PUTTING 
+:
+countPrimeSets(digits, 0, 0);
+Node[1192600]
+PUTTING 
+:
+count++;
+Node[1192638]
+PUTTING 
+:
+countPrimeSets(digits, split, num);
+Node[1192673]
+PUTTING 
+:
+split++;
+Node[1192679]
+PUTTING 
+:
+result = result * 10 + digits[i];
+Node[1192724]
+PUTTING 
+:
+i++;
+Node[1192734]
+PUTTING 
+:
+super();
+Node[1192748]
+PUTTING 
+:
+System.out.println(new p119().run());
+Node[1192758]
+PUTTING 
+:
+candidates.add(pow);
+Node[1192857]
+PUTTING 
+:
+n++;
+Node[1192862]
+PUTTING 
+:
+k++;
+Node[1192865]
+PUTTING 
+:
+limit = limit.shiftLeft(8);
+Node[1192889]
+PUTTING 
+:
+pow = pow.multiply(base);
+Node[1192934]
+PUTTING 
+:
+sum += c - '0';
+Node[1192974]
+PUTTING 
+:
+super();
+Node[1192987]
+PUTTING 
+:
+System.out.println(new p120().run());
+Node[1192997]
+PUTTING 
+:
+sum += a * (a - (a % 2 == 0 ? 2 : 1));
+Node[1193021]
+PUTTING 
+:
+a++;
+Node[1193038]
+PUTTING 
+:
+super();
+Node[1193052]
+PUTTING 
+:
+System.out.println(new p121().run());
+Node[1193062]
+PUTTING 
+:
+ways[0] = new BigInteger[]{BigInteger.ONE};
+Node[1193089]
+PUTTING 
+:
+ways[i] = new BigInteger[i + 1];
+Node[1193107]
+PUTTING 
+:
+temp = ways[i - 1][j].multiply(BigInteger.valueOf(i));
+Node[1193136]
+PUTTING 
+:
+temp = temp.add(ways[i - 1][j - 1]);
+Node[1193157]
+PUTTING 
+:
+ways[i][j] = temp;
+Node[1193172]
+PUTTING 
+:
+j++;
+Node[1193180]
+PUTTING 
+:
+i++;
+Node[1193183]
+PUTTING 
+:
+numer = numer.add(ways[TURNS][i]);
+Node[1193203]
+PUTTING 
+:
+i++;
+Node[1193214]
+PUTTING 
+:
+super();
+Node[1193239]
+PUTTING 
+:
+System.out.println(new p122().run());
+Node[1193249]
+PUTTING 
+:
+minOperations = new int[LIMIT + 1];
+Node[1193270]
+PUTTING 
+:
+Arrays.fill(minOperations, -1);
+Node[1193278]
+PUTTING 
+:
+minOperations[0] = 0;
+Node[1193284]
+PUTTING 
+:
+minOperations[1] = 0;
+Node[1193290]
+PUTTING 
+:
+numUnknown = LIMIT - 1;
+Node[1193296]
+PUTTING 
+:
+chain.push(1);
+Node[1193320]
+PUTTING 
+:
+exploreChains(chain, ops);
+Node[1193326]
+PUTTING 
+:
+ops++;
+Node[1193332]
+PUTTING 
+:
+sum += x;
+Node[1193343]
+PUTTING 
+:
+chain.push(x);
+Node[1193425]
+PUTTING 
+:
+minOperations[x] = chain.size - 1;
+Node[1193438]
+PUTTING 
+:
+numUnknown--;
+Node[1193447]
+PUTTING 
+:
+exploreChains(chain, maxOps);
+Node[1193450]
+PUTTING 
+:
+chain.pop();
+Node[1193455]
+PUTTING 
+:
+j--;
+Node[1193460]
+PUTTING 
+:
+i--;
+Node[1193463]
+PUTTING 
+:
+super();
+Node[1193476]
+PUTTING 
+:
+values = new int[capacity];
+Node[1193480]
+PUTTING 
+:
+size = 0;
+Node[1193486]
+PUTTING 
+:
+values[size] = x;
+Node[1193505]
+PUTTING 
+:
+size++;
+Node[1193511]
+PUTTING 
+:
+size--;
+Node[1193525]
+PUTTING 
+:
+super();
+Node[1193537]
+PUTTING 
+:
+System.out.println(new p123().run());
+Node[1193547]
+PUTTING 
+:
+n += 2;
+Node[1193609]
+PUTTING 
+:
+super();
+Node[1193623]
+PUTTING 
+:
+System.out.println(new p124().run());
+Node[1193633]
+PUTTING 
+:
+Arrays.fill(rads, 1, rads.length, 1);
+Node[1193658]
+PUTTING 
+:
+rads[j] *= i;
+Node[1193694]
+PUTTING 
+:
+j += i;
+Node[1193700]
+PUTTING 
+:
+i++;
+Node[1193704]
+PUTTING 
+:
+data[i] = new IntPair(rads[i + 1], i + 1);
+Node[1193723]
+PUTTING 
+:
+i++;
+Node[1193739]
+PUTTING 
+:
+Arrays.sort(data);
+Node[1193742]
+PUTTING 
+:
+super();
+Node[1193771]
+PUTTING 
+:
+this.a = a;
+Node[1193775]
+PUTTING 
+:
+this.b = b;
+Node[1193780]
+PUTTING 
+:
+super();
+Node[1193818]
+PUTTING 
+:
+System.out.println(new p125().run());
+Node[1193828]
+PUTTING 
+:
+sum += j * j;
+Node[1193871]
+PUTTING 
+:
+nums.add(sum);
+Node[1193889]
+PUTTING 
+:
+j++;
+Node[1193894]
+PUTTING 
+:
+i++;
+Node[1193897]
+PUTTING 
+:
+sum += x;
+Node[1193908]
+PUTTING 
+:
+super();
+Node[1193923]
+PUTTING 
+:
+System.out.println(new p127().run());
+Node[1193933]
+PUTTING 
+:
+Arrays.fill(rads, 1, rads.length, 1);
+Node[1193956]
+PUTTING 
+:
+rads[j] *= i;
+Node[1193992]
+PUTTING 
+:
+j += i;
+Node[1193998]
+PUTTING 
+:
+i++;
+Node[1194002]
+PUTTING 
+:
+sum += c;
+Node[1194079]
+PUTTING 
+:
+a++;
+Node[1194083]
+PUTTING 
+:
+c++;
+Node[1194086]
+PUTTING 
+:
+super();
+Node[1194099]
+PUTTING 
+:
+System.out.println(new p128().run());
+Node[1194109]
+PUTTING 
+:
+count++;
+Node[1194180]
+PUTTING 
+:
+count++;
+Node[1194233]
+PUTTING 
+:
+ring++;
+Node[1194257]
+PUTTING 
+:
+super();
+Node[1194265]
+PUTTING 
+:
+System.out.println(new p129().run());
+Node[1194275]
+PUTTING 
+:
+n++;
+Node[1194314]
+PUTTING 
+:
+k++;
+Node[1194369]
+PUTTING 
+:
+pow = pow * 10 % n;
+Node[1194372]
+PUTTING 
+:
+sum = (sum + pow) % n;
+Node[1194380]
+PUTTING 
+:
+super();
+Node[1194396]
+PUTTING 
+:
+System.out.println(new p130().run());
+Node[1194406]
+PUTTING 
+:
+sum += i;
+Node[1194461]
+PUTTING 
+:
+found++;
+Node[1194465]
+PUTTING 
+:
+i += 2;
+Node[1194468]
+PUTTING 
+:
+k++;
+Node[1194529]
+PUTTING 
+:
+pow = pow * 10 % n;
+Node[1194532]
+PUTTING 
+:
+sum = (sum + pow) % n;
+Node[1194540]
+PUTTING 
+:
+super();
+Node[1194556]
+PUTTING 
+:
+System.out.println(new p132().run());
+Node[1194566]
+PUTTING 
+:
+sum += i;
+Node[1194610]
+PUTTING 
+:
+count++;
+Node[1194614]
+PUTTING 
+:
+i++;
+Node[1194617]
+PUTTING 
+:
+super();
+Node[1194652]
+PUTTING 
+:
+System.out.println(new p133().run());
+Node[1194662]
+PUTTING 
+:
+sum += p;
+Node[1194701]
+PUTTING 
+:
+super();
+Node[1194751]
+PUTTING 
+:
+System.out.println(new p134().run());
+Node[1194761]
+PUTTING 
+:
+k *= 10;
+Node[1194819]
+PUTTING 
+:
+sum += m * k + p;
+Node[1194842]
+PUTTING 
+:
+i++;
+Node[1194850]
+PUTTING 
+:
+super();
+Node[1194863]
+PUTTING 
+:
+System.out.println(new p135().run());
+Node[1194873]
+PUTTING 
+:
+solutions[(int)temp]++;
+Node[1194949]
+PUTTING 
+:
+k++;
+Node[1194956]
+PUTTING 
+:
+m++;
+Node[1194959]
+PUTTING 
+:
+count++;
+Node[1194976]
+PUTTING 
+:
+super();
+Node[1194989]
+PUTTING 
+:
+System.out.println(new p139().run());
+Node[1194999]
+PUTTING 
+:
+count += (LIMIT - 1) / p;
+Node[1195105]
+PUTTING 
+:
+t += 2;
+Node[1195114]
+PUTTING 
+:
+s += 2;
+Node[1195118]
+PUTTING 
+:
+super();
+Node[1195132]
+PUTTING 
+:
+System.out.println(new p142().run());
+Node[1195142]
+PUTTING 
+:
+isSquare = new boolean[sumLimit];
+Node[1195165]
+PUTTING 
+:
+isSquare[i * i] = true;
+Node[1195181]
+PUTTING 
+:
+i++;
+Node[1195189]
+PUTTING 
+:
+sum = sumLimit;
+Node[1195205]
+PUTTING 
+:
+sumLimit *= 10;
+Node[1195210]
+PUTTING 
+:
+sumLimit = sum;
+Node[1195234]
+PUTTING 
+:
+c++;
+Node[1195375]
+PUTTING 
+:
+b--;
+Node[1195378]
+PUTTING 
+:
+a++;
+Node[1195381]
+PUTTING 
+:
+super();
+Node[1195391]
+PUTTING 
+:
+System.out.println(new p145().run());
+Node[1195401]
+PUTTING 
+:
+sum += 20 * Library.pow(30, digits / 2 - 1);
+Node[1195433]
+PUTTING 
+:
+sum += 100 * Library.pow(500, (digits - 3) / 4);
+Node[1195454]
+PUTTING 
+:
+sum += 0;
+Node[1195476]
+PUTTING 
+:
+digits++;
+Node[1195483]
+PUTTING 
+:
+super();
+Node[1195497]
+PUTTING 
+:
+System.out.println(new p146().run());
+Node[1195507]
+PUTTING 
+:
+sum += n;
+Node[1195553]
+PUTTING 
+:
+n += 10;
+Node[1195557]
+PUTTING 
+:
+temp[i] = n2 + INCREMENTS[i];
+Node[1195624]
+PUTTING 
+:
+i++;
+Node[1195634]
+PUTTING 
+:
+i++;
+Node[1195693]
+PUTTING 
+:
+super();
+Node[1195743]
+PUTTING 
+:
+System.out.println(new p149().run());
+Node[1195753]
+PUTTING 
+:
+grid = new int[SIZE][SIZE];
+Node[1195773]
+PUTTING 
+:
+grid[y][x] = rand.next();
+Node[1195807]
+PUTTING 
+:
+x++;
+Node[1195818]
+PUTTING 
+:
+y++;
+Node[1195821]
+PUTTING 
+:
+max = Math.max(getMaxSubstringSum(0, i, +1, 0), max);
+Node[1195837]
+PUTTING 
+:
+max = Math.max(getMaxSubstringSum(i, 0, 0, +1), max);
+Node[1195852]
+PUTTING 
+:
+max = Math.max(getMaxSubstringSum(0, i, +1, +1), max);
+Node[1195866]
+PUTTING 
+:
+max = Math.max(getMaxSubstringSum(i, 0, +1, +1), max);
+Node[1195881]
+PUTTING 
+:
+max = Math.max(getMaxSubstringSum(i, 0, -1, +1), max);
+Node[1195896]
+PUTTING 
+:
+max = Math.max(getMaxSubstringSum(SIZE - 1, i, -1, +1), max);
+Node[1195910]
+PUTTING 
+:
+i++;
+Node[1195926]
+PUTTING 
+:
+cur = Math.max(cur + grid[y][x], 0);
+Node[1195970]
+PUTTING 
+:
+max = Math.max(cur, max);
+Node[1195984]
+PUTTING 
+:
+x += dx;
+Node[1195992]
+PUTTING 
+:
+y += dy;
+Node[1195996]
+PUTTING 
+:
+super();
+Node[1196012]
+PUTTING 
+:
+k = 1;
+Node[1196016]
+PUTTING 
+:
+history = new int[55];
+Node[1196020]
+PUTTING 
+:
+index = 0;
+Node[1196026]
+PUTTING 
+:
+result = (int)((100003L - 200003L * k + 300007L * k * k * k) % 1000000) - 500000;
+Node[1196041]
+PUTTING 
+:
+k++;
+Node[1196065]
+PUTTING 
+:
+result = (getHistory(24) + getHistory(55) + 1000000) % 1000000 - 500000;
+Node[1196069]
+PUTTING 
+:
+history[index] = result;
+Node[1196087]
+PUTTING 
+:
+index = (index + 1) % history.length;
+Node[1196093]
+PUTTING 
+:
+super();
+Node[1196141]
+PUTTING 
+:
+System.out.println(new p150().run());
+Node[1196151]
+PUTTING 
+:
+triangle[i] = new int[i + 1];
+Node[1196192]
+PUTTING 
+:
+triangle[i][j] = rand.next();
+Node[1196210]
+PUTTING 
+:
+j++;
+Node[1196221]
+PUTTING 
+:
+i++;
+Node[1196224]
+PUTTING 
+:
+rowSums[i] = new int[triangle[i].length + 1];
+Node[1196247]
+PUTTING 
+:
+rowSums[i][0] = 0;
+Node[1196260]
+PUTTING 
+:
+rowSums[i][j + 1] = rowSums[i][j] + triangle[i][j];
+Node[1196276]
+PUTTING 
+:
+j++;
+Node[1196296]
+PUTTING 
+:
+i++;
+Node[1196299]
+PUTTING 
+:
+curSum += rowSums[k][k - i + 1 + j] - rowSums[k][j];
+Node[1196342]
+PUTTING 
+:
+minSum = Math.min(curSum, minSum);
+Node[1196362]
+PUTTING 
+:
+k++;
+Node[1196370]
+PUTTING 
+:
+j++;
+Node[1196373]
+PUTTING 
+:
+i++;
+Node[1196376]
+PUTTING 
+:
+super();
+Node[1196389]
+PUTTING 
+:
+state = 0;
+Node[1196393]
+PUTTING 
+:
+state = (615949 * state + 797807) & ((1 << 20) - 1);
+Node[1196400]
+PUTTING 
+:
+super();
+Node[1196435]
+PUTTING 
+:
+System.out.println(new p151().run());
+Node[1196445]
+PUTTING 
+:
+newState.remove(i);
+Node[1196546]
+PUTTING 
+:
+newState.add(j);
+Node[1196562]
+PUTTING 
+:
+j++;
+Node[1196567]
+PUTTING 
+:
+Collections.sort(newState);
+Node[1196570]
+PUTTING 
+:
+result += getExpectedSingles(newState);
+Node[1196575]
+PUTTING 
+:
+i++;
+Node[1196581]
+PUTTING 
+:
+result /= state.size();
+Node[1196584]
+PUTTING 
+:
+result++;
+Node[1196597]
+PUTTING 
+:
+expectedSingles.put(state, result);
+Node[1196600]
+PUTTING 
+:
+super();
+Node[1196616]
+PUTTING 
+:
+System.out.println(new p155().run());
+Node[1196626]
+PUTTING 
+:
+possible[0] = new HashSet<>();
+Node[1196666]
+PUTTING 
+:
+possible[1] = new HashSet<>();
+Node[1196674]
+PUTTING 
+:
+possible[1].add(new FastFraction(60, 1));
+Node[1196682]
+PUTTING 
+:
+all.addAll(possible[1]);
+Node[1196693]
+PUTTING 
+:
+poss.add(a.add(b));
+Node[1196745]
+PUTTING 
+:
+poss.add(a.reciprocalAdd(b));
+Node[1196754]
+PUTTING 
+:
+j++;
+Node[1196763]
+PUTTING 
+:
+possible[i] = poss;
+Node[1196766]
+PUTTING 
+:
+all.addAll(poss);
+Node[1196772]
+PUTTING 
+:
+i++;
+Node[1196777]
+PUTTING 
+:
+super();
+Node[1196800]
+PUTTING 
+:
+n /= gcd;
+Node[1196848]
+PUTTING 
+:
+d /= gcd;
+Node[1196852]
+PUTTING 
+:
+numerator = n;
+Node[1196856]
+PUTTING 
+:
+denominator = d;
+Node[1196860]
+PUTTING 
+:
+bigFraction = null;
+Node[1196864]
+PUTTING 
+:
+numerator = temp.numerator;
+Node[1196885]
+PUTTING 
+:
+denominator = temp.denominator;
+Node[1196890]
+PUTTING 
+:
+bigFraction = temp.bigFraction;
+Node[1196895]
+PUTTING 
+:
+super();
+Node[1196904]
+PUTTING 
+:
+numerator = frac.numerator.intValue();
+Node[1196923]
+PUTTING 
+:
+denominator = frac.denominator.intValue();
+Node[1196930]
+PUTTING 
+:
+bigFraction = null;
+Node[1196937]
+PUTTING 
+:
+numerator = 0;
+Node[1196942]
+PUTTING 
+:
+denominator = 0;
+Node[1196946]
+PUTTING 
+:
+bigFraction = frac;
+Node[1196950]
+PUTTING 
+:
+super();
+Node[1197174]
+PUTTING 
+:
+System.out.println(new p160().run());
+Node[1197184]
+PUTTING 
+:
+twos = (twos - 5) % 2500 + 5;
+Node[1197227]
+PUTTING 
+:
+n %= 100000;
+Node[1197319]
+PUTTING 
+:
+product = i * product % 100000;
+Node[1197349]
+PUTTING 
+:
+i++;
+Node[1197357]
+PUTTING 
+:
+super();
+Node[1197393]
+PUTTING 
+:
+System.out.println(new p162().run());
+Node[1197403]
+PUTTING 
+:
+sum = sum.add(bi(15).multiply(bi(16).pow(n - 1))).subtract(bi(43).multiply(bi(15).pow(n - 1))).add(bi(41).multiply(bi(14).pow(n - 1))).subtract(bi(13).pow(n));
+Node[1197429]
+PUTTING 
+:
+n++;
+Node[1197487]
+PUTTING 
+:
+super();
+Node[1197515]
+PUTTING 
+:
+System.out.println(new p164().run());
+Node[1197525]
+PUTTING 
+:
+ways[0][0] = BigInteger.ONE;
+Node[1197570]
+PUTTING 
+:
+ways[0][prefix] = BigInteger.ZERO;
+Node[1197590]
+PUTTING 
+:
+prefix++;
+Node[1197599]
+PUTTING 
+:
+sum = sum.add(ways[digits - 1][prefix % Library.pow(BASE, CONSECUTIVE - 1) * BASE + nextDigit]);
+Node[1197646]
+PUTTING 
+:
+nextDigit++;
+Node[1197671]
+PUTTING 
+:
+ways[digits][prefix] = sum;
+Node[1197674]
+PUTTING 
+:
+prefix++;
+Node[1197682]
+PUTTING 
+:
+digits++;
+Node[1197685]
+PUTTING 
+:
+sum += n % 10;
+Node[1197722]
+PUTTING 
+:
+n /= 10;
+Node[1197728]
+PUTTING 
+:
+super();
+Node[1197739]
+PUTTING 
+:
+System.out.println(new p166().run());
+Node[1197749]
+PUTTING 
+:
+count++;
+Node[1198010]
+PUTTING 
+:
+num[i] = 0;
+Node[1198041]
+PUTTING 
+:
+i++;
+Node[1198047]
+PUTTING 
+:
+num[i]++;
+Node[1198058]
+PUTTING 
+:
+super();
+Node[1198075]
+PUTTING 
+:
+System.out.println(new p169().run());
+Node[1198085]
+PUTTING 
+:
+result = number.equals(BigInteger.ZERO) ? BigInteger.ONE : BigInteger.ZERO;
+Node[1198173]
+PUTTING 
+:
+result = countWays(number, exponent - 1, 2);
+Node[1198187]
+PUTTING 
+:
+result = result.add(countWays(number.subtract(pow), exponent, repetitions - 1));
+Node[1198236]
+PUTTING 
+:
+ways.put(key, result);
+Node[1198252]
+PUTTING 
+:
+super();
+Node[1198265]
+PUTTING 
+:
+System.out.println(new p171().run());
+Node[1198275]
+PUTTING 
+:
+count[0][0] = 1;
+Node[1198343]
+PUTTING 
+:
+sum[i][k + j * j] = (sum[i][k + j * j] + sum[i - 1][k] + Library.powMod(BASE, i - 1, MODULUS) * j % MODULUS * count[i - 1][k]) % MODULUS;
+Node[1198382]
+PUTTING 
+:
+count[i][k + j * j] = (count[i][k + j * j] + count[i - 1][k]) % MODULUS;
+Node[1198434]
+PUTTING 
+:
+k++;
+Node[1198465]
+PUTTING 
+:
+j++;
+Node[1198468]
+PUTTING 
+:
+i++;
+Node[1198471]
+PUTTING 
+:
+s = (s + sum[LENGTH][i * i]) % MODULUS;
+Node[1198488]
+PUTTING 
+:
+i++;
+Node[1198503]
+PUTTING 
+:
+super();
+Node[1198520]
+PUTTING 
+:
+System.out.println(new p172().run());
+Node[1198530]
+PUTTING 
+:
+ways = ways.multiply(BASE_BI.subtract(BigInteger.ONE));
+Node[1198573]
+PUTTING 
+:
+ways = divideExactly(ways, BASE_BI);
+Node[1198584]
+PUTTING 
+:
+terms.add(i);
+Node[1198647]
+PUTTING 
+:
+result = result.add(partitionAndCount(sum - i, i, terms));
+Node[1198652]
+PUTTING 
+:
+terms.remove(terms.size() - 1);
+Node[1198665]
+PUTTING 
+:
+i--;
+Node[1198674]
+PUTTING 
+:
+histogram[x]++;
+Node[1198699]
+PUTTING 
+:
+ways = ways.divide(Library.factorial(x));
+Node[1198715]
+PUTTING 
+:
+ways = ways.multiply(Library.factorial(LENGTH));
+Node[1198725]
+PUTTING 
+:
+ways = ways.divide(Library.factorial(x));
+Node[1198739]
+PUTTING 
+:
+super();
+Node[1198788]
+PUTTING 
+:
+System.out.println(new p173().run());
+Node[1198798]
+PUTTING 
+:
+count++;
+Node[1198858]
+PUTTING 
+:
+k -= 2;
+Node[1198861]
+PUTTING 
+:
+n++;
+Node[1198865]
+PUTTING 
+:
+super();
+Node[1198878]
+PUTTING 
+:
+System.out.println(new p174().run());
+Node[1198888]
+PUTTING 
+:
+type[tiles]++;
+Node[1198958]
+PUTTING 
+:
+m -= 2;
+Node[1198963]
+PUTTING 
+:
+n++;
+Node[1198967]
+PUTTING 
+:
+count++;
+Node[1198988]
+PUTTING 
+:
+super();
+Node[1199002]
+PUTTING 
+:
+System.out.println(new p178().run());
+Node[1199012]
+PUTTING 
+:
+val = (low == head && head == high) ? BigInteger.ONE : BigInteger.ZERO;
+Node[1199092]
+PUTTING 
+:
+val = BigInteger.ZERO;
+Node[1199109]
+PUTTING 
+:
+val = val.add(prevWays[head - 1][low][high]);
+Node[1199133]
+PUTTING 
+:
+val = val.add(prevWays[head - 1][low][high - 1]);
+Node[1199153]
+PUTTING 
+:
+val = val.add(prevWays[head + 1][low][high]);
+Node[1199178]
+PUTTING 
+:
+val = val.add(prevWays[head + 1][low + 1][high]);
+Node[1199198]
+PUTTING 
+:
+ways[digits][head][low][high] = val;
+Node[1199215]
+PUTTING 
+:
+sum = sum.add(val);
+Node[1199240]
+PUTTING 
+:
+high++;
+Node[1199247]
+PUTTING 
+:
+low++;
+Node[1199250]
+PUTTING 
+:
+head++;
+Node[1199253]
+PUTTING 
+:
+digits++;
+Node[1199256]
+PUTTING 
+:
+super();
+Node[1199269]
+PUTTING 
+:
+System.out.println(new p179().run());
+Node[1199279]
+PUTTING 
+:
+Arrays.fill(numDivisors, 2);
+Node[1199308]
+PUTTING 
+:
+numDivisors[j]++;
+Node[1199335]
+PUTTING 
+:
+j += i;
+Node[1199340]
+PUTTING 
+:
+i++;
+Node[1199344]
+PUTTING 
+:
+count++;
+Node[1199374]
+PUTTING 
+:
+i++;
+Node[1199377]
+PUTTING 
+:
+super();
+Node[1199390]
+PUTTING 
+:
+System.out.println(new p182().run());
+Node[1199400]
+PUTTING 
+:
+minUnconcealedP = Math.min(x, minUnconcealedP);
+Node[1199456]
+PUTTING 
+:
+minUnconcealedQ = Math.min(x, minUnconcealedQ);
+Node[1199473]
+PUTTING 
+:
+sum += e;
+Node[1199517]
+PUTTING 
+:
+e++;
+Node[1199521]
+PUTTING 
+:
+numUnconcealed[e] = countUnconcealed(prime, e);
+Node[1199565]
+PUTTING 
+:
+numUnconcealed[e] = Integer.MAX_VALUE;
+Node[1199575]
+PUTTING 
+:
+e++;
+Node[1199582]
+PUTTING 
+:
+count++;
+Node[1199617]
+PUTTING 
+:
+m++;
+Node[1199620]
+PUTTING 
+:
+super();
+Node[1199630]
+PUTTING 
+:
+System.out.println(new p186().run());
+Node[1199640]
+PUTTING 
+:
+ds.union(caller, callee);
+Node[1199698]
+PUTTING 
+:
+i++;
+Node[1199705]
+PUTTING 
+:
+super();
+Node[1199721]
+PUTTING 
+:
+nodes = new Node[size];
+Node[1199725]
+PUTTING 
+:
+nodes[i] = new Node();
+Node[1199739]
+PUTTING 
+:
+i++;
+Node[1199747]
+PUTTING 
+:
+node.parent = find(node.parent);
+Node[1199773]
+PUTTING 
+:
+x.rank++;
+Node[1199816]
+PUTTING 
+:
+x = y;
+Node[1199832]
+PUTTING 
+:
+y = z;
+Node[1199836]
+PUTTING 
+:
+y.parent = x;
+Node[1199840]
+PUTTING 
+:
+x.size += y.size;
+Node[1199845]
+PUTTING 
+:
+y.size = 0;
+Node[1199851]
+PUTTING 
+:
+super();
+Node[1199875]
+PUTTING 
+:
+parent = this;
+Node[1199879]
+PUTTING 
+:
+rank = 0;
+Node[1199883]
+PUTTING 
+:
+size = 1;
+Node[1199887]
+PUTTING 
+:
+super();
+Node[1199901]
+PUTTING 
+:
+k = 1;
+Node[1199905]
+PUTTING 
+:
+history = new int[55];
+Node[1199909]
+PUTTING 
+:
+index = 0;
+Node[1199915]
+PUTTING 
+:
+result = (int)((100003L - 200003L * k + 300007L * k * k * k) % 1000000);
+Node[1199930]
+PUTTING 
+:
+k++;
+Node[1199952]
+PUTTING 
+:
+result = (getHistory(24) + getHistory(55)) % 1000000;
+Node[1199955]
+PUTTING 
+:
+history[index] = result;
+Node[1199969]
+PUTTING 
+:
+index++;
+Node[1199975]
+PUTTING 
+:
+index = 0;
+Node[1199984]
+PUTTING 
+:
+i += history.length;
+Node[1200006]
+PUTTING 
+:
+super();
+Node[1200021]
+PUTTING 
+:
+System.out.println(new p187().run());
+Node[1200031]
+PUTTING 
+:
+end++;
+Node[1200107]
+PUTTING 
+:
+end = -end - 1;
+Node[1200110]
+PUTTING 
+:
+count += end - i;
+Node[1200117]
+PUTTING 
+:
+i++;
+Node[1200123]
+PUTTING 
+:
+super();
+Node[1200136]
+PUTTING 
+:
+System.out.println(new p188().run());
+Node[1200146]
+PUTTING 
+:
+super();
+Node[1200211]
+PUTTING 
+:
+System.out.println(new p191().run());
+Node[1200221]
+PUTTING 
+:
+numPrizeStrings[0][0][0] = 1;
+Node[1200262]
+PUTTING 
+:
+sum = 0;
+Node[1200307]
+PUTTING 
+:
+sum += numPrizeStrings[i - 1][l][k];
+Node[1200319]
+PUTTING 
+:
+l++;
+Node[1200331]
+PUTTING 
+:
+sum += numPrizeStrings[i - 1][l][k - 1];
+Node[1200348]
+PUTTING 
+:
+l++;
+Node[1200362]
+PUTTING 
+:
+sum = numPrizeStrings[i - 1][j - 1][k];
+Node[1200365]
+PUTTING 
+:
+numPrizeStrings[i][j][k] = sum;
+Node[1200379]
+PUTTING 
+:
+k++;
+Node[1200389]
+PUTTING 
+:
+j++;
+Node[1200392]
+PUTTING 
+:
+i++;
+Node[1200395]
+PUTTING 
+:
+sum += numPrizeStrings[NUM_DAYS][j][k];
+Node[1200419]
+PUTTING 
+:
+k++;
+Node[1200429]
+PUTTING 
+:
+j++;
+Node[1200432]
+PUTTING 
+:
+super();
+Node[1200445]
+PUTTING 
+:
+System.out.println(new p197().run());
+Node[1200455]
+PUTTING 
+:
+x = f(x);
+Node[1200498]
+PUTTING 
+:
+y = f(f(y));
+Node[1200505]
+PUTTING 
+:
+i++;
+Node[1200513]
+PUTTING 
+:
+x = f(x);
+Node[1200529]
+PUTTING 
+:
+remain--;
+Node[1200535]
+PUTTING 
+:
+answer = Math.floor(answer * 1.0E9) / 1.0E9;
+Node[1200546]
+PUTTING 
+:
+super();
+Node[1200593]
+PUTTING 
+:
+System.out.println(new p203().run());
+Node[1200603]
+PUTTING 
+:
+numbers.add(x.longValue());
+Node[1200664]
+PUTTING 
+:
+max = Math.max(x.longValue(), max);
+Node[1200672]
+PUTTING 
+:
+k++;
+Node[1200682]
+PUTTING 
+:
+n++;
+Node[1200685]
+PUTTING 
+:
+primesSquared = new long[primes.length];
+Node[1200701]
+PUTTING 
+:
+primesSquared[i] = (long)primes[i] * primes[i];
+Node[1200717]
+PUTTING 
+:
+i++;
+Node[1200731]
+PUTTING 
+:
+sum += n;
+Node[1200749]
+PUTTING 
+:
+super();
+Node[1200793]
+PUTTING 
+:
+System.out.println(new p204().run());
+Node[1200803]
+PUTTING 
+:
+count += count(primeIndex + 1, product);
+Node[1200871]
+PUTTING 
+:
+product *= primes[primeIndex];
+Node[1200880]
+PUTTING 
+:
+super();
+Node[1200893]
+PUTTING 
+:
+System.out.println(new p205().run());
+Node[1200903]
+PUTTING 
+:
+ninePyramidalPdf = convolve(ninePyramidalPdf, PYRAMIDAL_DIE_PDF);
+Node[1200951]
+PUTTING 
+:
+i++;
+Node[1200959]
+PUTTING 
+:
+sixCubicPdf = convolve(sixCubicPdf, CUBIC_DIE_PDF);
+Node[1200976]
+PUTTING 
+:
+i++;
+Node[1200983]
+PUTTING 
+:
+numer += (long)ninePyramidalPdf[i] * sum(sixCubicPdf, 0, i);
+Node[1200999]
+PUTTING 
+:
+i++;
+Node[1201014]
+PUTTING 
+:
+c[i + j] += a[i] * b[j];
+Node[1201087]
+PUTTING 
+:
+j++;
+Node[1201101]
+PUTTING 
+:
+i++;
+Node[1201104]
+PUTTING 
+:
+sum += array[i];
+Node[1201131]
+PUTTING 
+:
+i++;
+Node[1201137]
+PUTTING 
+:
+super();
+Node[1201147]
+PUTTING 
+:
+System.out.println(new p206().run());
+Node[1201157]
+PUTTING 
+:
+ndigits[i] = (int)(temp % 10);
+Node[1201200]
+PUTTING 
+:
+i++;
+Node[1201211]
+PUTTING 
+:
+temp /= 10;
+Node[1201214]
+PUTTING 
+:
+temp = n * n;
+Node[1201218]
+PUTTING 
+:
+n2digits[i] = (int)(temp % 10);
+Node[1201233]
+PUTTING 
+:
+i++;
+Node[1201244]
+PUTTING 
+:
+temp /= 10;
+Node[1201247]
+PUTTING 
+:
+add20n(ndigits, n2digits);
+Node[1201259]
+PUTTING 
+:
+add10Pow(n2digits, 2);
+Node[1201265]
+PUTTING 
+:
+n += 10;
+Node[1201271]
+PUTTING 
+:
+add10Pow(ndigits, 1);
+Node[1201275]
+PUTTING 
+:
+i++;
+Node[1201313]
+PUTTING 
+:
+n[i] = 0;
+Node[1201338]
+PUTTING 
+:
+i++;
+Node[1201344]
+PUTTING 
+:
+n[i]++;
+Node[1201347]
+PUTTING 
+:
+i = 0;
+Node[1201368]
+PUTTING 
+:
+n2[i + 1] = sum % 10;
+Node[1201393]
+PUTTING 
+:
+carry = sum / 10;
+Node[1201403]
+PUTTING 
+:
+i++;
+Node[1201409]
+PUTTING 
+:
+i++;
+Node[1201413]
+PUTTING 
+:
+n2[i] = sum % 10;
+Node[1201428]
+PUTTING 
+:
+carry = sum / 10;
+Node[1201436]
+PUTTING 
+:
+i++;
+Node[1201442]
+PUTTING 
+:
+super();
+Node[1201454]
+PUTTING 
+:
+System.out.println(new p208().run());
+Node[1201464]
+PUTTING 
+:
+reachable.put(new State(0, 0, 0, 0, 0), BigInteger.ONE);
+Node[1201489]
+PUTTING 
+:
+newReachable.put(acw, temp.add(ways));
+Node[1201569]
+PUTTING 
+:
+temp = newReachable.containsKey(cw) ? newReachable.get(cw) : BigInteger.ZERO;
+Node[1201585]
+PUTTING 
+:
+newReachable.put(cw, temp.add(ways));
+Node[1201599]
+PUTTING 
+:
+reachable = newReachable;
+Node[1201608]
+PUTTING 
+:
+i++;
+Node[1201612]
+PUTTING 
+:
+sum = sum.add(reachable.get(st));
+Node[1201645]
+PUTTING 
+:
+dir++;
+Node[1201655]
+PUTTING 
+:
+super();
+Node[1201685]
+PUTTING 
+:
+direction = dir;
+Node[1201701]
+PUTTING 
+:
+xComponent0 = xComp0;
+Node[1201705]
+PUTTING 
+:
+xComponent1 = xComp1;
+Node[1201709]
+PUTTING 
+:
+yComponent0 = yComp0;
+Node[1201713]
+PUTTING 
+:
+yComponent1 = yComp1;
+Node[1201717]
+PUTTING 
+:
+super();
+Node[1201883]
+PUTTING 
+:
+System.out.println(new p211().run());
+Node[1201893]
+PUTTING 
+:
+isResidue = new boolean[RESIDUE_TEST];
+Node[1201921]
+PUTTING 
+:
+isResidue[i * i % RESIDUE_TEST] = true;
+Node[1201935]
+PUTTING 
+:
+i++;
+Node[1201945]
+PUTTING 
+:
+sum += i;
+Node[1201979]
+PUTTING 
+:
+i++;
+Node[1201983]
+PUTTING 
+:
+quasiPrimeFactor[i] = (short)i;
+Node[1202030]
+PUTTING 
+:
+quasiPrimeFactor[j] = (short)i;
+Node[1202066]
+PUTTING 
+:
+j += i;
+Node[1202074]
+PUTTING 
+:
+i++;
+Node[1202078]
+PUTTING 
+:
+sigma2[1] = 1;
+Node[1202090]
+PUTTING 
+:
+p = i;
+Node[1202117]
+PUTTING 
+:
+sum += k;
+Node[1202147]
+PUTTING 
+:
+j /= p;
+Node[1202151]
+PUTTING 
+:
+k *= p2;
+Node[1202155]
+PUTTING 
+:
+sigma2[i] = sum * sigma2[j];
+Node[1202159]
+PUTTING 
+:
+i++;
+Node[1202169]
+PUTTING 
+:
+y |= i;
+Node[1202210]
+PUTTING 
+:
+y ^= i;
+Node[1202225]
+PUTTING 
+:
+i >>>= 1;
+Node[1202229]
+PUTTING 
+:
+super();
+Node[1202244]
+PUTTING 
+:
+System.out.println(new p214().run());
+Node[1202254]
+PUTTING 
+:
+totientChainLength[0] = 0;
+Node[1202288]
+PUTTING 
+:
+totientChainLength[i] = chainlen;
+Node[1202318]
+PUTTING 
+:
+sum += i;
+Node[1202337]
+PUTTING 
+:
+i++;
+Node[1202341]
+PUTTING 
+:
+super();
+Node[1202359]
+PUTTING 
+:
+System.out.println(new p215().run());
+Node[1202369]
+PUTTING 
+:
+getCrackPositions(new Stack<Integer>(), 0, crackPositions);
+Node[1202398]
+PUTTING 
+:
+Arrays.fill(ways, BigInteger.ONE);
+Node[1202417]
+PUTTING 
+:
+sum = sum.add(ways[k]);
+Node[1202480]
+PUTTING 
+:
+k++;
+Node[1202489]
+PUTTING 
+:
+newWays[j] = sum;
+Node[1202492]
+PUTTING 
+:
+j++;
+Node[1202498]
+PUTTING 
+:
+ways = newWays;
+Node[1202501]
+PUTTING 
+:
+i++;
+Node[1202505]
+PUTTING 
+:
+sum = sum.add(x);
+Node[1202517]
+PUTTING 
+:
+cracks.push(position + i);
+Node[1202565]
+PUTTING 
+:
+getCrackPositions(cracks, position + i, result);
+Node[1202572]
+PUTTING 
+:
+cracks.pop();
+Node[1202580]
+PUTTING 
+:
+i++;
+Node[1202584]
+PUTTING 
+:
+temp[i] = cracks.get(i);
+Node[1202613]
+PUTTING 
+:
+i++;
+Node[1202623]
+PUTTING 
+:
+result.add(temp);
+Node[1202626]
+PUTTING 
+:
+i++;
+Node[1202680]
+PUTTING 
+:
+j++;
+Node[1202692]
+PUTTING 
+:
+super();
+Node[1202705]
+PUTTING 
+:
+System.out.println(new p216().run());
+Node[1202715]
+PUTTING 
+:
+sequence[0] = sequence[1] = -1;
+Node[1202740]
+PUTTING 
+:
+sequence[i] = 2L * i * i - 1;
+Node[1202759]
+PUTTING 
+:
+i++;
+Node[1202771]
+PUTTING 
+:
+count++;
+Node[1202805]
+PUTTING 
+:
+sequence[j] /= p;
+Node[1202847]
+PUTTING 
+:
+j += p;
+Node[1202861]
+PUTTING 
+:
+sequence[j] /= p;
+Node[1202893]
+PUTTING 
+:
+j += p;
+Node[1202907]
+PUTTING 
+:
+i++;
+Node[1202911]
+PUTTING 
+:
+super();
+Node[1202924]
+PUTTING 
+:
+System.out.println(new p218().run());
+Node[1202934]
+PUTTING 
+:
+super();
+Node[1202953]
+PUTTING 
+:
+System.out.println(new p222().run());
+Node[1202963]
+PUTTING 
+:
+sphereRadii = new double[21];
+Node[1202975]
+PUTTING 
+:
+sphereRadii[i] = (i + 30) * 1000;
+Node[1202990]
+PUTTING 
+:
+i++;
+Node[1203001]
+PUTTING 
+:
+minLength = new double[sphereRadii.length][1 << sphereRadii.length];
+Node[1203004]
+PUTTING 
+:
+min = Math.min(findMinimumLength(i, (1 << sphereRadii.length) - 1) + sphereRadii[i], min);
+Node[1203029]
+PUTTING 
+:
+i++;
+Node[1203052]
+PUTTING 
+:
+result = sphereRadii[currentSphereIndex];
+Node[1203112]
+PUTTING 
+:
+result = Double.POSITIVE_INFINITY;
+Node[1203119]
+PUTTING 
+:
+temp += findMinimumLength(i, newSetOfSpheres);
+Node[1203174]
+PUTTING 
+:
+result = Math.min(temp, result);
+Node[1203181]
+PUTTING 
+:
+i++;
+Node[1203189]
+PUTTING 
+:
+minLength[currentSphereIndex][setOfSpheres] = result;
+Node[1203192]
+PUTTING 
+:
+super();
+Node[1203212]
+PUTTING 
+:
+System.out.println(new p225().run());
+Node[1203222]
+PUTTING 
+:
+count++;
+Node[1203256]
+PUTTING 
+:
+i += 2;
+Node[1203269]
+PUTTING 
+:
+tribonacci(slow, modulus);
+Node[1203324]
+PUTTING 
+:
+tribonacci(fast, modulus);
+Node[1203330]
+PUTTING 
+:
+tribonacci(fast, modulus);
+Node[1203335]
+PUTTING 
+:
+head = false;
+Node[1203340]
+PUTTING 
+:
+state[0] = b;
+Node[1203370]
+PUTTING 
+:
+state[1] = c;
+Node[1203376]
+PUTTING 
+:
+state[2] = (a + b + c) % mod;
+Node[1203382]
+PUTTING 
+:
+super();
+Node[1203400]
+PUTTING 
+:
+System.out.println(new p231().run());
+Node[1203410]
+PUTTING 
+:
+smallestPrimeFactor = Library.listSmallestPrimeFactors(N);
+Node[1203430]
+PUTTING 
+:
+sum += p;
+Node[1203492]
+PUTTING 
+:
+j /= p;
+Node[1203496]
+PUTTING 
+:
+i++;
+Node[1203500]
+PUTTING 
+:
+super();
+Node[1203511]
+PUTTING 
+:
+System.out.println(new p243().run());
+Node[1203521]
+PUTTING 
+:
+totient = totient.multiply(BigInteger.valueOf(p - 1));
+Node[1203562]
+PUTTING 
+:
+denominator = denominator.multiply(BigInteger.valueOf(p));
+Node[1203574]
+PUTTING 
+:
+p++;
+Node[1203585]
+PUTTING 
+:
+i++;
+Node[1203654]
+PUTTING 
+:
+super();
+Node[1203662]
+PUTTING 
+:
+System.out.println(new p249().run());
+Node[1203672]
+PUTTING 
+:
+numSubsets[0] = 1;
+Node[1203715]
+PUTTING 
+:
+maxSum += i;
+Node[1203741]
+PUTTING 
+:
+numSubsets[j] = temp;
+Node[1203771]
+PUTTING 
+:
+numSubsets[j] = temp - MODULUS;
+Node[1203777]
+PUTTING 
+:
+j--;
+Node[1203785]
+PUTTING 
+:
+i++;
+Node[1203788]
+PUTTING 
+:
+sum = (sum + numSubsets[i]) % MODULUS;
+Node[1203810]
+PUTTING 
+:
+i++;
+Node[1203821]
+PUTTING 
+:
+super();
+Node[1203834]
+PUTTING 
+:
+System.out.println(new p250().run());
+Node[1203844]
+PUTTING 
+:
+numSubsets[0] = 1;
+Node[1203867]
+PUTTING 
+:
+newArray[(j + temp) % 250] = (numSubsets[j] + numSubsets[(j + temp) % 250]) % MODULUS;
+Node[1203907]
+PUTTING 
+:
+j++;
+Node[1203932]
+PUTTING 
+:
+numSubsets = newArray;
+Node[1203935]
+PUTTING 
+:
+i++;
+Node[1203939]
+PUTTING 
+:
+super();
+Node[1203961]
+PUTTING 
+:
+System.out.println(new p265().run());
+Node[1203971]
+PUTTING 
+:
+sum += i;
+Node[1204035]
+PUTTING 
+:
+i += 2;
+Node[1204039]
+PUTTING 
+:
+seen |= 1 << ((int)(temp >>> i) & MASK);
+Node[1204097]
+PUTTING 
+:
+i++;
+Node[1204111]
+PUTTING 
+:
+super();
+Node[1204124]
+PUTTING 
+:
+System.out.println(new p267().run());
+Node[1204134]
+PUTTING 
+:
+maxIndex = index;
+Node[1204216]
+PUTTING 
+:
+prevChangeLevel = level;
+Node[1204220]
+PUTTING 
+:
+i += 2;
+Node[1204224]
+PUTTING 
+:
+level++;
+Node[1204228]
+PUTTING 
+:
+binomialSum = binomialSum.add(Library.binomial(TRIALS, i));
+Node[1204244]
+PUTTING 
+:
+i++;
+Node[1204255]
+PUTTING 
+:
+i = 0;
+Node[1204287]
+PUTTING 
+:
+i++;
+Node[1204325]
+PUTTING 
+:
+num = new Fraction(num.numerator.multiply(BigInteger.TEN.pow(places)), num.denominator);
+Node[1204359]
+PUTTING 
+:
+whole = whole.add(BigInteger.ONE);
+Node[1204428]
+PUTTING 
+:
+sb.insert(0, '0');
+Node[1204454]
+PUTTING 
+:
+sb.insert(sb.length() - places, '.');
+Node[1204461]
+PUTTING 
+:
+super();
+Node[1204485]
+PUTTING 
+:
+System.out.println(new p271().run());
+Node[1204495]
+PUTTING 
+:
+sols.add(j);
+Node[1204568]
+PUTTING 
+:
+j++;
+Node[1204573]
+PUTTING 
+:
+factorSolutions.add(sols);
+Node[1204576]
+PUTTING 
+:
+result = result.add(temp);
+Node[1204666]
+PUTTING 
+:
+super();
+Node[1204718]
+PUTTING 
+:
+System.out.println(new p280().run());
+Node[1204728]
+PUTTING 
+:
+sucIds[i] = it.next().id;
+Node[1204794]
+PUTTING 
+:
+i++;
+Node[1204804]
+PUTTING 
+:
+successors[st.id] = sucIds;
+Node[1204807]
+PUTTING 
+:
+probs[State.START_STATE.id] = 1;
+Node[1204826]
+PUTTING 
+:
+nextProbs[k] += probs[j] / suc.length;
+Node[1204877]
+PUTTING 
+:
+j++;
+Node[1204888]
+PUTTING 
+:
+sum += doneNow * i;
+Node[1204909]
+PUTTING 
+:
+probs = nextProbs;
+Node[1204915]
+PUTTING 
+:
+i++;
+Node[1204919]
+PUTTING 
+:
+seed[j] = ((i >>> j) & 1) != 0;
+Node[1205053]
+PUTTING 
+:
+j++;
+Node[1205067]
+PUTTING 
+:
+result.add(new State(false, x, y, seed));
+Node[1205070]
+PUTTING 
+:
+x++;
+Node[1205081]
+PUTTING 
+:
+y++;
+Node[1205084]
+PUTTING 
+:
+i++;
+Node[1205087]
+PUTTING 
+:
+result.add(DONE_STATE);
+Node[1205090]
+PUTTING 
+:
+super();
+Node[1205120]
+PUTTING 
+:
+isDone = done;
+Node[1205123]
+PUTTING 
+:
+antX = x;
+Node[1205127]
+PUTTING 
+:
+antY = y;
+Node[1205131]
+PUTTING 
+:
+hasSeed = seed;
+Node[1205135]
+PUTTING 
+:
+id = 5 * 5 * (1 << seed.length);
+Node[1205142]
+PUTTING 
+:
+temp |= (seed[i] ? 1 : 0) << i;
+Node[1205168]
+PUTTING 
+:
+i++;
+Node[1205180]
+PUTTING 
+:
+id = x + y * 5 + temp * 25;
+Node[1205183]
+PUTTING 
+:
+tryAddSuccessor(-1, 0, result);
+Node[1205213]
+PUTTING 
+:
+tryAddSuccessor(+1, 0, result);
+Node[1205220]
+PUTTING 
+:
+tryAddSuccessor(0, -1, result);
+Node[1205227]
+PUTTING 
+:
+tryAddSuccessor(0, +1, result);
+Node[1205233]
+PUTTING 
+:
+seed[5 + x] = false;
+Node[1205311]
+PUTTING 
+:
+seed[10] = true;
+Node[1205319]
+PUTTING 
+:
+seed[10] = false;
+Node[1205340]
+PUTTING 
+:
+seed[x] = true;
+Node[1205346]
+PUTTING 
+:
+done = seed[0] & seed[1] & seed[2] & seed[3] & seed[4];
+Node[1205352]
+PUTTING 
+:
+result.add(new State(done, x, y, seed));
+Node[1205374]
+PUTTING 
+:
+super();
+Node[1205389]
+PUTTING 
+:
+System.out.println(new p301().run());
+Node[1205399]
+PUTTING 
+:
+a = b;
+Node[1205434]
+PUTTING 
+:
+b = c;
+Node[1205438]
+PUTTING 
+:
+i++;
+Node[1205442]
+PUTTING 
+:
+super();
+Node[1205458]
+PUTTING 
+:
+System.out.println(new p303().run());
+Node[1205468]
+PUTTING 
+:
+sum = sum.add(findMinimumMultiple(n).divide(BigInteger.valueOf(n)));
+Node[1205493]
+PUTTING 
+:
+n++;
+Node[1205509]
+PUTTING 
+:
+feasible.add(new byte[n]);
+Node[1205530]
+PUTTING 
+:
+feasible.get(0)[0] = 1;
+Node[1205537]
+PUTTING 
+:
+cur[(j + digitMod * 0) % n] = prev[j];
+Node[1205609]
+PUTTING 
+:
+cur[(j + digitMod * 1) % n] = 2;
+Node[1205624]
+PUTTING 
+:
+cur[(j + digitMod * 2) % n] = 2;
+Node[1205637]
+PUTTING 
+:
+j++;
+Node[1205650]
+PUTTING 
+:
+feasible.add(cur);
+Node[1205653]
+PUTTING 
+:
+i++;
+Node[1205658]
+PUTTING 
+:
+result = result.multiply(BigInteger.valueOf(10)).add(BigInteger.valueOf(j));
+Node[1205738]
+PUTTING 
+:
+remainder = newRem;
+Node[1205754]
+PUTTING 
+:
+j++;
+Node[1205759]
+PUTTING 
+:
+i--;
+Node[1205765]
+PUTTING 
+:
+super();
+Node[1205776]
+PUTTING 
+:
+System.out.println(new p304().run());
+Node[1205786]
+PUTTING 
+:
+isComposite = new boolean[SEARCH_RANGE];
+Node[1205835]
+PUTTING 
+:
+isComposite[i] = true;
+Node[1205869]
+PUTTING 
+:
+i += p;
+Node[1205875]
+PUTTING 
+:
+p = nextPrime(p);
+Node[1205896]
+PUTTING 
+:
+sum = (sum + fibonacciMod(BASE + p)) % MODULUS;
+Node[1205903]
+PUTTING 
+:
+i++;
+Node[1205917]
+PUTTING 
+:
+n++;
+Node[1205932]
+PUTTING 
+:
+a = d;
+Node[1206001]
+PUTTING 
+:
+b = e;
+Node[1206005]
+PUTTING 
+:
+a = b;
+Node[1206028]
+PUTTING 
+:
+b = c;
+Node[1206032]
+PUTTING 
+:
+a = a.mod(MODULUS_BI);
+Node[1206036]
+PUTTING 
+:
+b = b.mod(MODULUS_BI);
+Node[1206043]
+PUTTING 
+:
+i--;
+Node[1206050]
+PUTTING 
+:
+super();
+Node[1206062]
+PUTTING 
+:
+System.out.println(new p315().run());
+Node[1206072]
+PUTTING 
+:
+sum += samTransitionsMinusMaxTransitions(i);
+Node[1206111]
+PUTTING 
+:
+i++;
+Node[1206118]
+PUTTING 
+:
+maxTrans += Long.bitCount(newState ^ segmentState);
+Node[1206160]
+PUTTING 
+:
+segmentState = newState;
+Node[1206170]
+PUTTING 
+:
+samTrans += 2 * Long.bitCount(newState);
+Node[1206174]
+PUTTING 
+:
+n = digitSum(n);
+Node[1206183]
+PUTTING 
+:
+maxTrans += Long.bitCount(segmentState);
+Node[1206190]
+PUTTING 
+:
+result |= (long)DECIMAL_DIGIT_TO_SEGMENT[n % 10] << (i * 7);
+Node[1206228]
+PUTTING 
+:
+n /= 10;
+Node[1206243]
+PUTTING 
+:
+i++;
+Node[1206247]
+PUTTING 
+:
+result += n % 10;
+Node[1206279]
+PUTTING 
+:
+n /= 10;
+Node[1206285]
+PUTTING 
+:
+super();
+Node[1206312]
+PUTTING 
+:
+System.out.println(new p323().run());
+Node[1206322]
+PUTTING 
+:
+expect[0] = Fraction.ZERO;
+Node[1206365]
+PUTTING 
+:
+sum = sum.add(term);
+Node[1206420]
+PUTTING 
+:
+k++;
+Node[1206427]
+PUTTING 
+:
+expect[n] = new Fraction(temp.numerator, temp.denominator.multiply(twoPowN.subtract(BigInteger.ONE)));
+Node[1206447]
+PUTTING 
+:
+n++;
+Node[1206465]
+PUTTING 
+:
+whole = whole.add(BigInteger.ONE);
+Node[1206571]
+PUTTING 
+:
+temp = "0" + temp;
+Node[1206603]
+PUTTING 
+:
+super();
+Node[1206637]
+PUTTING 
+:
+System.out.println(new p329().run());
+Node[1206647]
+PUTTING 
+:
+trialNumerator *= 2;
+Node[1206762]
+PUTTING 
+:
+pos++;
+Node[1206780]
+PUTTING 
+:
+pos--;
+Node[1206788]
+PUTTING 
+:
+pos++;
+Node[1206802]
+PUTTING 
+:
+pos--;
+Node[1206805]
+PUTTING 
+:
+trialNumerator *= 2;
+Node[1206823]
+PUTTING 
+:
+k++;
+Node[1206827]
+PUTTING 
+:
+globalNumerator += trialNumerator;
+Node[1206830]
+PUTTING 
+:
+j++;
+Node[1206834]
+PUTTING 
+:
+i++;
+Node[1206837]
+PUTTING 
+:
+super();
+Node[1206880]
+PUTTING 
+:
+System.out.println(new p345().run());
+Node[1206890]
+PUTTING 
+:
+maxSum = new int[ROWS][1 << COLUMNS];
+Node[1206910]
+PUTTING 
+:
+max = Math.max(MATRIX[startRow][col] + findMaximumSum(startRow + 1, setOfCols ^ (1 << col)), max);
+Node[1207002]
+PUTTING 
+:
+col++;
+Node[1207026]
+PUTTING 
+:
+maxSum[startRow][setOfCols] = max;
+Node[1207029]
+PUTTING 
+:
+super();
+Node[1207309]
+PUTTING 
+:
+System.out.println(new p346().run());
+Node[1207319]
+PUTTING 
+:
+strongRepunits.add(1L);
+Node[1207343]
+PUTTING 
+:
+value *= base;
+Node[1207391]
+PUTTING 
+:
+value++;
+Node[1207403]
+PUTTING 
+:
+i++;
+Node[1207406]
+PUTTING 
+:
+strongRepunits.add(value);
+Node[1207415]
+PUTTING 
+:
+base++;
+Node[1207420]
+PUTTING 
+:
+length++;
+Node[1207423]
+PUTTING 
+:
+sum += x;
+Node[1207446]
+PUTTING 
+:
+super();
+Node[1207462]
+PUTTING 
+:
+System.out.println(new p347().run());
+Node[1207472]
+PUTTING 
+:
+multiplier *= p;
+Node[1207582]
+PUTTING 
+:
+multiplier /= p;
+Node[1207598]
+PUTTING 
+:
+multiplier *= q;
+Node[1207609]
+PUTTING 
+:
+maxMult = Math.max(multiplier, maxMult);
+Node[1207613]
+PUTTING 
+:
+possible.add(maxMult * lcm);
+Node[1207621]
+PUTTING 
+:
+j++;
+Node[1207628]
+PUTTING 
+:
+i++;
+Node[1207631]
+PUTTING 
+:
+sum += x;
+Node[1207642]
+PUTTING 
+:
+super();
+Node[1207656]
+PUTTING 
+:
+System.out.println(new p348().run());
+Node[1207666]
+PUTTING 
+:
+limit *= 10;
+Node[1207737]
+PUTTING 
+:
+ways[index] = (byte)Math.min(ways[index] + 1, TARGET_WAYS + 1);
+Node[1207799]
+PUTTING 
+:
+j--;
+Node[1207817]
+PUTTING 
+:
+i--;
+Node[1207820]
+PUTTING 
+:
+result += i;
+Node[1207854]
+PUTTING 
+:
+count++;
+Node[1207858]
+PUTTING 
+:
+i++;
+Node[1207868]
+PUTTING 
+:
+y |= i;
+Node[1207902]
+PUTTING 
+:
+y ^= i;
+Node[1207919]
+PUTTING 
+:
+i >>>= 1;
+Node[1207923]
+PUTTING 
+:
+super();
+Node[1207934]
+PUTTING 
+:
+System.out.println(new p357().run());
+Node[1207944]
+PUTTING 
+:
+isPrime = Library.listPrimality(LIMIT + 1);
+Node[1207967]
+PUTTING 
+:
+sum += n;
+Node[1208001]
+PUTTING 
+:
+n++;
+Node[1208005]
+PUTTING 
+:
+i++;
+Node[1208052]
+PUTTING 
+:
+super();
+Node[1208062]
+PUTTING 
+:
+System.out.println(new p381().run());
+Node[1208072]
+PUTTING 
+:
+sum += s(i);
+Node[1208115]
+PUTTING 
+:
+i++;
+Node[1208122]
+PUTTING 
+:
+super();
+Node[1208161]
+PUTTING 
+:
+System.out.println(new p387().run());
+Node[1208171]
+PUTTING 
+:
+findHarshadPrimes(i, i, false);
+Node[1208200]
+PUTTING 
+:
+i++;
+Node[1208207]
+PUTTING 
+:
+sum = sum.add(BigInteger.valueOf(m));
+Node[1208254]
+PUTTING 
+:
+findHarshadPrimes(m, s, isPrime(m / s));
+Node[1208271]
+PUTTING 
+:
+i++;
+Node[1208281]
+PUTTING 
+:
+m++;
+Node[1208284]
+PUTTING 
+:
+s++;
+Node[1208287]
+PUTTING 
+:
+i++;
+Node[1208340]
+PUTTING 
+:
+super();
+Node[1208351]
+PUTTING 
+:
+System.out.println(new p401().run());
+Node[1208361]
+PUTTING 
+:
+splitCount = Math.max(splitCount / 3, 1);
+Node[1208394]
+PUTTING 
+:
+term = term * count % MODULUS;
+Node[1208447]
+PUTTING 
+:
+sum = (sum + term) % MODULUS;
+Node[1208455]
+PUTTING 
+:
+i++;
+Node[1208464]
+PUTTING 
+:
+sumSquares = (sumSquares + MODULUS) % MODULUS;
+Node[1208502]
+PUTTING 
+:
+sum = (sum + i * sumSquares % MODULUS) % MODULUS;
+Node[1208511]
+PUTTING 
+:
+i--;
+Node[1208524]
+PUTTING 
+:
+y = y.multiply(x.shiftLeft(1).add(BigInteger.ONE));
+Node[1208569]
+PUTTING 
+:
+y = y.divide(SIX_BI);
+Node[1208583]
+PUTTING 
+:
+y = y.mod(MODULUS_BI);
+Node[1208590]
+PUTTING 
+:
+super();
+Node[1208608]
+PUTTING 
+:
+System.out.println(new p407().run());
+Node[1208618]
+PUTTING 
+:
+prod *= i;
+Node[1208680]
+PUTTING 
+:
+maxNumPrimeFactors++;
+Node[1208684]
+PUTTING 
+:
+i++;
+Node[1208687]
+PUTTING 
+:
+j /= p;
+Node[1208750]
+PUTTING 
+:
+q *= p;
+Node[1208754]
+PUTTING 
+:
+factorization.add(q);
+Node[1208764]
+PUTTING 
+:
+solns[0] = 0;
+Node[1208769]
+PUTTING 
+:
+newsolns[newsolnslen++] = ((0 + (int)((long)(solns[j] - 0 + modulus) * recip % modulus) * q) % newmod);
+Node[1208817]
+PUTTING 
+:
+newsolns[newsolnslen++] = ((1 + (int)((long)(solns[j] - 1 + modulus) * recip % modulus) * q) % newmod);
+Node[1208848]
+PUTTING 
+:
+j++;
+Node[1208879]
+PUTTING 
+:
+solnslen = newsolnslen;
+Node[1208882]
+PUTTING 
+:
+modulus = newmod;
+Node[1208886]
+PUTTING 
+:
+solns = newsolns;
+Node[1208895]
+PUTTING 
+:
+newsolns = temp;
+Node[1208899]
+PUTTING 
+:
+max = Math.max(solns[j], max);
+Node[1208915]
+PUTTING 
+:
+j++;
+Node[1208925]
+PUTTING 
+:
+sum += max;
+Node[1208928]
+PUTTING 
+:
+i++;
+Node[1208932]
+PUTTING 
+:
+super();
+Node[1208946]
+PUTTING 
+:
+System.out.println(new p417().run());
+Node[1208956]
+PUTTING 
+:
+smallestPrimeFactor = null;
+Node[1209009]
+PUTTING 
+:
+temp.append(pow << 32 | tot);
+Node[1209076]
+PUTTING 
+:
+pow *= p;
+Node[1209086]
+PUTTING 
+:
+tot *= p;
+Node[1209090]
+PUTTING 
+:
+Arrays.sort(result);
+Node[1209102]
+PUTTING 
+:
+period /= q;
+Node[1209187]
+PUTTING 
+:
+remainingFactors /= q;
+Node[1209191]
+PUTTING 
+:
+result[i] = period;
+Node[1209195]
+PUTTING 
+:
+i++;
+Node[1209201]
+PUTTING 
+:
+result[1] = 1;
+Node[1209225]
+PUTTING 
+:
+result[j * ppow] = lcm(result[j], period);
+Node[1209280]
+PUTTING 
+:
+j++;
+Node[1209294]
+PUTTING 
+:
+i++;
+Node[1209297]
+PUTTING 
+:
+result[1] = 0;
+Node[1209300]
+PUTTING 
+:
+n >>>= Integer.numberOfTrailingZeros(n);
+Node[1209331]
+PUTTING 
+:
+n /= 5;
+Node[1209346]
+PUTTING 
+:
+sum += periods[n];
+Node[1209364]
+PUTTING 
+:
+i++;
+Node[1209370]
+PUTTING 
+:
+super();
+Node[1209402]
+PUTTING 
+:
+data = new long[initCapacity];
+Node[1209414]
+PUTTING 
+:
+length = 0;
+Node[1209420]
+PUTTING 
+:
+data = Arrays.copyOf(data, length * 2);
+Node[1209435]
+PUTTING 
+:
+data[length] = x;
+Node[1209446]
+PUTTING 
+:
+length++;
+Node[1209452]
+PUTTING 
+:
+super();
+Node[1209473]
+PUTTING 
+:
+System.out.println(new p425().run());
+Node[1209483]
+PUTTING 
+:
+Arrays.fill(pathMax, Integer.MAX_VALUE);
+Node[1209519]
+PUTTING 
+:
+queue.add(new IntPair(2, 2));
+Node[1209535]
+PUTTING 
+:
+pathMax[n] = pmax;
+Node[1209579]
+PUTTING 
+:
+tempDigits[i] = j;
+Node[1209619]
+PUTTING 
+:
+queue.add(new IntPair(nextPmax, m));
+Node[1209656]
+PUTTING 
+:
+j++;
+Node[1209664]
+PUTTING 
+:
+tempDigits[i] = digits[i];
+Node[1209667]
+PUTTING 
+:
+i++;
+Node[1209675]
+PUTTING 
+:
+sum += i;
+Node[1209703]
+PUTTING 
+:
+i++;
+Node[1209707]
+PUTTING 
+:
+temp[len] = n % 10;
+Node[1209742]
+PUTTING 
+:
+n /= 10;
+Node[1209750]
+PUTTING 
+:
+len++;
+Node[1209754]
+PUTTING 
+:
+result[i] = temp[len - i];
+Node[1209779]
+PUTTING 
+:
+i++;
+Node[1209789]
+PUTTING 
+:
+result = result * 10 + x;
+Node[1209808]
+PUTTING 
+:
+super();
+Node[1209832]
+PUTTING 
+:
+this.a = a;
+Node[1209836]
+PUTTING 
+:
+this.b = b;
+Node[1209841]
+PUTTING 
+:
+super();
+Node[1209863]
+PUTTING 
+:
+System.out.println(new p429().run());
+Node[1209873]
+PUTTING 
+:
+sum *= 1 + Library.powMod(p, power * 2, MODULUS);
+Node[1209922]
+PUTTING 
+:
+sum %= MODULUS;
+Node[1209935]
+PUTTING 
+:
+super();
+Node[1209974]
+PUTTING 
+:
+System.out.println(new p431().run());
+Node[1209984]
+PUTTING 
+:
+sum += findRootSecant(0, RADIUS, i * i);
+Node[1210020]
+PUTTING 
+:
+i++;
+Node[1210031]
+PUTTING 
+:
+x0 = x1;
+Node[1210106]
+PUTTING 
+:
+x1 = x2;
+Node[1210110]
+PUTTING 
+:
+y0 = y1;
+Node[1210114]
+PUTTING 
+:
+y1 = y2;
+Node[1210118]
+PUTTING 
+:
+samples = Math.max(1000000, samples);
+Node[1210132]
+PUTTING 
+:
+samples = Math.max(10000000, samples);
+Node[1210150]
+PUTTING 
+:
+samples = Math.max(100000000, samples);
+Node[1210168]
+PUTTING 
+:
+sum += Math.acos(((r2plusx2 - r2) * rec2x - x) / r) * r2;
+Node[1210267]
+PUTTING 
+:
+i++;
+Node[1210287]
+PUTTING 
+:
+discVolume -= sum * 4 * x / samples;
+Node[1210290]
+PUTTING 
+:
+super();
+Node[1210313]
+PUTTING 
+:
+System.out.println(new p433().run());
+Node[1210323]
+PUTTING 
+:
+exploreGcds(i, 0, 0);
+Node[1210351]
+PUTTING 
+:
+i++;
+Node[1210358]
+PUTTING 
+:
+sum += steps;
+Node[1210406]
+PUTTING 
+:
+exploreGcds(z, x, steps + 1);
+Node[1210428]
+PUTTING 
+:
+z += x;
+Node[1210436]
+PUTTING 
+:
+super();
+Node[1210448]
+PUTTING 
+:
+System.out.println(new p451().run());
+Node[1210458]
+PUTTING 
+:
+smallestPrimeFactor = Library.listSmallestPrimeFactors(LIMIT);
+Node[1210479]
+PUTTING 
+:
+solutions = new IntArrayArray(LIMIT / 2 + 1);
+Node[1210486]
+PUTTING 
+:
+solutions.append();
+Node[1210497]
+PUTTING 
+:
+solutions.append();
+Node[1210502]
+PUTTING 
+:
+solutions.append(1);
+Node[1210506]
+PUTTING 
+:
+solutions.append(sols);
+Node[1210539]
+PUTTING 
+:
+sum += sols[sols.length - 2];
+Node[1210544]
+PUTTING 
+:
+i++;
+Node[1210553]
+PUTTING 
+:
+temp.add(k);
+Node[1210644]
+PUTTING 
+:
+i += inc;
+Node[1210649]
+PUTTING 
+:
+result[i] = temp.get(i);
+Node[1210671]
+PUTTING 
+:
+i++;
+Node[1210680]
+PUTTING 
+:
+super();
+Node[1210700]
+PUTTING 
+:
+data = new int[1];
+Node[1210704]
+PUTTING 
+:
+dataLength = 0;
+Node[1210710]
+PUTTING 
+:
+starts = new int[len + 1];
+Node[1210714]
+PUTTING 
+:
+Arrays.fill(starts, -1);
+Node[1210722]
+PUTTING 
+:
+starts[0] = 0;
+Node[1210728]
+PUTTING 
+:
+index = 0;
+Node[1210734]
+PUTTING 
+:
+data = Arrays.copyOf(data, data.length * 2);
+Node[1210772]
+PUTTING 
+:
+System.arraycopy(arr, 0, data, dataLength, arr.length);
+Node[1210783]
+PUTTING 
+:
+dataLength += arr.length;
+Node[1210794]
+PUTTING 
+:
+index++;
+Node[1210799]
+PUTTING 
+:
+starts[index] = dataLength;
+Node[1210802]
+PUTTING 
+:
+super();
+Node[1210817]
+PUTTING 
+:
+System.out.println(new p493().run());
+Node[1210827]
+PUTTING 
+:
+explore(NUM_PICKED, BALLS_PER_COLOR, new Stack<Integer>());
+Node[1210856]
+PUTTING 
+:
+hist[i] = history.get(i);
+Node[1210935]
+PUTTING 
+:
+i++;
+Node[1210944]
+PUTTING 
+:
+histogram[x]++;
+Node[1210960]
+PUTTING 
+:
+count = divideExactly(count, Library.factorial(x));
+Node[1210976]
+PUTTING 
+:
+count = count.multiply(Library.binomial(BALLS_PER_COLOR, x));
+Node[1210991]
+PUTTING 
+:
+numerator = numerator.add(count.multiply(BigInteger.valueOf(distinctColors)));
+Node[1211008]
+PUTTING 
+:
+history.push(i);
+Node[1211042]
+PUTTING 
+:
+explore(remain - i, i, history);
+Node[1211047]
+PUTTING 
+:
+history.pop();
+Node[1211055]
+PUTTING 
+:
+i--;
+Node[1211059]
+PUTTING 
+:
+super();
+Node[1211101]
+PUTTING 
+:
+System.out.println(new p500().run());
+Node[1211111]
+PUTTING 
+:
+queue.add((long)nextPrime);
+Node[1211143]
+PUTTING 
+:
+product *= item % MODULUS;
+Node[1211169]
+PUTTING 
+:
+product %= MODULUS;
+Node[1211175]
+PUTTING 
+:
+queue.add(item * item);
+Node[1211179]
+PUTTING 
+:
+nextPrime++;
+Node[1211193]
+PUTTING 
+:
+queue.add((long)nextPrime);
+Node[1211202]
+PUTTING 
+:
+i++;
+Node[1211209]
+PUTTING 
+:
+super();
+Node[1211222]
+PUTTING 
+:
+System.out.println(new p518().run());
+Node[1211232]
+PUTTING 
+:
+sum += addend;
+Node[1211392]
+PUTTING 
+:
+z++;
+Node[1211396]
+PUTTING 
+:
+y++;
+Node[1211399]
+PUTTING 
+:
+x++;
+Node[1211402]
+PUTTING 
+:
+super();
+Node[1211415]
+PUTTING 
+:
+System.out.println(new p549().run());
+Node[1211425]
+PUTTING 
+:
+power *= i;
+Node[1211483]
+PUTTING 
+:
+smallestDivisibleFactorials[k] = Math.max(j, smallestDivisibleFactorials[k]);
+Node[1211508]
+PUTTING 
+:
+k += inc;
+Node[1211520]
+PUTTING 
+:
+power *= i;
+Node[1211537]
+PUTTING 
+:
+temp /= i;
+Node[1211547]
+PUTTING 
+:
+j += i;
+Node[1211551]
+PUTTING 
+:
+i++;
+Node[1211555]
+PUTTING 
+:
+sum += x;
+Node[1211566]
+PUTTING 
+:
+super();
+Node[1211580]
+PUTTING 
+:
+System.out.println(new p587().run());
+Node[1211590]
+PUTTING 
+:
+concaveTriangleArea += integral(1) - integral(x);
+Node[1211688]
+PUTTING 
+:
+i++;
+Node[1211720]
+sTATEMENT:	super();
+Node[1115391]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=308
+lineNumber=13
+
+sTATEMENT:	org.junit.Assert.assertEquals("233168", new p001().run());
+Node[1115401]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=360
+lineNumber=15
+
+sTATEMENT:	org.junit.Assert.assertEquals("4613732", new p002().run());
+Node[1115417]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=454
+lineNumber=16
+
+sTATEMENT:	org.junit.Assert.assertEquals("6857", new p003().run());
+Node[1115432]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=548
+lineNumber=17
+
+sTATEMENT:	org.junit.Assert.assertEquals("906609", new p004().run());
+Node[1115447]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=642
+lineNumber=18
+
+sTATEMENT:	org.junit.Assert.assertEquals("232792560", new p005().run());
+Node[1115462]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=736
+lineNumber=19
+
+sTATEMENT:	org.junit.Assert.assertEquals("25164150", new p006().run());
+Node[1115477]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=830
+lineNumber=20
+
+sTATEMENT:	org.junit.Assert.assertEquals("104743", new p007().run());
+Node[1115492]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=924
+lineNumber=21
+
+sTATEMENT:	org.junit.Assert.assertEquals("23514624000", new p008().run());
+Node[1115507]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=1018
+lineNumber=22
+
+sTATEMENT:	org.junit.Assert.assertEquals("31875000", new p009().run());
+Node[1115522]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1112
+lineNumber=23
+
+sTATEMENT:	org.junit.Assert.assertEquals("142913828922", new p010().run());
+Node[1115537]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=1206
+lineNumber=24
+
+sTATEMENT:	org.junit.Assert.assertEquals("70600674", new p011().run());
+Node[1115552]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=1300
+lineNumber=25
+
+sTATEMENT:	org.junit.Assert.assertEquals("76576500", new p012().run());
+Node[1115567]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=1394
+lineNumber=26
+
+sTATEMENT:	org.junit.Assert.assertEquals("5537376230", new p013().run());
+Node[1115582]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=1488
+lineNumber=27
+
+sTATEMENT:	org.junit.Assert.assertEquals("837799", new p014().run());
+Node[1115597]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1582
+lineNumber=28
+
+sTATEMENT:	org.junit.Assert.assertEquals("137846528820", new p015().run());
+Node[1115612]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1676
+lineNumber=29
+
+sTATEMENT:	org.junit.Assert.assertEquals("1366", new p016().run());
+Node[1115627]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1770
+lineNumber=30
+
+sTATEMENT:	org.junit.Assert.assertEquals("21124", new p017().run());
+Node[1115642]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=1864
+lineNumber=31
+
+sTATEMENT:	org.junit.Assert.assertEquals("1074", new p018().run());
+Node[1115657]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1958
+lineNumber=32
+
+sTATEMENT:	org.junit.Assert.assertEquals("171", new p019().run());
+Node[1115672]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2052
+lineNumber=33
+
+sTATEMENT:	org.junit.Assert.assertEquals("648", new p020().run());
+Node[1115687]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=2146
+lineNumber=34
+
+sTATEMENT:	org.junit.Assert.assertEquals("31626", new p021().run());
+Node[1115702]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2240
+lineNumber=35
+
+sTATEMENT:	org.junit.Assert.assertEquals("871198282", new p022().run());
+Node[1115717]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2334
+lineNumber=36
+
+sTATEMENT:	org.junit.Assert.assertEquals("4179871", new p023().run());
+Node[1115732]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2428
+lineNumber=37
+
+sTATEMENT:	org.junit.Assert.assertEquals("2783915460", new p024().run());
+Node[1115747]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2522
+lineNumber=38
+
+sTATEMENT:	org.junit.Assert.assertEquals("4782", new p025().run());
+Node[1115762]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2616
+lineNumber=39
+
+sTATEMENT:	org.junit.Assert.assertEquals("983", new p026().run());
+Node[1115777]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=2710
+lineNumber=40
+
+sTATEMENT:	org.junit.Assert.assertEquals("-59231", new p027().run());
+Node[1115792]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=2804
+lineNumber=41
+
+sTATEMENT:	org.junit.Assert.assertEquals("669171001", new p028().run());
+Node[1115807]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=2898
+lineNumber=42
+
+sTATEMENT:	org.junit.Assert.assertEquals("9183", new p029().run());
+Node[1115822]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2992
+lineNumber=43
+
+sTATEMENT:	org.junit.Assert.assertEquals("443839", new p030().run());
+Node[1115837]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=3086
+lineNumber=44
+
+sTATEMENT:	org.junit.Assert.assertEquals("73682", new p031().run());
+Node[1115852]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=3180
+lineNumber=45
+
+sTATEMENT:	org.junit.Assert.assertEquals("45228", new p032().run());
+Node[1115867]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=3274
+lineNumber=46
+
+sTATEMENT:	org.junit.Assert.assertEquals("100", new p033().run());
+Node[1115882]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=3368
+lineNumber=47
+
+sTATEMENT:	org.junit.Assert.assertEquals("40730", new p034().run());
+Node[1115897]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=3462
+lineNumber=48
+
+sTATEMENT:	org.junit.Assert.assertEquals("55", new p035().run());
+Node[1115912]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=3556
+lineNumber=49
+
+sTATEMENT:	org.junit.Assert.assertEquals("872187", new p036().run());
+Node[1115927]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=3650
+lineNumber=50
+
+sTATEMENT:	org.junit.Assert.assertEquals("748317", new p037().run());
+Node[1115942]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=3744
+lineNumber=51
+
+sTATEMENT:	org.junit.Assert.assertEquals("932718654", new p038().run());
+Node[1115957]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=3838
+lineNumber=52
+
+sTATEMENT:	org.junit.Assert.assertEquals("840", new p039().run());
+Node[1115972]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=3932
+lineNumber=53
+
+sTATEMENT:	org.junit.Assert.assertEquals("210", new p040().run());
+Node[1115987]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4026
+lineNumber=54
+
+sTATEMENT:	org.junit.Assert.assertEquals("7652413", new p041().run());
+Node[1116002]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4120
+lineNumber=55
+
+sTATEMENT:	org.junit.Assert.assertEquals("162", new p042().run());
+Node[1116017]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=4214
+lineNumber=56
+
+sTATEMENT:	org.junit.Assert.assertEquals("16695334890", new p043().run());
+Node[1116032]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4308
+lineNumber=57
+
+sTATEMENT:	org.junit.Assert.assertEquals("5482660", new p044().run());
+Node[1116047]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4402
+lineNumber=58
+
+sTATEMENT:	org.junit.Assert.assertEquals("1533776805", new p045().run());
+Node[1116062]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4496
+lineNumber=59
+
+sTATEMENT:	org.junit.Assert.assertEquals("5777", new p046().run());
+Node[1116077]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=4590
+lineNumber=60
+
+sTATEMENT:	org.junit.Assert.assertEquals("134043", new p047().run());
+Node[1116092]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4684
+lineNumber=61
+
+sTATEMENT:	org.junit.Assert.assertEquals("9110846700", new p048().run());
+Node[1116107]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4778
+lineNumber=62
+
+sTATEMENT:	org.junit.Assert.assertEquals("296962999629", new p049().run());
+Node[1116122]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=4872
+lineNumber=63
+
+sTATEMENT:	org.junit.Assert.assertEquals("997651", new p050().run());
+Node[1116137]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=4966
+lineNumber=64
+
+sTATEMENT:	org.junit.Assert.assertEquals("121313", new p051().run());
+Node[1116152]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=5060
+lineNumber=65
+
+sTATEMENT:	org.junit.Assert.assertEquals("142857", new p052().run());
+Node[1116167]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=5154
+lineNumber=66
+
+sTATEMENT:	org.junit.Assert.assertEquals("4075", new p053().run());
+Node[1116182]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=5248
+lineNumber=67
+
+sTATEMENT:	org.junit.Assert.assertEquals("376", new p054().run());
+Node[1116197]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=5342
+lineNumber=68
+
+sTATEMENT:	org.junit.Assert.assertEquals("249", new p055().run());
+Node[1116212]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=5436
+lineNumber=69
+
+sTATEMENT:	org.junit.Assert.assertEquals("972", new p056().run());
+Node[1116227]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=5530
+lineNumber=70
+
+sTATEMENT:	org.junit.Assert.assertEquals("153", new p057().run());
+Node[1116242]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=5624
+lineNumber=71
+
+sTATEMENT:	org.junit.Assert.assertEquals("26241", new p058().run());
+Node[1116257]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=5718
+lineNumber=72
+
+sTATEMENT:	org.junit.Assert.assertEquals("107359", new p059().run());
+Node[1116272]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=5812
+lineNumber=73
+
+sTATEMENT:	org.junit.Assert.assertEquals("26033", new p060().run());
+Node[1116287]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=5906
+lineNumber=74
+
+sTATEMENT:	org.junit.Assert.assertEquals("28684", new p061().run());
+Node[1116302]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=6000
+lineNumber=75
+
+sTATEMENT:	org.junit.Assert.assertEquals("127035954683", new p062().run());
+Node[1116317]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=6094
+lineNumber=76
+
+sTATEMENT:	org.junit.Assert.assertEquals("49", new p063().run());
+Node[1116332]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=6188
+lineNumber=77
+
+sTATEMENT:	org.junit.Assert.assertEquals("1322", new p064().run());
+Node[1116347]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=6282
+lineNumber=78
+
+sTATEMENT:	org.junit.Assert.assertEquals("272", new p065().run());
+Node[1116362]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=6376
+lineNumber=79
+
+sTATEMENT:	org.junit.Assert.assertEquals("661", new p066().run());
+Node[1116377]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=6470
+lineNumber=80
+
+sTATEMENT:	org.junit.Assert.assertEquals("7273", new p067().run());
+Node[1116392]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=6564
+lineNumber=81
+
+sTATEMENT:	org.junit.Assert.assertEquals("6531031914842725", new p068().run());
+Node[1116407]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=6658
+lineNumber=82
+
+sTATEMENT:	org.junit.Assert.assertEquals("510510", new p069().run());
+Node[1116422]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=6752
+lineNumber=83
+
+sTATEMENT:	org.junit.Assert.assertEquals("8319823", new p070().run());
+Node[1116437]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=6846
+lineNumber=84
+
+sTATEMENT:	org.junit.Assert.assertEquals("428570", new p071().run());
+Node[1116452]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=6940
+lineNumber=85
+
+sTATEMENT:	org.junit.Assert.assertEquals("303963552391", new p072().run());
+Node[1116467]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7034
+lineNumber=86
+
+sTATEMENT:	org.junit.Assert.assertEquals("7295372", new p073().run());
+Node[1116482]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7128
+lineNumber=87
+
+sTATEMENT:	org.junit.Assert.assertEquals("402", new p074().run());
+Node[1116497]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=7222
+lineNumber=88
+
+sTATEMENT:	org.junit.Assert.assertEquals("161667", new p075().run());
+Node[1116512]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7316
+lineNumber=89
+
+sTATEMENT:	org.junit.Assert.assertEquals("190569291", new p076().run());
+Node[1116527]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=7410
+lineNumber=90
+
+sTATEMENT:	org.junit.Assert.assertEquals("71", new p077().run());
+Node[1116542]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7504
+lineNumber=91
+
+sTATEMENT:	org.junit.Assert.assertEquals("55374", new p078().run());
+Node[1116557]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7598
+lineNumber=92
+
+sTATEMENT:	org.junit.Assert.assertEquals("73162890", new p079().run());
+Node[1116572]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7692
+lineNumber=93
+
+sTATEMENT:	org.junit.Assert.assertEquals("40886", new p080().run());
+Node[1116587]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7786
+lineNumber=94
+
+sTATEMENT:	org.junit.Assert.assertEquals("427337", new p081().run());
+Node[1116602]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=7880
+lineNumber=95
+
+sTATEMENT:	org.junit.Assert.assertEquals("260324", new p082().run());
+Node[1116617]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=7974
+lineNumber=96
+
+sTATEMENT:	org.junit.Assert.assertEquals("425185", new p083().run());
+Node[1116632]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=8068
+lineNumber=97
+
+sTATEMENT:	org.junit.Assert.assertEquals("101524", new p084().run());
+Node[1116647]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=8162
+lineNumber=98
+
+sTATEMENT:	org.junit.Assert.assertEquals("2772", new p085().run());
+Node[1116662]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=8256
+lineNumber=99
+
+sTATEMENT:	org.junit.Assert.assertEquals("1818", new p086().run());
+Node[1116677]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=8350
+lineNumber=100
+
+sTATEMENT:	org.junit.Assert.assertEquals("1097343", new p087().run());
+Node[1116692]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=8444
+lineNumber=101
+
+sTATEMENT:	org.junit.Assert.assertEquals("7587457", new p088().run());
+Node[1116707]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=8538
+lineNumber=102
+
+sTATEMENT:	org.junit.Assert.assertEquals("743", new p089().run());
+Node[1116722]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=8632
+lineNumber=103
+
+sTATEMENT:	org.junit.Assert.assertEquals("1217", new p090().run());
+Node[1116737]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=8726
+lineNumber=104
+
+sTATEMENT:	org.junit.Assert.assertEquals("14234", new p091().run());
+Node[1116752]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=8820
+lineNumber=105
+
+sTATEMENT:	org.junit.Assert.assertEquals("8581146", new p092().run());
+Node[1116767]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=8914
+lineNumber=106
+
+sTATEMENT:	org.junit.Assert.assertEquals("1258", new p093().run());
+Node[1116782]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=9008
+lineNumber=107
+
+sTATEMENT:	org.junit.Assert.assertEquals("518408346", new p094().run());
+Node[1116797]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=9102
+lineNumber=108
+
+sTATEMENT:	org.junit.Assert.assertEquals("14316", new p095().run());
+Node[1116812]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=9196
+lineNumber=109
+
+sTATEMENT:	org.junit.Assert.assertEquals("24702", new p096().run());
+Node[1116827]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=9290
+lineNumber=110
+
+sTATEMENT:	org.junit.Assert.assertEquals("8739992577", new p097().run());
+Node[1116842]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=9384
+lineNumber=111
+
+sTATEMENT:	org.junit.Assert.assertEquals("18769", new p098().run());
+Node[1116857]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=9478
+lineNumber=112
+
+sTATEMENT:	org.junit.Assert.assertEquals("709", new p099().run());
+Node[1116872]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=9572
+lineNumber=113
+
+sTATEMENT:	org.junit.Assert.assertEquals("756872327473", new p100().run());
+Node[1116887]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=9666
+lineNumber=114
+
+sTATEMENT:	org.junit.Assert.assertEquals("37076114526", new p101().run());
+Node[1116902]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=9760
+lineNumber=115
+
+sTATEMENT:	org.junit.Assert.assertEquals("228", new p102().run());
+Node[1116917]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=9854
+lineNumber=116
+
+sTATEMENT:	org.junit.Assert.assertEquals("329468", new p104().run());
+Node[1116932]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=9948
+lineNumber=117
+
+sTATEMENT:	org.junit.Assert.assertEquals("73702", new p105().run());
+Node[1116947]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=10042
+lineNumber=118
+
+sTATEMENT:	org.junit.Assert.assertEquals("259679", new p107().run());
+Node[1116962]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=10136
+lineNumber=119
+
+sTATEMENT:	org.junit.Assert.assertEquals("180180", new p108().run());
+Node[1116977]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=10230
+lineNumber=120
+
+sTATEMENT:	org.junit.Assert.assertEquals("38182", new p109().run());
+Node[1116992]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=10324
+lineNumber=121
+
+sTATEMENT:	org.junit.Assert.assertEquals("612407567715", new p111().run());
+Node[1117007]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=10418
+lineNumber=122
+
+sTATEMENT:	org.junit.Assert.assertEquals("1587000", new p112().run());
+Node[1117022]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=10512
+lineNumber=123
+
+sTATEMENT:	org.junit.Assert.assertEquals("51161058134250", new p113().run());
+Node[1117037]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=10606
+lineNumber=124
+
+sTATEMENT:	org.junit.Assert.assertEquals("16475640049", new p114().run());
+Node[1117052]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=10700
+lineNumber=125
+
+sTATEMENT:	org.junit.Assert.assertEquals("168", new p115().run());
+Node[1117067]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=10794
+lineNumber=126
+
+sTATEMENT:	org.junit.Assert.assertEquals("20492570929", new p116().run());
+Node[1117082]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=10888
+lineNumber=127
+
+sTATEMENT:	org.junit.Assert.assertEquals("100808458960497", new p117().run());
+Node[1117097]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=10982
+lineNumber=128
+
+sTATEMENT:	org.junit.Assert.assertEquals("44680", new p118().run());
+Node[1117112]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11076
+lineNumber=129
+
+sTATEMENT:	org.junit.Assert.assertEquals("248155780267521", new p119().run());
+Node[1117127]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11170
+lineNumber=130
+
+sTATEMENT:	org.junit.Assert.assertEquals("333082500", new p120().run());
+Node[1117142]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11264
+lineNumber=131
+
+sTATEMENT:	org.junit.Assert.assertEquals("2269", new p121().run());
+Node[1117157]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11358
+lineNumber=132
+
+sTATEMENT:	org.junit.Assert.assertEquals("1582", new p122().run());
+Node[1117172]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11452
+lineNumber=133
+
+sTATEMENT:	org.junit.Assert.assertEquals("21035", new p123().run());
+Node[1117187]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11546
+lineNumber=134
+
+sTATEMENT:	org.junit.Assert.assertEquals("21417", new p124().run());
+Node[1117202]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11640
+lineNumber=135
+
+sTATEMENT:	org.junit.Assert.assertEquals("2906969179", new p125().run());
+Node[1117217]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11734
+lineNumber=136
+
+sTATEMENT:	org.junit.Assert.assertEquals("18407904", new p127().run());
+Node[1117232]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=11828
+lineNumber=137
+
+sTATEMENT:	org.junit.Assert.assertEquals("14516824220", new p128().run());
+Node[1117247]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=11922
+lineNumber=138
+
+sTATEMENT:	org.junit.Assert.assertEquals("1000023", new p129().run());
+Node[1117262]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=12016
+lineNumber=139
+
+sTATEMENT:	org.junit.Assert.assertEquals("149253", new p130().run());
+Node[1117277]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=12110
+lineNumber=140
+
+sTATEMENT:	org.junit.Assert.assertEquals("843296", new p132().run());
+Node[1117292]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=12204
+lineNumber=141
+
+sTATEMENT:	org.junit.Assert.assertEquals("453647705", new p133().run());
+Node[1117307]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=12298
+lineNumber=142
+
+sTATEMENT:	org.junit.Assert.assertEquals("18613426663617118", new p134().run());
+Node[1117322]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=12392
+lineNumber=143
+
+sTATEMENT:	org.junit.Assert.assertEquals("4989", new p135().run());
+Node[1117337]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=12486
+lineNumber=144
+
+sTATEMENT:	org.junit.Assert.assertEquals("10057761", new p139().run());
+Node[1117352]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=12580
+lineNumber=145
+
+sTATEMENT:	org.junit.Assert.assertEquals("1006193", new p142().run());
+Node[1117367]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=12674
+lineNumber=146
+
+sTATEMENT:	org.junit.Assert.assertEquals("608720", new p145().run());
+Node[1117382]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=12768
+lineNumber=147
+
+sTATEMENT:	org.junit.Assert.assertEquals("676333270", new p146().run());
+Node[1117397]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=12862
+lineNumber=148
+
+sTATEMENT:	org.junit.Assert.assertEquals("52852124", new p149().run());
+Node[1117412]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=12956
+lineNumber=149
+
+sTATEMENT:	org.junit.Assert.assertEquals("-271248680", new p150().run());
+Node[1117427]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=13050
+lineNumber=150
+
+sTATEMENT:	org.junit.Assert.assertEquals("0.464399", new p151().run());
+Node[1117442]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=13144
+lineNumber=151
+
+sTATEMENT:	org.junit.Assert.assertEquals("3857447", new p155().run());
+Node[1117457]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=13238
+lineNumber=152
+
+sTATEMENT:	org.junit.Assert.assertEquals("16576", new p160().run());
+Node[1117472]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=13332
+lineNumber=153
+
+sTATEMENT:	org.junit.Assert.assertEquals("3D58725572C62302", new p162().run());
+Node[1117487]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=13426
+lineNumber=154
+
+sTATEMENT:	org.junit.Assert.assertEquals("378158756814587", new p164().run());
+Node[1117502]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=13520
+lineNumber=155
+
+sTATEMENT:	org.junit.Assert.assertEquals("7130034", new p166().run());
+Node[1117517]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=13614
+lineNumber=156
+
+sTATEMENT:	org.junit.Assert.assertEquals("178653872807", new p169().run());
+Node[1117532]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=13708
+lineNumber=157
+
+sTATEMENT:	org.junit.Assert.assertEquals("142989277", new p171().run());
+Node[1117547]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=13802
+lineNumber=158
+
+sTATEMENT:	org.junit.Assert.assertEquals("227485267000992000", new p172().run());
+Node[1117562]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=13896
+lineNumber=159
+
+sTATEMENT:	org.junit.Assert.assertEquals("1572729", new p173().run());
+Node[1117577]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=13990
+lineNumber=160
+
+sTATEMENT:	org.junit.Assert.assertEquals("209566", new p174().run());
+Node[1117592]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14084
+lineNumber=161
+
+sTATEMENT:	org.junit.Assert.assertEquals("126461847755", new p178().run());
+Node[1117607]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14178
+lineNumber=162
+
+sTATEMENT:	org.junit.Assert.assertEquals("986262", new p179().run());
+Node[1117622]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14272
+lineNumber=163
+
+sTATEMENT:	org.junit.Assert.assertEquals("399788195976", new p182().run());
+Node[1117637]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14366
+lineNumber=164
+
+sTATEMENT:	org.junit.Assert.assertEquals("2325629", new p186().run());
+Node[1117652]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14460
+lineNumber=165
+
+sTATEMENT:	org.junit.Assert.assertEquals("17427258", new p187().run());
+Node[1117667]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14554
+lineNumber=166
+
+sTATEMENT:	org.junit.Assert.assertEquals("95962097", new p188().run());
+Node[1117682]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14648
+lineNumber=167
+
+sTATEMENT:	org.junit.Assert.assertEquals("1918080160", new p191().run());
+Node[1117697]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=14742
+lineNumber=168
+
+sTATEMENT:	org.junit.Assert.assertEquals("1.710637717", new p197().run());
+Node[1117712]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=14836
+lineNumber=169
+
+sTATEMENT:	org.junit.Assert.assertEquals("34029210557338", new p203().run());
+Node[1117727]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=14930
+lineNumber=170
+
+sTATEMENT:	org.junit.Assert.assertEquals("2944730", new p204().run());
+Node[1117742]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=15024
+lineNumber=171
+
+sTATEMENT:	org.junit.Assert.assertEquals("0.5731441", new p205().run());
+Node[1117757]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=15118
+lineNumber=172
+
+sTATEMENT:	org.junit.Assert.assertEquals("1389019170", new p206().run());
+Node[1117772]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=15212
+lineNumber=173
+
+sTATEMENT:	org.junit.Assert.assertEquals("331951449665644800", new p208().run());
+Node[1117787]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=15306
+lineNumber=174
+
+sTATEMENT:	org.junit.Assert.assertEquals("1922364685", new p211().run());
+Node[1117802]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=15400
+lineNumber=175
+
+sTATEMENT:	org.junit.Assert.assertEquals("1677366278943", new p214().run());
+Node[1117817]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=15494
+lineNumber=176
+
+sTATEMENT:	org.junit.Assert.assertEquals("806844323190414", new p215().run());
+Node[1117832]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=15588
+lineNumber=177
+
+sTATEMENT:	org.junit.Assert.assertEquals("5437849", new p216().run());
+Node[1117847]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=15682
+lineNumber=178
+
+sTATEMENT:	org.junit.Assert.assertEquals("0", new p218().run());
+Node[1117862]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=15776
+lineNumber=179
+
+sTATEMENT:	org.junit.Assert.assertEquals("1590933", new p222().run());
+Node[1117877]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=15870
+lineNumber=180
+
+sTATEMENT:	org.junit.Assert.assertEquals("2009", new p225().run());
+Node[1117892]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=15964
+lineNumber=181
+
+sTATEMENT:	org.junit.Assert.assertEquals("7526965179680", new p231().run());
+Node[1117907]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=16058
+lineNumber=182
+
+sTATEMENT:	org.junit.Assert.assertEquals("892371480", new p243().run());
+Node[1117922]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=16152
+lineNumber=183
+
+sTATEMENT:	org.junit.Assert.assertEquals("9275262564250418", new p249().run());
+Node[1117937]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=16246
+lineNumber=184
+
+sTATEMENT:	org.junit.Assert.assertEquals("1425480602091519", new p250().run());
+Node[1117952]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=16340
+lineNumber=185
+
+sTATEMENT:	org.junit.Assert.assertEquals("209110240768", new p265().run());
+Node[1117967]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=16434
+lineNumber=186
+
+sTATEMENT:	org.junit.Assert.assertEquals("0.999992836187", new p267().run());
+Node[1117982]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=16528
+lineNumber=187
+
+sTATEMENT:	org.junit.Assert.assertEquals("4617456485273129588", new p271().run());
+Node[1117997]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=16622
+lineNumber=188
+
+sTATEMENT:	org.junit.Assert.assertEquals("430.088247", new p280().run());
+Node[1118012]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=16716
+lineNumber=189
+
+sTATEMENT:	org.junit.Assert.assertEquals("2178309", new p301().run());
+Node[1118027]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=16810
+lineNumber=190
+
+sTATEMENT:	org.junit.Assert.assertEquals("1111981904675169", new p303().run());
+Node[1118042]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=16904
+lineNumber=191
+
+sTATEMENT:	org.junit.Assert.assertEquals("283988410192", new p304().run());
+Node[1118057]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=16998
+lineNumber=192
+
+sTATEMENT:	org.junit.Assert.assertEquals("13625242", new p315().run());
+Node[1118072]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=17092
+lineNumber=193
+
+sTATEMENT:	org.junit.Assert.assertEquals("6.3551758451", new p323().run());
+Node[1118087]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=17186
+lineNumber=194
+
+sTATEMENT:	org.junit.Assert.assertEquals("199740353/29386561536000", new p329().run());
+Node[1118102]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=17280
+lineNumber=195
+
+sTATEMENT:	org.junit.Assert.assertEquals("13938", new p345().run());
+Node[1118117]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=17374
+lineNumber=196
+
+sTATEMENT:	org.junit.Assert.assertEquals("336108797689259276", new p346().run());
+Node[1118132]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=17468
+lineNumber=197
+
+sTATEMENT:	org.junit.Assert.assertEquals("11109800204052", new p347().run());
+Node[1118147]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=17562
+lineNumber=198
+
+sTATEMENT:	org.junit.Assert.assertEquals("1004195061", new p348().run());
+Node[1118162]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=17656
+lineNumber=199
+
+sTATEMENT:	org.junit.Assert.assertEquals("1739023853137", new p357().run());
+Node[1118177]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=17750
+lineNumber=200
+
+sTATEMENT:	org.junit.Assert.assertEquals("139602943319822", new p381().run());
+Node[1118192]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=17844
+lineNumber=201
+
+sTATEMENT:	org.junit.Assert.assertEquals("696067597313468", new p387().run());
+Node[1118207]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=17938
+lineNumber=202
+
+sTATEMENT:	org.junit.Assert.assertEquals("281632621", new p401().run());
+Node[1118222]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18032
+lineNumber=203
+
+sTATEMENT:	org.junit.Assert.assertEquals("39782849136421", new p407().run());
+Node[1118237]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18126
+lineNumber=204
+
+sTATEMENT:	org.junit.Assert.assertEquals("446572970925740", new p417().run());
+Node[1118252]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=18220
+lineNumber=205
+
+sTATEMENT:	org.junit.Assert.assertEquals("46479497324", new p425().run());
+Node[1118267]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18314
+lineNumber=206
+
+sTATEMENT:	org.junit.Assert.assertEquals("98792821", new p429().run());
+Node[1118282]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18408
+lineNumber=207
+
+sTATEMENT:	org.junit.Assert.assertEquals("23.386029052", new p431().run());
+Node[1118297]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18502
+lineNumber=208
+
+sTATEMENT:	org.junit.Assert.assertEquals("326624372659664", new p433().run());
+Node[1118312]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18596
+lineNumber=209
+
+sTATEMENT:	org.junit.Assert.assertEquals("153651073760956", new p451().run());
+Node[1118327]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18690
+lineNumber=210
+
+sTATEMENT:	org.junit.Assert.assertEquals("6.818741802", new p493().run());
+Node[1118342]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18784
+lineNumber=211
+
+sTATEMENT:	org.junit.Assert.assertEquals("35407281", new p500().run());
+Node[1118357]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=18878
+lineNumber=212
+
+sTATEMENT:	org.junit.Assert.assertEquals("100315739184392", new p518().run());
+Node[1118372]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=18972
+lineNumber=213
+
+sTATEMENT:	org.junit.Assert.assertEquals("476001479068717", new p549().run());
+Node[1118387]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=19066
+lineNumber=214
+
+sTATEMENT:	org.junit.Assert.assertEquals("2240", new p587().run());
+Node[1118402]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=19160
+lineNumber=215
+
+sTATEMENT:	super();
+Node[1118435]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=604
+lineNumber=24
+
+sTATEMENT:	numerator = numer;
+Node[1118439]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->ASSIGNMENT
+Label:	EXPRESSION_STATEMENT
+position=608
+lineNumber=25
+
+sTATEMENT:	denominator = BigInteger.ONE;
+Node[1118443]
+ENCLOSES_EXPR	--->ASSIGNMENT
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=629
+lineNumber=26
+
+sTATEMENT:	super();
+Node[1118454]
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=719
+lineNumber=30
+
+sTATEMENT:	numer = numer.negate();
+Node[1118478]
+ENCLOSES_EXPR	--->ASSIGNMENT
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=868
+lineNumber=36
+
+sTATEMENT:	denom = denom.negate();
+Node[1118485]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->ASSIGNMENT
+Label:	EXPRESSION_STATEMENT
+position=895
+lineNumber=37
+
+sTATEMENT:	BigInteger gcd = numer.gcd(denom)
+Node[1118491]
+USED_BY	--->IDENTIFIER
+USED_BY	--->IDENTIFIER
+USED_BY	--->IDENTIFIER
+HAS_VARIABLEDECL_INIT	--->INITIALIZATION
+ENCLOSES	<---BLOCK
+HAS_VARIABLEDECL_TYPE	--->IDENTIFIER
+MODIFIED_BY	--->INITIALIZATION
+Label:	VAR_DEC
+typeKind=DECLARED
+actualType=java.math.BigInteger
+name=gcd
+position=925
+isFinal=false
+lineNumber=39
+
+sTATEMENT:	numer = numer.divide(gcd);
+Node[1118509]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->ASSIGNMENT
+Label:	EXPRESSION_STATEMENT
+position=1000
+lineNumber=41
+
+sTATEMENT:	denom = denom.divide(gcd);
+Node[1118517]
+ENCLOSES_EXPR	--->ASSIGNMENT
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1030
+lineNumber=42
+
+sTATEMENT:	numerator = numer;
+Node[1118524]
+ENCLOSES_EXPR	--->ASSIGNMENT
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1066
+lineNumber=45
+
+sTATEMENT:	denominator = denom;
+Node[1118528]
+ENCLOSES_EXPR	--->ASSIGNMENT
+ENCLOSES	<---BLOCK
+Label:	EXPRESSION_STATEMENT
+position=1087
+lineNumber=46
+
+sTATEMENT:	return new Fraction(numerator.multiply(other.denominator).add(other.numerator.multiply(denominator)), denominator.multiply(other.denominator));
+Node[1118537]
+ENCLOSES	<---BLOCK
+RETURN_EXPR	--->NEW_INSTANCE
+Label:	RETURN_STATEMENT
+position=1156
+lineNumber=51
+
+sTATEMENT:	return new Fraction(numerator.multiply(other.denominator).subtract(other.numerator.multiply(denominator)), denominator.multiply(other.denominator));
+Node[1118564]
+RETURN_EXPR	--->NEW_INSTANCE
+ENCLOSES	<---BLOCK
+Label:	RETURN_STATEMENT
+position=1360
+lineNumber=58
+
+sTATEMENT:	return new Fraction(numerator.multiply(other.numerator), denominator.multiply(other.denominator));
+Node[1118590]
+RETURN_EXPR	--->NEW_INSTANCE
+ENCLOSES	<---BLOCK
+Label:	RETURN_STATEMENT
+position=1569
+lineNumber=65
+
+sTATEMENT:	return new Fraction(numerator.multiply(other.denominator), denominator.multiply(other.numerator));
+Node[1118608]
+ENCLOSES	<---BLOCK
+RETURN_EXPR	--->NEW_INSTANCE
+Label:	RETURN_STATEMENT
+position=1726
+lineNumber=72
+
+sTATEMENT:	return false;
+Node[1118633]
+RETURN_EXPR	--->LITERAL
+IF_THEN	<---IF_STATEMENT
+Label:	RETURN_STATEMENT
+position=1913
+lineNumber=80
+
+sTATEMENT:	Fraction other = (Fraction)(Fraction)obj
+Node[1118635]
+HAS_VARIABLEDECL_INIT	--->INITIALIZATION
+ENCLOSES	<---BLOCK
+HAS_VARIABLEDECL_TYPE	--->IDENTIFIER
+MODIFIED_BY	--->INITIALIZATION
+USED_BY	--->IDENTIFIER
+USED_BY	--->IDENTIFIER
+Label:	VAR_DEC
+typeKind=DECLARED
+actualType=Fraction
+name=other
+position=1929
+isFinal=false
+lineNumber=81
+
+sTATEMENT:	return numerator.equals(other.numerator) && denominator.equals(other.denominator);
+Node[1118641]
+RETURN_EXPR	--->BINARY_OPERATION
+ENCLOSES	<---BLOCK
+Label:	RETURN_STATEMENT
+position=1963
+lineNumber=82
+
+sTATEMENT:	return numerator.multiply(other.denominator).compareTo(other.numerator.multiply(denominator));
+Node[1118658]
+ENCLOSES	<---BLOCK
+RETURN_EXPR	--->METHOD_INVOCATION
+Label:	RETURN_STATEMENT
+position=2098
+lineNumber=88
+
+sTATEMENT:	return numerator.hashCode() + denominator.hashCode();
+Node[1118675]
+ENCLOSES	<---BLOCK
+RETURN_EXPR	--->BINARY_OPERATION
+Label:	RETURN_STATEMENT
+position=2231
+lineNumber=94
+
+sTATEMENT:	return numerator + "/" + denominator;
+Node[1118687]
+RETURN_EXPR	--->BINARY_OPERATION
+ENCLOSES	<---BLOCK
+Label:	RETURN_STATEMENT
+position=2322
+lineNumber=99
+
+sTATEMENT:	super();
+Node[1118696]
+ENCLOSES	<---BLOCK
+ENCLOSES_EXPR	--->METHOD_INVOCATION
+Label:	EXPRESSION_STATEMENT
+position=2369
+lineNumber=105
+
+sTATEMENT:	this.this$0 = this$0;
+NULL
+
+C:\Users\Oscar\Desktop\Oskar\Tesis\BigCodeProject\PhdPrototype>pause
+Presione una tecla para continuar . . . 
