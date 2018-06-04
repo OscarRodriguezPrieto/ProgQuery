@@ -38,7 +38,6 @@ import com.sun.source.tree.WhileLoopTree;
 import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.code.Type;
 
-import ast.ASTAuxiliarStorage;
 import cache.SimpleTreeNodeCache;
 import database.DatabaseFachade;
 import database.nodes.NodeTypes;
@@ -290,7 +289,7 @@ public class CFGVisitor extends
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitAssert(AssertTree assertTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
-		Node n = ASTAuxiliarStorage.assertList.get(assertCounter).getSecond();
+		Node n = CFGCache.get(assertTree.getCondition());
 
 		linkLastsCondition(lasts.getSecond(), n);
 		linkThrowing(n, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE, JavacInfo.getSymtab().assertionErrorType);
@@ -352,19 +351,16 @@ public class CFGVisitor extends
 
 	}
 
-	private static int enhancedForLoopCounter = 0;
 
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitForLoop(ForLoopTree forLoopTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
 		Node conditionNode;
-		if (forLoopTree.getCondition() != null) {
+		if (forLoopTree.getCondition() != null)
 			conditionNode = CFGCache.get(forLoopTree.getCondition());
-			if (conditionNode == null)
-				return visitEnhancedForLoop(ASTAuxiliarStorage.enhancedForLoopList.get(enhancedForLoopCounter++),
-						lasts);
 
-		} else {
+
+		else {
 			conditionNode = DatabaseFachade.createNode(NodeTypes.LITERAL);
 			conditionNode.setProperty("typetag", "BOOLEAN");
 			conditionNode.setProperty("value", "true");
@@ -452,15 +448,11 @@ public class CFGVisitor extends
 
 	}
 
-	private static int assertCounter = 0;
 
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitIf(IfTree ifTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
 		Node conditionNode = CFGCache.get(ifTree.getCondition());
-		// If condition is null is one assert
-		if (conditionNode == null)
-			return visitAssert(ASTAuxiliarStorage.assertList.get(assertCounter++).getFirst(), lasts);
 
 		linkLastsCondition(lasts.getSecond(), conditionNode);
 		List<PartialRelation<CFGRelationTypes>> breakLasts = null;
@@ -708,7 +700,6 @@ public class CFGVisitor extends
 		for (StatementTree st : statements)
 			lasts = getNoNamePair(scan(st, lasts));
 
-
 		lasts.getSecond().addAll(newLasts);
 		return lasts.getSecond();
 	}
@@ -718,21 +709,12 @@ public class CFGVisitor extends
 		Node lastStatementNode = DatabaseFachade.createSkeletonNode(NodeTypes.CFG_METHOD_END),
 				entryStatement = DatabaseFachade.createSkeletonNode(NodeTypes.CFG_METHOD_ENTRY);
 		methodNode.createRelationshipTo(entryStatement, CFGRelationTypes.CFG_ENTRY);
-		if (tree.getBody() != null) {
-			if (ASTAuxiliarStorage.nestedConstructorsToBlocks.containsKey(tree))
-				CFGVisitor
-						.linkLasts(
-								new CFGVisitor(lastStatementNode, cfgCache, invocationsInStatements).scanStatements(
-										ASTAuxiliarStorage.nestedConstructorsToBlocks.get(tree), CFGVisitor
-												.getNoNamePair(entryStatement, CFGRelationTypes.CFG_NEXT_STATEMENT)),
-								lastStatementNode);
-			else
 
-				CFGVisitor.linkLasts(
-						new CFGVisitor(lastStatementNode, cfgCache, invocationsInStatements).scan(tree.getBody(),
-								CFGVisitor.getNoNamePair(entryStatement, CFGRelationTypes.CFG_NEXT_STATEMENT)),
-						lastStatementNode);
-		}
+		CFGVisitor.linkLasts(
+				new CFGVisitor(lastStatementNode, cfgCache, invocationsInStatements).scan(tree.getBody(),
+						CFGVisitor.getNoNamePair(entryStatement, CFGRelationTypes.CFG_NEXT_STATEMENT)),
+				lastStatementNode);
+
 		lastStatementNode.createRelationshipTo(methodNode, CFGRelationTypes.CFG_END_OF);
 	}
 

@@ -6,8 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
-import org.neo4j.test.TestGraphDatabaseFactory;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.Tree;
@@ -33,11 +31,7 @@ public abstract class GDBAPIBasedTest {
 
 	@Before
 	public void prepareTestDatabase() throws Exception {
-		graphDb = new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder()
-				.setConfig(GraphDatabaseSettings.node_keys_indexable, "nodeType")
-				.setConfig(GraphDatabaseSettings.relationship_keys_indexable, "typeKind")
-				.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
-				.setConfig(GraphDatabaseSettings.relationship_auto_indexing, "true").newGraphDatabase();
+		graphDb = DatabaseFachade.getDB();
 		JavacTaskImpl task = CompilerUtils.getTask(getFileName());
 
 		List<? extends CompilationUnitTree> parse = (List<? extends CompilationUnitTree>) task.parse();
@@ -50,9 +44,12 @@ public abstract class GDBAPIBasedTest {
 		transaction = graphDb.beginTx();
 		graphDb.execute(MainQuery.DELETE_ALL);
 		ASTAuxiliarStorage ast = new ASTAuxiliarStorage();
-		new ASTTypesVisitor(t, true, new PDGVisitor(), ast).scan(u, Pair.createPair(
+		PDGVisitor pdgUtils;
+		new ASTTypesVisitor(t, true, pdgUtils = new PDGVisitor(), ast).scan(u, Pair.createPair(
 				DatabaseFachade.createSkeletonNode(u, NodeTypes.COMPILATION_UNIT), RelationTypes.CU_PACKAGE_DEC));
-		ast.doCfgAnalysis();
+		ast.doDynamicMethodCallAnalysis();
+		ast.doInterproceduralPDGAnalysis(pdgUtils.getMethodsMutateThisAndParams(), pdgUtils.getParamsMutatedInMethods(),
+				pdgUtils.getParamsMayMutateInMethods(), pdgUtils.getThisRefsOfMethods());
 	}
 
 	@After

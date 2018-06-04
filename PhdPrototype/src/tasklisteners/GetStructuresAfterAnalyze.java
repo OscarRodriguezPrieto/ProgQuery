@@ -116,7 +116,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 			if (classCounter.size() == 0) {
 				// System.out.println("BEFORE CFG");
 				// System.out.println(ast.mm + "\n" + ast.b + "\n" + ast.s1);
-				cfgAnalysis();
+
 				dynamicMethodCallAnalysis();
 				interproceduralPDGAnalysis();
 				shutdownDatabase();
@@ -137,13 +137,6 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		transaction.close();
 	}
 
-	private void cfgAnalysis() {
-		Transaction transaction = DatabaseFachade.beginTx();
-		ast.doCfgAnalysis();
-		transaction.success();
-		transaction.close();
-
-	}
 
 	private void dynamicMethodCallAnalysis()
 	{

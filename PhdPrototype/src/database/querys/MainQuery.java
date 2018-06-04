@@ -6,6 +6,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 
 import database.DatabaseFachade;
+import database.relations.CFGRelationTypes;
 
 public class MainQuery {
 	private static final String ALL_METHODS_OF_ALL_CLASSES_QUERY = "START c=node:node_auto_index(nodeType='JCClassDecl') MATCH c-[r:DECLARES_METHOD]->m RETURN ('Class '+ c.fullyQualifiedName+ ' with method ' + m.name) AS warning";
@@ -27,7 +28,8 @@ public class MainQuery {
 	private static final String METHOD_INV_RELATIONS_OUT = "START n=node:node_auto_index(nodeType='METHOD_INVOCATION') MATCH n-[r]->m RETURN n,r,m";
 	private static final String METHOD_INV_RELATIONS_IN = "START m=node:node_auto_index(nodeType='METHOD_INVOCATION') MATCH n-[r]->m RETURN n,r,m";
 	private static final String ALL_CALLS = "MATCH (n)-[r:CALLS]->(mi)-[r2:HAS_DEC]->(md) RETURN n,r,mi,md";
-	private static final String CFG_RELS = "start n=node(*) MATCH m-[r:CFG_ENTRY | CFG_END_OF |	 CFG_NEXT_CONDITION | CFG_NEXT_STATEMENT | CFG_NEXT_COND_IF_TRUE | CFG_NEXT_STATEMENT_IF_TRUE | CFG_NEXT_COND_IF_FALSE | CFG_NEXT_STATEMENT_IF_FALSE ]->n RETURN m,r,n";
+	private static final String CFG_RELS = " MATCH (m)-[r:" + CFGRelationTypes.getCFGRelations()
+			+ " ]->(n) RETURN m, labels(m),r,n, labels(n)";
 	private static final String PDG_RELS = "start n=node(*) MATCH m-[r:USED_BY | MODIFIED_BY | STATE_MODIFIED_BY ]->n RETURN m,r,n";
 	private static final String STAT_MOD_RELS = "start n=node(*) MATCH m-[r: STATE_MODIFIED_BY |  STATE_MAY_BE_MODIFIED ]->n RETURN m,r,n";
 	private static final String USED_BY_RELS = "start n=node(*) MATCH m-[r: USED_BY ]->n RETURN m,r,n";
@@ -67,7 +69,7 @@ public class MainQuery {
 
 		GraphDatabaseService gs = DatabaseFachade.getDB();
 
-		Result res = gs.execute(REFER_RELS);
+		Result res = gs.execute(CFG_RELS);
 		// gs.execute(TYPE_HIERARCHY);
 
 		// System.out.println(res.resultAsString());
