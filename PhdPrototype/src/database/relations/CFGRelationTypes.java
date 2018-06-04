@@ -18,6 +18,13 @@ public enum CFGRelationTypes implements RelationTypesInterface {
 																											MAY_THROW_TO_COND);
 	private CFGRelationTypes toCondition;
 
+	public static String getCFGRelations() {
+		String ret = "";
+		for (CFGRelationTypes cfgRel : CFGRelationTypes.values())
+			ret += cfgRel.name() + " | ";
+		return ret.substring(0, ret.length() - 3);
+	}
+
 	public CFGRelationTypes toCondition() {
 		return toCondition;
 	}
