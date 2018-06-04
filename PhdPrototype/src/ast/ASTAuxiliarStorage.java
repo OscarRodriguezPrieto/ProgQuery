@@ -12,15 +12,12 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
-import com.sun.source.tree.AssertTree;
-import com.sun.source.tree.EnhancedForLoopTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ParenthesizedTree;
-import com.sun.source.tree.StatementTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TryTree;
-import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import com.sun.tools.javac.code.Type;
 
 import cache.SimpleTreeNodeCache;
@@ -34,32 +31,41 @@ import mig.DynamicMethodCallAnalysis;
 import pdg.GetDeclarationFromExpression;
 import pdg.InterproceduralPDG;
 import utils.Pair;
-import visitors.CFGVisitor;
 
 public class ASTAuxiliarStorage {
 	private static final String OBJECT_CLASS_NAME = "java.lang.Object";
 
-	public static List<EnhancedForLoopTree> enhancedForLoopList = new ArrayList<EnhancedForLoopTree>();
-	public static Map<MethodTree, List<StatementTree>> nestedConstructorsToBlocks = new HashMap<MethodTree, List<StatementTree>>();
-	public static List<Pair<AssertTree, Node>> assertList = new ArrayList<Pair<AssertTree, Node>>();
+	// public static List<EnhancedForLoopTree> enhancedForLoopList = new
+	// ArrayList<EnhancedForLoopTree>();
+	// public static Map<MethodTree, List<StatementTree>>
+	// nestedConstructorsToBlocks = new HashMap<MethodTree,
+	// List<StatementTree>>();
+	// public static List<Pair<AssertTree, Node>> assertList = new
+	// ArrayList<Pair<AssertTree, Node>>();
 
 	private SimpleTreeNodeCache<Tree> cfgNodeCache;
 	private SimpleTreeNodeCache<Tree> previousCfgNodeCache;
 
-	private Map<TryTree, List<Pair<Node, List<Symbol>>>> invocationsInStatements;
-	private Stack<List<Pair<Node, List<Symbol>>>> lastInvocationInStatementLists = new Stack<List<Pair<Node, List<Symbol>>>>();
-	private Map<TryTree, List<Pair<Node, List<Symbol>>>> previousInvStatements;
+	private Map<TryTree, List<Pair<Node, List<MethodSymbol>>>> invocationsInStatements;
+	private Stack<List<Pair<Node, List<MethodSymbol>>>> lastInvocationInStatementLists = new Stack<List<Pair<Node, List<MethodSymbol>>>>();
+	private Map<TryTree, List<Pair<Node, List<MethodSymbol>>>> previousInvStatements;
 
-	private final Map<String, List<Type>> methodNamesToExceptionThrowsTypes = new HashMap<String, List<Type>>();
+	// private final Map<String, List<Type>> methodNamesToExceptionThrowsTypes =
+	// new HashMap<String, List<Type>>();
 	private List<MethodInfo> methodInfo = new ArrayList<MethodInfo>();
 	public final List<Node> typeDecNodes = new ArrayList<Node>();
 
-	public void addThrowsInfoToMethod(String methodName, List<Type> exceptionTypes) {
-		methodNamesToExceptionThrowsTypes.put(methodName, exceptionTypes);
-	}
+	// public void addThrowsInfoToMethod(String methodName, List<Type>
+	// exceptionTypes) {
+	// methodNamesToExceptionThrowsTypes.put(methodName, exceptionTypes);
+	// }
 
 	public List<MethodInfo> getMethodsInfo() {
 		return methodInfo;
+	}
+
+	public SimpleTreeNodeCache<Tree> getCfgNodeCache() {
+		return cfgNodeCache;
 	}
 
 	public void putCfgNodeInCache(Tree t, Node n) {
@@ -68,8 +74,7 @@ public class ASTAuxiliarStorage {
 
 	public void addInfo(MethodTree methodTree, Node methodNode, Map<Node, Node> identificationForLeftAssignExprs) {
 
-		methodInfo.add(new MethodInfo(cfgNodeCache, methodTree, methodNode, invocationsInStatements,
-				identificationForLeftAssignExprs));
+		methodInfo.add(new MethodInfo(methodTree, methodNode, identificationForLeftAssignExprs));
 	}
 
 	public void putConditionInCfgCache(ExpressionTree tree, Node n) {
@@ -80,7 +85,7 @@ public class ASTAuxiliarStorage {
 	}
 
 	public void enterInNewTry(TryTree tryTree) {
-		lastInvocationInStatementLists.push(new ArrayList<Pair<Node, List<Symbol>>>());
+		lastInvocationInStatementLists.push(new ArrayList<Pair<Node, List<MethodSymbol>>>());
 		invocationsInStatements.put(tryTree, lastInvocationInStatementLists.peek());
 	}
 
@@ -88,13 +93,13 @@ public class ASTAuxiliarStorage {
 		lastInvocationInStatementLists.pop();
 	}
 
-	public void addInvocationInStatement(Node statement, List<Symbol> methodNames) {
+	public void addInvocationInStatement(Node statement, List<MethodSymbol> methodNames) {
 		lastInvocationInStatementLists.peek().add(Pair.create(statement, methodNames));
 	}
 
 	public void newMethodDeclaration() {
 		previousInvStatements = invocationsInStatements;
-		invocationsInStatements = new HashMap<TryTree, List<Pair<Node, List<Symbol>>>>();
+		invocationsInStatements = new HashMap<TryTree, List<Pair<Node, List<MethodSymbol>>>>();
 		enterInNewTry(null);
 		previousCfgNodeCache = cfgNodeCache;
 		cfgNodeCache = new SimpleTreeNodeCache<Tree>();
@@ -106,33 +111,27 @@ public class ASTAuxiliarStorage {
 		exitTry();
 	}
 
-	public void doCfgAnalysis() {
-		for (MethodInfo mInfo : methodInfo) {
-			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> throwsTypesInStatementsGrouped = new HashMap<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>>();
-			for (Entry<TryTree, List<Pair<Node, List<Symbol>>>> entry : mInfo.invocationsInStatements.entrySet()) {
-				Map<Type, List<PartialRelation<CFGRelationTypes>>> typesToRelations = new HashMap<Type, List<PartialRelation<CFGRelationTypes>>>();
-				for (Pair<Node, List<Symbol>> invocationsInStatement : entry.getValue()) {
-					for (Symbol methodName : invocationsInStatement.getSecond())
-						if (methodNamesToExceptionThrowsTypes.containsKey(methodName))
-							for (Type excType : methodNamesToExceptionThrowsTypes.get(methodName)) {
-								if (!typesToRelations.containsKey(excType))
-									typesToRelations.put(excType, new ArrayList<PartialRelation<CFGRelationTypes>>());
-								typesToRelations.get(excType)
-										.add(new PartialRelationWithProperties<CFGRelationTypes>(
-												invocationsInStatement.getFirst(), CFGRelationTypes.MAY_THROW,
-												Pair.create("methodName", methodName),
-												Pair.create("exceptionType", excType.toString())));
-							}
+	public Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> getTrysToExceptionalPartialRelations() {
+		Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> throwsTypesInStatementsGrouped = new HashMap<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>>();
+		for (Entry<TryTree, List<Pair<Node, List<MethodSymbol>>>> entry : invocationsInStatements.entrySet()) {
+			Map<Type, List<PartialRelation<CFGRelationTypes>>> typesToRelations = new HashMap<Type, List<PartialRelation<CFGRelationTypes>>>();
+			for (Pair<Node, List<MethodSymbol>> invocationsInStatement : entry.getValue()) {
+				for (MethodSymbol methodSymbol : invocationsInStatement.getSecond())
+					for (Type excType : methodSymbol.getThrownTypes()) {
+						if (!typesToRelations.containsKey(excType))
+							typesToRelations.put(excType, new ArrayList<PartialRelation<CFGRelationTypes>>());
+						typesToRelations.get(excType)
+								.add(new PartialRelationWithProperties<CFGRelationTypes>(
+										invocationsInStatement.getFirst(), CFGRelationTypes.MAY_THROW,
+										Pair.create("methodName", methodSymbol.getQualifiedName().toString()),
+										Pair.create("exceptionType", excType.toString())));
+					}
 
-				}
-
-				throwsTypesInStatementsGrouped.put(entry.getKey(), typesToRelations);
 			}
 
-			CFGVisitor.doCFGAnalysis(mInfo.methodNode, mInfo.tree, mInfo.cfgCache, throwsTypesInStatementsGrouped);
+			throwsTypesInStatementsGrouped.put(entry.getKey(), typesToRelations);
 		}
-		methodNamesToExceptionThrowsTypes.clear();
-
+		return throwsTypesInStatementsGrouped;
 	}
 
 	public void doInterproceduralPDGAnalysis(Set<Node> methodsMutateThisAndParams,

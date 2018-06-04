@@ -27,7 +27,6 @@ import com.sun.source.tree.EmptyStatementTree;
 import com.sun.source.tree.EnhancedForLoopTree;
 import com.sun.source.tree.ErroneousTree;
 import com.sun.source.tree.ExpressionStatementTree;
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ForLoopTree;
 import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.IfTree;
@@ -48,7 +47,6 @@ import com.sun.source.tree.ParameterizedTypeTree;
 import com.sun.source.tree.ParenthesizedTree;
 import com.sun.source.tree.PrimitiveTypeTree;
 import com.sun.source.tree.ReturnTree;
-import com.sun.source.tree.StatementTree;
 import com.sun.source.tree.SwitchTree;
 import com.sun.source.tree.SynchronizedTree;
 import com.sun.source.tree.ThrowTree;
@@ -93,7 +91,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 	private PDGVisitor pdgUtils;
 	private ASTAuxiliarStorage ast;
 
-	private List<Symbol> currentMethodInvocations = new ArrayList<Symbol>();
+	private List<MethodSymbol> currentMethodInvocations = new ArrayList<MethodSymbol>();
 
 	// Must-May superficial analysis
 	private boolean must = true;
@@ -108,7 +106,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 	private Node addInvocationInStatement(Node statement) {
 		ast.addInvocationInStatement(statement, currentMethodInvocations);
-		currentMethodInvocations = new ArrayList<Symbol>();
+		currentMethodInvocations = new ArrayList<MethodSymbol>();
 		return statement;
 	}
 
@@ -214,11 +212,11 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 		Node assertNode = DatabaseFachade.createSkeletonNode(assertTree, NodeTypes.ASSERT_STATEMENT);
 		GraphUtils.connectWithParent(assertNode, t);
-		ExpressionTree condition = assertTree.getCondition();
+		Node conditionNode = scan(assertTree.getCondition(),
+				Pair.createPair(assertNode, RelationTypes.ASSERT_CONDITION));
 
-		ASTAuxiliarStorage.assertList.add(Pair.create(assertTree, addInvocationInStatement(
-				scan(condition, Pair.createPair(assertNode, RelationTypes.ASSERT_CONDITION)))));
-		// ast.putConditionInCfgCache(condition, cond);
+		addInvocationInStatement(conditionNode);
+		ast.putConditionInCfgCache(assertTree.getCondition(), conditionNode);
 		scan(assertTree.getDetail(), Pair.createPair(assertNode, RelationTypes.ASSERT_DETAIL));
 		return null;
 	}
@@ -489,7 +487,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 	@Override
 	public Node visitEnhancedForLoop(EnhancedForLoopTree enhancedForLoopTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
-		ASTAuxiliarStorage.enhancedForLoopList.add(enhancedForLoopTree);
+		// ASTAuxiliarStorage.enhancedForLoopList.add(enhancedForLoopTree);
 		Node enhancedForLoopNode = DatabaseFachade.createSkeletonNode(enhancedForLoopTree, NodeTypes.ENHANCED_FOR);
 		GraphUtils.connectWithParent(enhancedForLoopNode, t);
 		scan(enhancedForLoopTree.getVariable(), Pair.createPair(enhancedForLoopNode, RelationTypes.FOREACH_VAR));
@@ -750,9 +748,10 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		if (DEBUG)
 			System.out.println("Visiting method declaration " + methodTree.getName());
 		MethodSymbol methodSymbol = ((JCMethodDecl) methodTree).sym;
-		Node methodNode;
+
 		String name = methodTree.getName().toString(), completeName = methodSymbol.owner + ":" + name,
 				fullyQualifiedName = completeName + methodSymbol.type;
+		Node methodNode;
 		if (methodSymbol.isConstructor()) {
 			methodNode = DatabaseFachade.createSkeletonNode(methodTree, NodeTypes.CONSTRUCTOR_DEC);
 			((Pair<Pair, List<Node>>) t.getSecond()).getSecond().add(methodNode);
@@ -787,18 +786,22 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 					Pair.createPair(new PartialRelationWithProperties<RelationTypes>(methodNode,
 							RelationTypes.HAS_METHODDECL_PARAMETERS, "paramIndex", i + 1)));
 
-		ast.addThrowsInfoToMethod(fullyQualifiedName, methodSymbol.getThrownTypes());
+		// ast.addThrowsInfoToMethod(fullyQualifiedName,
+		// methodSymbol.getThrownTypes());
 
 		scan(methodTree.getThrows(), Pair.createPair(methodNode, RelationTypes.HAS_METHODDECL_THROWS));
 		scan(methodTree.getBody(), Pair.createPair(methodNode, RelationTypes.HAS_METHODDECL_BODY));
 		scan(methodTree.getDefaultValue(), Pair.createPair(methodNode, RelationTypes.HAS_DEFAULT_VALUE));
 		scan(methodTree.getReceiverParameter(), Pair.createPair(methodNode, RelationTypes.HAS_RECEIVER_PARAMETER));
 
-		if (methodSymbol.owner.isInner() && methodSymbol.isConstructor())
-			ASTAuxiliarStorage.nestedConstructorsToBlocks.put(methodTree,
-					new ArrayList<StatementTree>(methodTree.getBody().getStatements()));
+		// if (methodSymbol.owner.isInner() && methodSymbol.isConstructor())
+		// ASTAuxiliarStorage.nestedConstructorsToBlocks.put(methodTree,
+		// new ArrayList<StatementTree>(methodTree.getBody().getStatements()));
 
 		ast.addInfo(methodTree, methodNode, pdgUtils.getIdentificationForLeftAssignExprs());
+		if (methodTree.getBody() != null)
+			CFGVisitor.doCFGAnalysis(methodNode, methodTree, ast.getCfgNodeCache(),
+					ast.getTrysToExceptionalPartialRelations());
 		ast.endMethodDeclaration();
 		pdgUtils.endMethod();
 		return null;
