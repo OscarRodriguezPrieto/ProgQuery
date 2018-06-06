@@ -3,6 +3,7 @@ package test.pdg;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.Test;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -15,20 +16,23 @@ import org.neo4j.graphdb.traversal.BranchState;
 import org.neo4j.graphdb.traversal.Evaluation;
 import org.neo4j.graphdb.traversal.Evaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
- 
+
+import database.nodes.NodeTypes;
+import database.nodes.NodeUtils;
 import database.relations.PDGRelationTypes;
 import database.relations.RelationTypes;
-import test.PluginBasedTestWithCommands;
+import test.OldPluginBasedTest;
 import test.utils.TestUtils;
 
-public class PDGTest extends PluginBasedTestWithCommands {
+public class PDGTest extends OldPluginBasedTest {
+
 	private static List<Node> getIdsAndMemberSelections(Node assign, GraphDatabaseService graphDB) {
 		TraversalDescription td = graphDB.traversalDescription().expand(new PathExpander() {
 
 			@Override
 			public Iterable<Relationship> expand(Path arg0, BranchState arg1) {
 				Node endNode = arg0.endNode();
-				if (endNode.getProperty("nodeType").toString().contentEquals("NEW_INSTANCE"))
+				if (endNode.hasLabel(NodeTypes.NEW_INSTANCE))
 					return endNode.getRelationships(RelationTypes.NEW_CLASS_ARGUMENTS, RelationTypes.NEW_CLASS_BODY,
 							RelationTypes.NEW_CLASS_TYPE_ARGUMENTS);
 				else
@@ -43,10 +47,10 @@ public class PDGTest extends PluginBasedTestWithCommands {
 			@Override
 			public Evaluation evaluate(Path path) {
 				Node currentNode = path.endNode();
-				String nodeType = currentNode.getProperty("nodeType").toString();
 				// System.out.println("TRAVERSING----");
 				// System.out.println(NodeUtils.nodeToString(currentNode));
-				return Evaluation.of(nodeType.contentEquals("IDENTIFIER") || nodeType.contentEquals("MEMBER_SELECTION"),
+				return Evaluation.of(
+						currentNode.hasLabel(NodeTypes.IDENTIFIER) || currentNode.hasLabel(NodeTypes.MEMBER_SELECTION),
 						true);
 			}
 		});
@@ -58,9 +62,9 @@ public class PDGTest extends PluginBasedTestWithCommands {
 	@Test
 	public void test() {
 		try (Result result = graphDb.execute(
-				"MATCH left-[:ASSIGNMENT_LHS | :HAS_VARIABLEDECL_INIT]-assign-[:ASSIGNMENT_RHS | :INITIALIZATION_EXPR]->right RETURN  assign,  left, right ORDER BY assign.lineNumber, assign.position");
+				"MATCH (left)-[:ASSIGNMENT_LHS | :HAS_VARIABLEDECL_INIT]-(assign)-[:ASSIGNMENT_RHS | :INITIALIZATION_EXPR]->(right) RETURN  assign,  left, right ORDER BY assign.lineNumber, assign.position");
 				Result attrs = graphDb.execute(
-						"MATCH classDec-[:DECLARES_FIELD]->attrDec RETURN attrDec ORDER BY classDec.simpleName,attrDec.lineNumber")) {
+						"MATCH (classDec)-[:DECLARES_FIELD]->(attrDec) RETURN attrDec ORDER BY classDec.simpleName,attrDec.lineNumber")) {
 
 			List<Node> assignList = TestUtils.listFromResult(result), attrList = TestUtils.listFromResult(attrs);
 			Node methodParam = TestUtils
@@ -81,6 +85,7 @@ public class PDGTest extends PluginBasedTestWithCommands {
 							- Integer.parseInt(n2.getProperty("position").toString()) : lineDiff;
 				});
 			// System.out.println(NodeUtils.nodeToString(assignList.get(2)));
+			System.out.println(NodeUtils.nodeToString(assignList.get(2)));
 			Node varLocal = assignList.get(2)
 					.getSingleRelationship(RelationTypes.HAS_VARIABLEDECL_INIT, Direction.INCOMING).getStartNode();
 

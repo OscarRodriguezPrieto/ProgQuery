@@ -8,13 +8,13 @@ public class TryCatchFinally {
 
 	public void m(int a) throws IOException {
 
-		tr: try (BufferedReader r = null; BufferedReader r2 = null) {
+		tr: try (BufferedReader r = new BufferedReader(null); BufferedReader r2 = null) {
 			try {
 				NullPointerException n = null;
 				if (a < 2)
 					throw n;
 				try (BufferedReader rd = null) {
-
+((Cloneable)n).clone();
 				}
 			} catch (IndexOutOfBoundsException e) {
 				a = 5;

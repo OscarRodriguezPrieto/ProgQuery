@@ -11,5 +11,4 @@ public interface PartialRelation<T extends RelationTypesInterface> {
 
 	Relationship createRelationship(Node endNode);
 
-	Relationship createRelationshipToCondition(Node endNode);
 }
