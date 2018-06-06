@@ -84,8 +84,7 @@ public class TestUtils {
 	}
 
 	public static Node assertHasNextWith(Node previous, RelationTypesInterface r, Direction d, NodeTypes nodeType) {
-		return assertHasNextWith(previous, r, d,
-				n -> n.getProperty("nodeType").toString().contentEquals(nodeType.toString()));
+		return assertHasNextWith(previous, r, d, n -> n.hasLabel(nodeType));
 	}
 
 	public static int relationshipsWith(Node b, Iterable<Relationship> rels) {
@@ -95,6 +94,20 @@ public class TestUtils {
 				total++;
 		return total;
 
+	}
+
+	public static void justOneRelationshipWith(Node st, Node end, RelationTypesInterface rt,
+			Predicate<Relationship> p) {
+		justNRelationshipsWith(st, end, rt, p, 1);
+	}
+
+	public static void justNRelationshipsWith(Node st, Node end, RelationTypesInterface rt, Predicate<Relationship> p,
+			int n) {
+		int count = 0;
+		for (Relationship r : st.getRelationships(rt))
+			if (r.getStartNode().equals(st) && r.getEndNode().equals(end) && p.test(r))
+				count++;
+		assertEquals(n, count);
 	}
 
 	public static boolean hasAnyRelationshipsWith(Node a, Node b) {

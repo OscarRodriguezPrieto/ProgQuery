@@ -12,9 +12,7 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.ParenthesizedTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TryTree;
 import com.sun.tools.javac.code.Symbol.MethodSymbol;
@@ -26,7 +24,6 @@ import database.relations.CFGRelationTypes;
 import database.relations.CGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.PartialRelationWithProperties;
-import database.relations.RelationTypes;
 import mig.DynamicMethodCallAnalysis;
 import pdg.GetDeclarationFromExpression;
 import pdg.InterproceduralPDG;
@@ -45,6 +42,8 @@ public class ASTAuxiliarStorage {
 
 	private SimpleTreeNodeCache<Tree> cfgNodeCache;
 	private SimpleTreeNodeCache<Tree> previousCfgNodeCache;
+	private Map<Tree, Pair<Node, Node>> finallyCache;
+	private Map<Tree, Pair<Node, Node>> previousFinallyCache;
 
 	private Map<TryTree, List<Pair<Node, List<MethodSymbol>>>> invocationsInStatements;
 	private Stack<List<Pair<Node, List<MethodSymbol>>>> lastInvocationInStatementLists = new Stack<List<Pair<Node, List<MethodSymbol>>>>();
@@ -64,6 +63,10 @@ public class ASTAuxiliarStorage {
 		return methodInfo;
 	}
 
+	public Map<Tree, Pair<Node, Node>> getFinallyCache() {
+		return finallyCache;
+	}
+
 	public SimpleTreeNodeCache<Tree> getCfgNodeCache() {
 		return cfgNodeCache;
 	}
@@ -72,17 +75,22 @@ public class ASTAuxiliarStorage {
 		cfgNodeCache.put(t, n);
 	}
 
+	public void putFinallyInCache(Tree t, Node finallyNode, Node lastStatement) {
+		finallyCache.put(t, Pair.create(finallyNode, lastStatement));
+	}
+
 	public void addInfo(MethodTree methodTree, Node methodNode, Map<Node, Node> identificationForLeftAssignExprs) {
 
 		methodInfo.add(new MethodInfo(methodTree, methodNode, identificationForLeftAssignExprs));
 	}
 
-	public void putConditionInCfgCache(ExpressionTree tree, Node n) {
-		if (tree instanceof ParenthesizedTree)
-			n = n.getSingleRelationship(RelationTypes.PARENTHESIZED_ENCLOSES, Direction.OUTGOING).getEndNode();
-		if (tree != null)
-			cfgNodeCache.put(tree, n);
-	}
+	// public void putConditionInCfgCache(ExpressionTree tree, Node n) {
+	// if (tree instanceof ParenthesizedTree)
+	// n = n.getSingleRelationship(RelationTypes.PARENTHESIZED_ENCLOSES,
+	// Direction.OUTGOING).getEndNode();
+	// if (tree != null)
+	// cfgNodeCache.put(tree, n);
+	// }
 
 	public void enterInNewTry(TryTree tryTree) {
 		lastInvocationInStatementLists.push(new ArrayList<Pair<Node, List<MethodSymbol>>>());
@@ -94,7 +102,8 @@ public class ASTAuxiliarStorage {
 	}
 
 	public void addInvocationInStatement(Node statement, List<MethodSymbol> methodNames) {
-		lastInvocationInStatementLists.peek().add(Pair.create(statement, methodNames));
+		if (methodNames.size() > 0)
+			lastInvocationInStatementLists.peek().add(Pair.create(statement, methodNames));
 	}
 
 	public void newMethodDeclaration() {
@@ -103,11 +112,14 @@ public class ASTAuxiliarStorage {
 		enterInNewTry(null);
 		previousCfgNodeCache = cfgNodeCache;
 		cfgNodeCache = new SimpleTreeNodeCache<Tree>();
+		previousFinallyCache = finallyCache;
+		finallyCache = new HashMap<Tree, Pair<Node, Node>>();
 	}
 
 	public void endMethodDeclaration() {
 		invocationsInStatements = previousInvStatements;
 		cfgNodeCache = previousCfgNodeCache;
+		finallyCache = previousFinallyCache;
 		exitTry();
 	}
 

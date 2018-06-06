@@ -110,6 +110,11 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		return statement;
 	}
 
+	@Override
+	public Node reduce(Node n1, Node n2) {
+		return n2;
+	}
+
 	private Node getNotDeclaredConstructorDecNode(Symbol s, String fullyQualifiedName, String completeName) {
 		Node constructorDef = DatabaseFachade.createNode(NodeTypes.CONSTRUCTOR_DEC);
 		constructorDef.setProperty("isDeclared", false);
@@ -212,11 +217,10 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 		Node assertNode = DatabaseFachade.createSkeletonNode(assertTree, NodeTypes.ASSERT_STATEMENT);
 		GraphUtils.connectWithParent(assertNode, t);
-		Node conditionNode = scan(assertTree.getCondition(),
-				Pair.createPair(assertNode, RelationTypes.ASSERT_CONDITION));
 
-		addInvocationInStatement(conditionNode);
-		ast.putConditionInCfgCache(assertTree.getCondition(), conditionNode);
+		scan(assertTree.getCondition(), Pair.createPair(assertNode, RelationTypes.ASSERT_CONDITION));
+		addInvocationInStatement(assertNode);
+		ast.putCfgNodeInCache(assertTree, assertNode);
 		scan(assertTree.getDetail(), Pair.createPair(assertNode, RelationTypes.ASSERT_DETAIL));
 		return null;
 	}
@@ -302,9 +306,8 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		// pasa
 		boolean prev = must;
 		must = caseTree.getExpression() == null && prev && !anyBreak;
-		ast.putConditionInCfgCache(caseTree.getExpression(),
-				scan(caseTree.getExpression(), Pair.createPair(caseNode, RelationTypes.CASE_EXPR)));
-
+		ast.putCfgNodeInCache(caseTree.getExpression(), caseNode);
+		scan(caseTree.getExpression(), Pair.createPair(caseNode, RelationTypes.CASE_EXPR));
 		scan(caseTree.getStatements(), Pair.createPair(caseNode, RelationTypes.CASE_STATEMENTS));
 		must = prev;
 		return null;
@@ -466,10 +469,9 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		Node doWhileLoopNode = DatabaseFachade.createSkeletonNode(doWhileLoopTree, NodeTypes.DO_WHILE_LOOP);
 		GraphUtils.connectWithParent(doWhileLoopNode, t);
 		scan(doWhileLoopTree.getStatement(), Pair.createPair(doWhileLoopNode, RelationTypes.ENCLOSES));
-
-		ast.putConditionInCfgCache(doWhileLoopTree.getCondition(),
-				addInvocationInStatement(scan(doWhileLoopTree.getCondition(),
-						Pair.createPair(doWhileLoopNode, RelationTypes.DOWHILE_CONDITION))));
+		scan(doWhileLoopTree.getCondition(), Pair.createPair(doWhileLoopNode, RelationTypes.DOWHILE_CONDITION));
+		addInvocationInStatement(doWhileLoopNode);
+		ast.putCfgNodeInCache(doWhileLoopTree, doWhileLoopNode);
 		return null;
 	}
 
@@ -487,13 +489,12 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 	@Override
 	public Node visitEnhancedForLoop(EnhancedForLoopTree enhancedForLoopTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
-		// ASTAuxiliarStorage.enhancedForLoopList.add(enhancedForLoopTree);
 		Node enhancedForLoopNode = DatabaseFachade.createSkeletonNode(enhancedForLoopTree, NodeTypes.ENHANCED_FOR);
 		GraphUtils.connectWithParent(enhancedForLoopNode, t);
 		scan(enhancedForLoopTree.getVariable(), Pair.createPair(enhancedForLoopNode, RelationTypes.FOREACH_VAR));
-		ast.putConditionInCfgCache(enhancedForLoopTree.getExpression(),
-				addInvocationInStatement(scan(enhancedForLoopTree.getExpression(),
-						Pair.createPair(enhancedForLoopNode, RelationTypes.FOREACH_EXPR))));
+		scan(enhancedForLoopTree.getExpression(), Pair.createPair(enhancedForLoopNode, RelationTypes.FOREACH_EXPR));
+		addInvocationInStatement(enhancedForLoopNode);
+		ast.putCfgNodeInCache(enhancedForLoopTree, enhancedForLoopNode);
 		boolean prev = must;
 		must = false;
 		scan(enhancedForLoopTree.getStatement(), Pair.createPair(enhancedForLoopNode, RelationTypes.FOREACH_STATEMENT));
@@ -537,8 +538,9 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		GraphUtils.connectWithParent(forLoopNode, t);
 
 		scan(forLoopTree.getInitializer(), Pair.createPair(forLoopNode, RelationTypes.FORLOOP_INIT));
-		ast.putConditionInCfgCache(forLoopTree.getCondition(),
-				scan(forLoopTree.getCondition(), Pair.createPair(forLoopNode, RelationTypes.FORLOOP_CONDITION)));
+		scan(forLoopTree.getCondition(), Pair.createPair(forLoopNode, RelationTypes.FORLOOP_CONDITION));
+		addInvocationInStatement(forLoopNode);
+		ast.putCfgNodeInCache(forLoopTree, forLoopNode);
 		boolean prev = must;
 		must = false;
 		scan(forLoopTree.getStatement(), Pair.createPair(forLoopNode, RelationTypes.FORLOOP_STATEMENT));
@@ -574,8 +576,9 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 		Node ifNode = DatabaseFachade.createSkeletonNode(ifTree, NodeTypes.IF_STATEMENT);
 		GraphUtils.connectWithParent(ifNode, t);
-		ast.putConditionInCfgCache(ifTree.getCondition(), addInvocationInStatement(
-				scan(ifTree.getCondition(), Pair.createPair(ifNode, RelationTypes.IF_CONDITION))));
+		scan(ifTree.getCondition(), Pair.createPair(ifNode, RelationTypes.IF_CONDITION));
+		addInvocationInStatement(ifNode);
+		ast.putCfgNodeInCache(ifTree, ifNode);
 
 		boolean prev = must;
 		must = false;
@@ -636,7 +639,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		// labeledStatementNode);
 		labeledStatementNode.setProperty("name", labeledStatementTree.getLabel().toString());
 		GraphUtils.connectWithParent(labeledStatementNode, t);
-
+		ast.putCfgNodeInCache(labeledStatementTree, labeledStatementNode);
 		scan(labeledStatementTree.getStatement(),
 				Pair.createPair(labeledStatementNode, RelationTypes.LABELED_STATEMENT));
 		return null;
@@ -801,7 +804,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		ast.addInfo(methodTree, methodNode, pdgUtils.getIdentificationForLeftAssignExprs());
 		if (methodTree.getBody() != null)
 			CFGVisitor.doCFGAnalysis(methodNode, methodTree, ast.getCfgNodeCache(),
-					ast.getTrysToExceptionalPartialRelations());
+					ast.getTrysToExceptionalPartialRelations(), ast.getFinallyCache());
 		ast.endMethodDeclaration();
 		pdgUtils.endMethod();
 		return null;
@@ -826,8 +829,8 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 			fullyQualifiedName = completeName + methodSymbol.type;
 		}
 		pair = Pair.createPair(methodInvocationNode, RelationTypes.METHODINVOCATION_METHOD_SELECT);
-
-		currentMethodInvocations.add(methodSymbol);
+		if (methodSymbol.getThrownTypes().size() > 0)
+			currentMethodInvocations.add(methodSymbol);
 		Node decNode = isInCache ? DefinitionCache.METHOD_TYPE_CACHE.get(methodSymbol)
 				: methodSymbol.isConstructor()
 						? getNotDeclaredConstructorDecNode(methodSymbol, fullyQualifiedName, completeName)
@@ -1005,7 +1008,8 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		Relationship callRelation = pdgUtils.getLastMethodDecVisited().createRelationshipTo(newClassNode,
 				CGRelationTypes.CALLS);
 		callRelation.setProperty("mustBeExecuted", must);
-		currentMethodInvocations.add(consSymbol);
+		if (consSymbol.getThrownTypes().size() > 0)
+			currentMethodInvocations.add(consSymbol);
 
 		if (DEBUG) {
 			System.out.println("CONSTRUCTOR TYPE=" + ((JCNewClass) newClassTree).constructorType);
@@ -1092,8 +1096,9 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 		Node switchNode = DatabaseFachade.createSkeletonNode(switchTree, NodeTypes.SWITCH_STATEMENT);
 		GraphUtils.connectWithParent(switchNode, t);
-		ast.putConditionInCfgCache(switchTree.getExpression(), addInvocationInStatement(
-				scan(switchTree.getExpression(), Pair.createPair(switchNode, RelationTypes.SWITCH_EXPR))));
+		scan(switchTree.getExpression(), Pair.createPair(switchNode, RelationTypes.SWITCH_EXPR));
+		addInvocationInStatement(switchNode);
+		ast.putCfgNodeInCache(switchTree, switchNode);
 
 		scan(switchTree.getCases(), Pair.createPair(switchNode, RelationTypes.SWITCH_ENCLOSES_CASES));
 		return null;
@@ -1104,7 +1109,9 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 		Node synchronizedNode = DatabaseFachade.createSkeletonNode(synchronizedTree, NodeTypes.SYNCHRONIZED_BLOCK);
 		GraphUtils.connectWithParent(synchronizedNode, t);
+		ast.putCfgNodeInCache(synchronizedTree, synchronizedNode);
 		scan(synchronizedTree.getExpression(), Pair.createPair(synchronizedNode, RelationTypes.SYNCHRONIZED_EXPR));
+		addInvocationInStatement(synchronizedNode);
 		scan(synchronizedTree.getBlock(), Pair.createPair(synchronizedNode, RelationTypes.SYNCHRONIZED_BLOCK));
 		return null;
 	}
@@ -1137,11 +1144,14 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		scan(tryTree.getCatches(), Pair.createPair(tryNode, RelationTypes.TRY_CATCH));
 
 		ast.putCfgNodeInCache(tryTree, tryNode);
+		Node finallyNode = scan(tryTree.getFinallyBlock(), Pair.createPair(tryNode, RelationTypes.TRY_FINALLY));
 
-		if (tryTree.getFinallyBlock() != null)
-			ast.putCfgNodeInCache(tryTree.getFinallyBlock(),
+		if (tryTree.getFinallyBlock() != null) {
+			finallyNode.removeLabel(NodeTypes.BLOCK);
+			finallyNode.addLabel(NodeTypes.FINALLY_BLOCK);
+			ast.putFinallyInCache(tryTree.getFinallyBlock(), finallyNode,
 					DatabaseFachade.createSkeletonNode(NodeTypes.CFG_LAST_STATEMENT_IN_FINALLY));
-		scan(tryTree.getFinallyBlock(), Pair.createPair(tryNode, RelationTypes.TRY_FINALLY));
+		}
 
 		return null;
 
@@ -1236,7 +1246,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 			createVarInit(variableTree, variableNode);
 		}
-		if (!(isAttr || isMethodParam)) {
+		if (!(isMethodParam || isAttr)) {
 			ast.putCfgNodeInCache(variableTree, variableNode);
 			addInvocationInStatement(variableNode);
 		}
@@ -1252,8 +1262,10 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 		Node whileLoopNode = DatabaseFachade.createSkeletonNode(whileLoopTree, NodeTypes.WHILE_LOOP);
 		GraphUtils.connectWithParent(whileLoopNode, t);
-		ast.putConditionInCfgCache(whileLoopTree.getCondition(), addInvocationInStatement(
-				scan(whileLoopTree.getCondition(), Pair.createPair(whileLoopNode, RelationTypes.WHILE_CONDITION))));
+
+		scan(whileLoopTree.getCondition(), Pair.createPair(whileLoopNode, RelationTypes.WHILE_CONDITION));
+		addInvocationInStatement(whileLoopNode);
+		ast.putCfgNodeInCache(whileLoopTree, whileLoopNode);
 
 		boolean prev = must;
 		must = false;

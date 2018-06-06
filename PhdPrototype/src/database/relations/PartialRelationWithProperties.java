@@ -43,8 +43,4 @@ public class PartialRelationWithProperties<T extends RelationTypesInterface> ext
 
 	}
 
-	@Override
-	public Relationship createRelationshipToCondition(Node endNode) {
-		return addProperties(super.createRelationshipToCondition(endNode));
-	}
 }
