@@ -3,8 +3,7 @@ package database.relations;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
-public class SimplePartialRelation<T extends RelationTypesInterface> implements PartialRelation<T>
-{
+public class SimplePartialRelation<T extends RelationTypesInterface> implements PartialRelation<T> {
 	private final Node startingNode;
 	private final T relationType;
 
@@ -21,14 +20,16 @@ public class SimplePartialRelation<T extends RelationTypesInterface> implements 
 		return relationType;
 	}
 
-	@Override
-	public Relationship createRelationship(Node endNode) {
-		return startingNode.createRelationshipTo(endNode, relationType);
-	}
+	// private static int i = 0;
 
 	@Override
-	public Relationship createRelationshipToCondition(Node endNode) {
-		return startingNode.createRelationshipTo(endNode, ((CFGRelationTypes) relationType).toCondition());
+	public Relationship createRelationship(Node endNode) {
+		//
+		// if (startingNode.hasLabel(NodeTypes.CFG_LAST_STATEMENT_IN_FINALLY) &&
+		// endNode.hasLabel(NodeTypes.FINALLY_BLOCK)
+		// && ++i == 4)
+		// throw new IllegalStateException();
+		return startingNode.createRelationshipTo(endNode, relationType);
 	}
 
 }

@@ -2,15 +2,14 @@ package visitors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.lang.model.element.Name;
 
-import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
 
 import com.sun.source.tree.AssertTree;
 import com.sun.source.tree.BlockTree;
@@ -32,7 +31,6 @@ import com.sun.source.tree.SwitchTree;
 import com.sun.source.tree.ThrowTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.TryTree;
-import com.sun.source.tree.TypeCastTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WhileLoopTree;
 import com.sun.source.util.TreeScanner;
@@ -44,7 +42,6 @@ import database.nodes.NodeTypes;
 import database.relations.CFGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.PartialRelationWithProperties;
-import database.relations.RelationTypes;
 import database.relations.SimplePartialRelation;
 import utils.JavacInfo;
 import utils.MutablePair;
@@ -53,6 +50,8 @@ import utils.Pair;
 public class CFGVisitor extends
 		TreeScanner<List<PartialRelation<CFGRelationTypes>>, Pair<Name, List<PartialRelation<CFGRelationTypes>>>> {
 	private SimpleTreeNodeCache<Tree> CFGCache;
+	private Map<Tree, Pair<Node, Node>> finallyCache;
+
 	private Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> throwsTypesInStatements;
 
 	private static Pair<Name, List<PartialRelation<CFGRelationTypes>>> getEmptyListPair(Name n) {
@@ -103,30 +102,26 @@ public class CFGVisitor extends
 			rel.createRelationship(n);
 	}
 
-	private static void linkLastsCondition(List<PartialRelation<CFGRelationTypes>> l, Node n) {
-		for (PartialRelation<CFGRelationTypes> rel : l)
-			rel.createRelationshipToCondition(n);
-	}
-
 	// private PartialRelation<CFGRelationTypes> last;
 	// TODO Al terminar borrar exitThrowing en caso de que no se haya usado, es
 	// decir si no
 	// tiene relaciones con nada-- eso sólo si meto throwing para cualquier
 	// expression cosa que no creo que haga
-	private Node lastStatementNode, lastLoopCondition, exceptionalMethodEnding;
+	private Node lastStatementNode, lastLoopStatement, exceptionalMethodEnding;
 	private List<PartialRelation<CFGRelationTypes>> currentLoopLasts;
 	private Map<Name, List<PartialRelation<CFGRelationTypes>>> loopLastsMap = new HashMap<Name, List<PartialRelation<CFGRelationTypes>>>();
 	private int currentLoopTryIndex;
 	private Map<Name, Integer> loopTryIndexes = new HashMap<Name, Integer>();
 	private Map<Name, Node> nodesToContinue = new HashMap<Name, Node>();
-	private Map<BlockTree, List<PartialRelation<CFGRelationTypes>>> finallyRelationsToDo = new HashMap<BlockTree, List<PartialRelation<CFGRelationTypes>>>();
 	private List<MutablePair<TryTree, Boolean>> trys = new ArrayList<MutablePair<TryTree, Boolean>>();
 
-	public CFGVisitor(Node lastStatementNode, SimpleTreeNodeCache<Tree> CFGCache,
-			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> throwsTypesInStatements) {
+	public CFGVisitor(Node lastStatementNode, Node exceptionalEnd, SimpleTreeNodeCache<Tree> CFGCache,
+			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> throwsTypesInStatements,
+			Map<Tree, Pair<Node, Node>> finallyCache) {
+		this.finallyCache = finallyCache;
 		this.CFGCache = CFGCache;
 		this.lastStatementNode = lastStatementNode;
-		exceptionalMethodEnding = DatabaseFachade.createSkeletonNode(NodeTypes.CFG_EXCEPTIONAL_END);
+		exceptionalMethodEnding = exceptionalEnd;
 		this.throwsTypesInStatements = throwsTypesInStatements;
 		linkThrowing(throwsTypesInStatements.get(null));
 	}
@@ -138,15 +133,19 @@ public class CFGVisitor extends
 				TryTree tryTree = trys.get(i).getFirst();
 				for (CatchTree catchTree : tryTree.getCatches()) {
 					Type catchType = JavacInfo.getTypeDirect(catchTree.getParameter());
-					for (Entry<Type, List<PartialRelation<CFGRelationTypes>>> pair : typesToRelations.entrySet()) {
-						boolean inconditionalCatch = JavacInfo.isSubtype(pair.getKey(), catchType);
-						if (inconditionalCatch || JavacInfo.isSubtype(catchType, pair.getKey())) {
+					Iterator<Entry<Type, List<PartialRelation<CFGRelationTypes>>>> iterator = typesToRelations
+							.entrySet().iterator();
+					while (iterator.hasNext()) {
+						Entry<Type, List<PartialRelation<CFGRelationTypes>>> typeToRelations = iterator.next();
+						boolean inconditionalCatch = JavacInfo.isSubtype(typeToRelations.getKey(), catchType);
+						if (inconditionalCatch || JavacInfo.isSubtype(catchType, typeToRelations.getKey())) {
 							if (inconditionalCatch)
-								pair.getValue()
+								typeToRelations.getValue()
 										.forEach(r -> r.createRelationship(CFGCache.get(catchTree.getParameter())));
 							else
-								pair.getValue().forEach(r -> r.createRelationshipToCondition(CFGCache.get(catchTree)));
-							typesToRelations.remove(pair.getKey());
+								typeToRelations.getValue().forEach(r -> r.createRelationship(CFGCache.get(catchTree)));
+							// typesToRelations.remove(typeToRelations.getKey());
+							iterator.remove();
 							if (ended = typesToRelations.size() == 0)
 								break outFor;
 						}
@@ -184,17 +183,24 @@ public class CFGVisitor extends
 		return false;
 	}
 
-	private boolean isCaseInTheSameSwitch(Node previousCase, Node caseExpr) {
-		for (Relationship r : previousCase.getRelationships())
-			System.out.println(r.getType());
-		if (!previousCase.hasRelationship(RelationTypes.CASE_EXPR, Direction.INCOMING))
-			return false;
-		previousCase = previousCase.getSingleRelationship(RelationTypes.CASE_EXPR, Direction.INCOMING).getStartNode();
-		caseExpr = caseExpr.getSingleRelationship(RelationTypes.CASE_EXPR, Direction.INCOMING).getStartNode();
-		return previousCase.getSingleRelationship(RelationTypes.SWITCH_ENCLOSES_CASES, Direction.INCOMING)
-				.getStartNode().equals(caseExpr
-						.getSingleRelationship(RelationTypes.SWITCH_ENCLOSES_CASES, Direction.INCOMING).getStartNode());
-	}
+	// private boolean isCaseInTheSameSwitch(Node previousCase, Node caseExpr) {
+	// for (Relationship r : previousCase.getRelationships())
+	// System.out.println(r.getType());
+	// if (!previousCase.hasRelationship(RelationTypes.CASE_EXPR,
+	// Direction.INCOMING))
+	// return false;
+	// previousCase =
+	// previousCase.getSingleRelationship(RelationTypes.CASE_EXPR,
+	// Direction.INCOMING).getStartNode();
+	// caseExpr = caseExpr.getSingleRelationship(RelationTypes.CASE_EXPR,
+	// Direction.INCOMING).getStartNode();
+	// return
+	// previousCase.getSingleRelationship(RelationTypes.SWITCH_ENCLOSES_CASES,
+	// Direction.INCOMING)
+	// .getStartNode().equals(caseExpr
+	// .getSingleRelationship(RelationTypes.SWITCH_ENCLOSES_CASES,
+	// Direction.INCOMING).getStartNode());
+	// }
 
 	private void linkThrowing(Node n, CFGRelationTypes rel, Type throwType) {
 		linkThrowing(new SimplePartialRelation<CFGRelationTypes>(n, rel), throwType);
@@ -203,8 +209,8 @@ public class CFGVisitor extends
 	private void linkThrowing(PartialRelation<CFGRelationTypes> futureRel, Type throwType) {
 		boolean ended = false;
 		outFor: for (int i = trys.size() - 1; i >= 0 && !ended; i--) {
+			TryTree tryTree = trys.get(i).getFirst();
 			if (trys.get(i).getSecond()) {
-				TryTree tryTree = trys.get(i).getFirst();
 				for (CatchTree catchTree : tryTree.getCatches()) {
 					Type catchType = JavacInfo.getTypeDirect(catchTree.getParameter());
 					boolean inconditionalCatch = throwType != null && JavacInfo.isSubtype(throwType, catchType);
@@ -212,12 +218,14 @@ public class CFGVisitor extends
 						if (inconditionalCatch)
 							futureRel.createRelationship(CFGCache.get(catchTree.getParameter()));
 						else
-							futureRel.createRelationshipToCondition(CFGCache.get(catchTree));
+							futureRel.createRelationship(CFGCache.get(catchTree));
 						ended = true;
 						break outFor;
 					}
 				}
 				ended = finallyCheck(futureRel, tryTree.getFinallyBlock());
+			} else {
+				ended = finallyCheck(futureRel, trys.get(i).getFirst().getFinallyBlock());
 			}
 		}
 		if (!ended)
@@ -230,16 +238,11 @@ public class CFGVisitor extends
 
 	private void addRelationInFinallyStarting(BlockTree finallyBlock,
 			List<PartialRelation<CFGRelationTypes>> futureRels) {
-		if (!finallyRelationsToDo.containsKey(finallyBlock))
-			finallyRelationsToDo.put(finallyBlock, futureRels);
-		else
-			finallyRelationsToDo.get(finallyBlock).addAll(futureRels);
+		futureRels.forEach(partialRel -> partialRel.createRelationship(finallyCache.get(finallyBlock).getFirst()));
 	}
 
 	private void addRelationInFinallyStarting(BlockTree finallyBlock, PartialRelation<CFGRelationTypes> futureRel) {
-		if (!finallyRelationsToDo.containsKey(finallyBlock))
-			finallyRelationsToDo.put(finallyBlock, new ArrayList<PartialRelation<CFGRelationTypes>>());
-		finallyRelationsToDo.get(finallyBlock).add(futureRel);
+		futureRel.createRelationship(finallyCache.get(finallyBlock).getFirst());
 	}
 
 	private void linkBreaksToFinallies(Node node, Name label, boolean isBreak) {
@@ -258,41 +261,64 @@ public class CFGVisitor extends
 		for (; i >= limitIndex; i--) {
 			BlockTree finallyBlock = trys.get(i).getFirst().getFinallyBlock();
 			if (finallyBlock != null) {
-				addRelationInFinallyStarting(finallyBlock, CFGCache.get(lastFinally), rel);
+				if (hasLabel)
+					addRelationInFinallyStarting(finallyBlock, new PartialRelationWithProperties<CFGRelationTypes>(
+							finallyCache.get(lastFinally).getSecond(), rel, "label", label.toString()));
+				else
+					addRelationInFinallyStarting(finallyBlock, finallyCache.get(lastFinally).getSecond(), rel);
 				lastFinally = finallyBlock;
 			}
 		}
 
 		if (isBreak)
-			(hasLabel ? loopLastsMap.get(label) : currentLoopLasts).add(
-					lastFinally != null ? new SimplePartialRelation<CFGRelationTypes>(CFGCache.get(lastFinally), rel)
-							: new SimplePartialRelation<CFGRelationTypes>(node, CFGRelationTypes.CFG_NEXT_STATEMENT));
-		else
-			(lastFinally == null ? node : CFGCache.get(lastFinally)).createRelationshipTo(
-					hasLabel ? nodesToContinue.get(label) : lastLoopCondition, CFGRelationTypes.CFG_NEXT_STATEMENT);
+			if (hasLabel)
+				loopLastsMap.get(label).add(lastFinally != null
+						? new PartialRelationWithProperties<CFGRelationTypes>(finallyCache.get(lastFinally).getSecond(),
+								rel, "label", label.toString())
+						: new SimplePartialRelation<CFGRelationTypes>(node, CFGRelationTypes.CFG_NEXT_STATEMENT));
+			else
 
+				currentLoopLasts.add(lastFinally != null
+						? new SimplePartialRelation<CFGRelationTypes>(finallyCache.get(lastFinally).getSecond(), rel)
+						: new SimplePartialRelation<CFGRelationTypes>(node, CFGRelationTypes.CFG_NEXT_STATEMENT));
+		else if (lastFinally == null)
+			node.createRelationshipTo(hasLabel ? nodesToContinue.get(label) : lastLoopStatement,
+					CFGRelationTypes.CFG_NEXT_STATEMENT);
+		else {
+			if (hasLabel)
+				finallyCache.get(lastFinally).getSecond().createRelationshipTo(nodesToContinue.get(label), rel)
+						.setProperty("label", label.toString());
+			else
+				finallyCache.get(lastFinally).getSecond().createRelationshipTo(lastLoopStatement, rel);
+		}
 	}
 
 	private List<PartialRelation<CFGRelationTypes>> nextStatement(StatementTree t,
 			List<PartialRelation<CFGRelationTypes>> lasts) {
 		Node n = CFGCache.get(t);
-		if (n == null) {
-			// System.err.println("OJO:\n" + t);
-			return lasts;
-		}
+		// if (n == null) {
+		// // System.err.println("OJO:\n" + t);
+		// return lasts;
+		// }
 
 		linkLasts(lasts, n);
 
 		return getPairList(n, CFGRelationTypes.CFG_NEXT_STATEMENT);
 	}
 
+	private List<PartialRelation<CFGRelationTypes>> nextStatement(Node n,
+			List<PartialRelation<CFGRelationTypes>> lasts) {
+		linkLasts(lasts, n);
+		return getPairList(n, CFGRelationTypes.CFG_NEXT_STATEMENT);
+	}
+
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitAssert(AssertTree assertTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
-		Node n = CFGCache.get(assertTree.getCondition());
+		Node n = CFGCache.get(assertTree);
 
-		linkLastsCondition(lasts.getSecond(), n);
-		linkThrowing(n, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE, JavacInfo.getSymtab().assertionErrorType);
+		linkLasts(lasts.getSecond(), n);
+		linkThrowing(n, CFGRelationTypes.UNCAUGHT_EXCEPTION, JavacInfo.getSymtab().assertionErrorType);
 		return getPairList(n, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE);
 	}
 
@@ -334,6 +360,15 @@ public class CFGVisitor extends
 	}
 
 	@Override
+	public List<PartialRelation<CFGRelationTypes>> visitCatch(CatchTree catchTree,
+			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
+		Node catchNode = CFGCache.get(catchTree);
+		linkLasts(lasts.getSecond(), catchNode);
+		return scan(catchTree.getBlock(), getNoNamePair(
+				scan(catchTree.getParameter(), getNoNamePair(catchNode, CFGRelationTypes.CAUGHT_EXCEPTION))));
+	}
+
+	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitContinue(ContinueTree continueTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
 		Node continueNode = CFGCache.get(continueTree);
@@ -351,48 +386,39 @@ public class CFGVisitor extends
 
 	}
 
-
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitForLoop(ForLoopTree forLoopTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
-		Node conditionNode;
-		if (forLoopTree.getCondition() != null)
-			conditionNode = CFGCache.get(forLoopTree.getCondition());
+		Node forNode = CFGCache.get(forLoopTree);
 
-
-		else {
-			conditionNode = DatabaseFachade.createNode(NodeTypes.LITERAL);
-			conditionNode.setProperty("typetag", "BOOLEAN");
-			conditionNode.setProperty("value", "true");
-		}
 		List<PartialRelation<CFGRelationTypes>> previousLasts = lasts.getSecond();
 		for (StatementTree t : forLoopTree.getInitializer())
 			previousLasts = nextStatement(t, previousLasts);
 
-		linkLastsCondition(previousLasts, conditionNode);
+		linkLasts(previousLasts, forNode);
 
-		Node previousLoop = lastLoopCondition;
+		Node previousLoop = lastLoopStatement;
 		previousLasts = currentLoopLasts;
 		List<PartialRelation<CFGRelationTypes>> newLasts;
 
-		currentLoopLasts = newLasts = getPairList(conditionNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
+		currentLoopLasts = newLasts = getPairList(forNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
 
 		int previousTryIndex = currentLoopTryIndex;
 		currentLoopTryIndex = trys.size();
 		if (lasts.getFirst() != null) {
-			nodesToContinue.put(lasts.getFirst(), conditionNode);
+			nodesToContinue.put(lasts.getFirst(), forNode);
 			loopLastsMap.put(lasts.getFirst(), newLasts);
 			loopTryIndexes.put(lasts.getFirst(), trys.size());
 		}
-		lastLoopCondition = conditionNode;
+		lastLoopStatement = forNode;
 
 		List<PartialRelation<CFGRelationTypes>> statementLasts = scan(forLoopTree.getStatement(),
-				getNoNamePair(conditionNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE));
+				getNoNamePair(forNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE));
 		for (ExpressionStatementTree update : forLoopTree.getUpdate())
 			statementLasts = nextStatement(update, statementLasts);
-		linkLastsCondition(statementLasts, conditionNode);
+		linkLasts(statementLasts, forNode);
 
-		lastLoopCondition = previousLoop;
+		lastLoopStatement = previousLoop;
 		currentLoopLasts = previousLasts;
 		currentLoopTryIndex = previousTryIndex;
 		if (lasts.getFirst() != null) {
@@ -408,28 +434,25 @@ public class CFGVisitor extends
 	public List<PartialRelation<CFGRelationTypes>> visitEnhancedForLoop(EnhancedForLoopTree enhancedForLoopTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
 
-		Node forEachCollection = CFGCache.get(enhancedForLoopTree.getExpression()),
+		Node forEachNode = CFGCache.get(enhancedForLoopTree),
 				localVarNode = CFGCache.get(enhancedForLoopTree.getVariable());
-		// System.out.println("FOR:\n" + enhancedForLoopTree);
-		if (forEachCollection == null)
-			forEachCollection = CFGCache.get(((TypeCastTree) enhancedForLoopTree.getExpression()).getExpression());
-		linkLastsCondition(lasts.getSecond(), forEachCollection);
-		Node previousLoop = lastLoopCondition;
+		linkLasts(lasts.getSecond(), forEachNode);
+		Node previousLoop = lastLoopStatement;
 		List<PartialRelation<CFGRelationTypes>> previousLasts = currentLoopLasts, newLasts;
-		forEachCollection.createRelationshipTo(localVarNode, CFGRelationTypes.CFG_FOR_EACH_HAS_NEXT);
-		currentLoopLasts = newLasts = getPairList(forEachCollection, CFGRelationTypes.CFG_FOR_EACH_NO_MORE_ELEMENTS);
+		forEachNode.createRelationshipTo(localVarNode, CFGRelationTypes.CFG_FOR_EACH_HAS_NEXT);
+		currentLoopLasts = newLasts = getPairList(forEachNode, CFGRelationTypes.CFG_FOR_EACH_NO_MORE_ELEMENTS);
 		int previousTryIndex = currentLoopTryIndex;
 		currentLoopTryIndex = trys.size();
 		if (lasts.getFirst() != null) {
-			nodesToContinue.put(lasts.getFirst(), forEachCollection);
+			nodesToContinue.put(lasts.getFirst(), forEachNode);
 			loopLastsMap.put(lasts.getFirst(), newLasts);
 			loopTryIndexes.put(lasts.getFirst(), trys.size());
 		}
 
-		lastLoopCondition = forEachCollection;
-		linkLastsCondition(scan(enhancedForLoopTree.getStatement(),
-				getNoNamePair(localVarNode, CFGRelationTypes.CFG_NEXT_STATEMENT)), forEachCollection);
-		lastLoopCondition = previousLoop;
+		lastLoopStatement = forEachNode;
+		linkLasts(scan(enhancedForLoopTree.getStatement(),
+				getNoNamePair(localVarNode, CFGRelationTypes.CFG_NEXT_STATEMENT)), forEachNode);
+		lastLoopStatement = previousLoop;
 		currentLoopLasts = previousLasts;
 		currentLoopTryIndex = previousTryIndex;
 		if (lasts.getFirst() != null) {
@@ -448,27 +471,26 @@ public class CFGVisitor extends
 
 	}
 
-
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitIf(IfTree ifTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
-		Node conditionNode = CFGCache.get(ifTree.getCondition());
+		Node ifNode = CFGCache.get(ifTree);
 
-		linkLastsCondition(lasts.getSecond(), conditionNode);
+		linkLasts(lasts.getSecond(), ifNode);
 		List<PartialRelation<CFGRelationTypes>> breakLasts = null;
 		if (lasts.getFirst() != null) {
 			loopTryIndexes.put(lasts.getFirst(), trys.size());
 			loopLastsMap.put(lasts.getFirst(), breakLasts = new ArrayList<PartialRelation<CFGRelationTypes>>());
 		}
 		List<PartialRelation<CFGRelationTypes>> newLasts = scan(ifTree.getThenStatement(),
-				getNoNamePair(conditionNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE));
+				getNoNamePair(ifNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE));
 
 		if (ifTree.getElseStatement() != null)
 			newLasts.addAll(scan(ifTree.getElseStatement(),
-					getNoNamePair(conditionNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE)));
+					getNoNamePair(ifNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE)));
 		else
-			newLasts.add(new SimplePartialRelation<CFGRelationTypes>(conditionNode,
-					CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE));
+			newLasts.add(
+					new SimplePartialRelation<CFGRelationTypes>(ifNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE));
 
 		if (lasts.getFirst() != null) {
 			loopTryIndexes.remove(lasts.getFirst());
@@ -481,24 +503,24 @@ public class CFGVisitor extends
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitDoWhileLoop(DoWhileLoopTree doWhileLoopTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
-		Node conditionNode = CFGCache.get(doWhileLoopTree.getCondition());
-		Node previousLoop = lastLoopCondition;
+		Node doWhileNode = CFGCache.get(doWhileLoopTree);
+		Node previousLoop = lastLoopStatement;
 		int previousTryIndex = currentLoopTryIndex;
 		currentLoopTryIndex = trys.size();
 		List<PartialRelation<CFGRelationTypes>> previousLasts = currentLoopLasts, newLasts;
-		currentLoopLasts = newLasts = getPairList(conditionNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
+		currentLoopLasts = newLasts = getPairList(doWhileNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
 		if (lasts.getFirst() != null) {
 			loopTryIndexes.put(lasts.getFirst(), currentLoopTryIndex);
-			nodesToContinue.put(lasts.getFirst(), conditionNode);
+			nodesToContinue.put(lasts.getFirst(), doWhileNode);
 			loopLastsMap.put(lasts.getFirst(), newLasts);
 		}
 
-		lastLoopCondition = conditionNode;
-		lasts.getSecond().add(new SimplePartialRelation<CFGRelationTypes>(conditionNode,
-				CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE));
-		linkLastsCondition(scan(doWhileLoopTree.getStatement(), lasts), conditionNode);
+		lastLoopStatement = doWhileNode;
+		lasts.getSecond().add(
+				new SimplePartialRelation<CFGRelationTypes>(doWhileNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE));
+		linkLasts(scan(doWhileLoopTree.getStatement(), lasts), doWhileNode);
 
-		lastLoopCondition = previousLoop;
+		lastLoopStatement = previousLoop;
 		currentLoopLasts = previousLasts;
 		currentLoopTryIndex = previousTryIndex;
 		if (lasts.getFirst() != null) {
@@ -513,7 +535,11 @@ public class CFGVisitor extends
 	public List<PartialRelation<CFGRelationTypes>> visitLabeledStatement(LabeledStatementTree labeledStatementTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
 
-		return scan(labeledStatementTree.getStatement(), getPair(labeledStatementTree.getLabel(), lasts.getSecond()));
+		Node labelStatNode = CFGCache.get(labeledStatementTree);
+		linkLasts(lasts.getSecond(), labelStatNode);
+
+		return scan(labeledStatementTree.getStatement(),
+				getPair(labeledStatementTree.getLabel(), labelStatNode, CFGRelationTypes.CFG_NEXT_STATEMENT));
 	}
 
 	@Override
@@ -528,8 +554,8 @@ public class CFGVisitor extends
 	public List<PartialRelation<CFGRelationTypes>> visitSwitch(SwitchTree switchTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
 
-		Node switchExpression = CFGCache.get(switchTree.getExpression());
-		linkLastsCondition(lasts.getSecond(), switchExpression);
+		Node switchNode = CFGCache.get(switchTree);
+		linkLasts(lasts.getSecond(), switchNode);
 		lasts.getSecond().clear();
 
 		List<PartialRelation<CFGRelationTypes>> previousLasts = currentLoopLasts;
@@ -544,13 +570,13 @@ public class CFGVisitor extends
 		List<PartialRelation<CFGRelationTypes>> newLasts = new ArrayList<PartialRelation<CFGRelationTypes>>();
 		for (; i < switchTree.getCases().size() && switchTree.getCases().get(i).getExpression() != null; i++) {
 			CaseTree caseTree = switchTree.getCases().get(i);
-			newLasts.add(new PartialRelationWithProperties<CFGRelationTypes>(switchExpression,
+			newLasts.add(new PartialRelationWithProperties<CFGRelationTypes>(switchNode,
 					CFGRelationTypes.SWITCH_CASE_IS_EQUAL_TO, Pair.create("value", caseTree.toString()),
 					Pair.create("caseIndex", i)));
 			newLasts = scan(caseTree, getNoNamePair(newLasts));
 		}
 		if (i < switchTree.getCases().size()) {
-			newLasts.add(new PartialRelationWithProperties<CFGRelationTypes>(switchExpression,
+			newLasts.add(new PartialRelationWithProperties<CFGRelationTypes>(switchNode,
 					CFGRelationTypes.SWITCH_DEFAULT_CASE, Pair.create("caseIndex", i)));
 			lasts.getSecond().addAll(scan(switchTree.getCases().get(i), getNoNamePair(newLasts)));
 		} else
@@ -570,8 +596,9 @@ public class CFGVisitor extends
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
 
 		Node n = CFGCache.get(tree);
+
 		linkLasts(lasts.getSecond(), n);
-		linkThrowing(n, CFGRelationTypes.CFG_NEXT_STATEMENT, JavacInfo.getTypeDirect(tree.getExpression()));
+		linkThrowing(n, CFGRelationTypes.UNCAUGHT_EXCEPTION, JavacInfo.getTypeDirect(tree.getExpression()));
 		return new ArrayList<PartialRelation<CFGRelationTypes>>();
 	}
 
@@ -589,7 +616,8 @@ public class CFGVisitor extends
 			trys.add(tryPair = MutablePair.create(tryTree, true));
 			linkThrowing(throwsTypesInStatements.get(tryTree));
 		}
-		List<PartialRelation<CFGRelationTypes>> previousLasts = lasts.getSecond();
+		Node tryNode = CFGCache.get(tryTree);
+		List<PartialRelation<CFGRelationTypes>> previousLasts = nextStatement(tryNode, lasts.getSecond());
 		for (Tree t : tryTree.getResources())
 			previousLasts = nextStatement((StatementTree) t, previousLasts);
 
@@ -598,12 +626,12 @@ public class CFGVisitor extends
 		newLasts.addAll(scan(tryTree.getBlock(), getNoNamePair(previousLasts)));
 
 		if (tryTree.getCatches().size() == 0 && tryTree.getFinallyBlock() == null) {
-			linkThrowing(CFGCache.get(tryTree), CFGRelationTypes.UNCAUGHT_EXCEPTION, null);
+			linkThrowing(tryNode, CFGRelationTypes.UNCAUGHT_EXCEPTION, null);
 			return newLasts;
 		}
 		tryPair.setSecond(false);
 
-		Node blockThrowingUncaught = CFGCache.get(tryTree);
+		Node blockThrowingUncaught = tryNode;
 
 		for (int i = 0; i < tryTree.getCatches().size(); i++) {
 			newLasts.addAll(scan(tryTree.getCatches().get(i),
@@ -620,18 +648,30 @@ public class CFGVisitor extends
 
 		newLasts.add(new SimplePartialRelation<CFGRelationTypes>(blockThrowingUncaught,
 				CFGRelationTypes.UNCAUGHT_EXCEPTION));
-		newLasts.addAll(finallyRelationsToDo.get(tryTree.getFinallyBlock()));
+		// List<PartialRelation<CFGRelationTypes>> finallyRels =
+		// finallyRelationsToDo.get(tryTree.getFinallyBlock());
+		// if (finallyRels != null)
+		// newLasts.addAll(finallyRels);
 
-		Node lastStatementFinally = CFGCache.get(tryTree.getFinallyBlock());
-		linkThrowing(lastStatementFinally, CFGRelationTypes.UNCAUGHT_EXCEPTION, null);
+		Pair<Node, Node> finallyStartAndEnd = finallyCache.get(tryTree.getFinallyBlock());
+		linkThrowing(finallyStartAndEnd.getSecond(), CFGRelationTypes.UNCAUGHT_EXCEPTION, null);
+
+		List<PartialRelation<CFGRelationTypes>> breakRelsForNextStat = new ArrayList<PartialRelation<CFGRelationTypes>>();
+		for (PartialRelation<CFGRelationTypes> rel : newLasts)
+			if (rel.getStartingNode().equals(finallyStartAndEnd.getSecond()))
+				breakRelsForNextStat.add(rel);
+			else
+				rel.createRelationship(finallyStartAndEnd.getFirst());
 
 		if (tryTree.getFinallyBlock().getStatements().size() == 0) {
-			linkLasts(newLasts, lastStatementFinally);
+			linkLasts(getPairList(finallyStartAndEnd.getFirst(), CFGRelationTypes.CFG_NEXT_STATEMENT),
+					finallyStartAndEnd.getSecond());
 			if (lasts.getFirst() != null) {
 				loopLastsMap.remove(lasts.getFirst());
 				loopTryIndexes.remove(lasts.getFirst());
 			}
-			return getPairList(lastStatementFinally, CFGRelationTypes.NO_EXCEPTION);
+			breakRelsForNextStat.addAll(getPairList(finallyStartAndEnd.getSecond(), CFGRelationTypes.NO_EXCEPTION));
+			return breakRelsForNextStat;
 		} else {
 			List<PartialRelation<CFGRelationTypes>> finallyBreaks = new ArrayList<PartialRelation<CFGRelationTypes>>();
 			if (lasts.getFirst() != null) {
@@ -639,13 +679,17 @@ public class CFGVisitor extends
 				loopTryIndexes.put(lasts.getFirst(), trys.size());
 			}
 
-			linkLasts(scan(tryTree.getFinallyBlock(), getNoNamePair(newLasts)), lastStatementFinally);
+			linkLasts(
+					scan(tryTree.getFinallyBlock(),
+							getNoNamePair(finallyStartAndEnd.getFirst(), CFGRelationTypes.CFG_NEXT_STATEMENT)),
+					finallyStartAndEnd.getSecond());
 			if (lasts.getFirst() != null) {
 				loopLastsMap.remove(lasts.getFirst());
 				loopTryIndexes.remove(lasts.getFirst());
 			}
-			finallyBreaks.add(
-					new SimplePartialRelation<CFGRelationTypes>(lastStatementFinally, CFGRelationTypes.NO_EXCEPTION));
+			finallyBreaks.add(new SimplePartialRelation<CFGRelationTypes>(finallyStartAndEnd.getSecond(),
+					CFGRelationTypes.NO_EXCEPTION));
+			finallyBreaks.addAll(breakRelsForNextStat);
 			return finallyBreaks;
 		}
 	}
@@ -660,28 +704,28 @@ public class CFGVisitor extends
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitWhileLoop(WhileLoopTree whileLoopTree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
-		Node conditionNode = CFGCache.get(whileLoopTree.getCondition());
+		Node whileNode = CFGCache.get(whileLoopTree);
 		// Se puede hacer retornando en el caso de los bucles la condicion
 		// tambien
 
-		linkLastsCondition(lasts.getSecond(), conditionNode);
-		Node previousLoop = lastLoopCondition;
+		linkLasts(lasts.getSecond(), whileNode);
+		Node previousLoop = lastLoopStatement;
 		int previousTryIndex = currentLoopTryIndex;
 		currentLoopTryIndex = trys.size();
 		List<PartialRelation<CFGRelationTypes>> previousLasts = currentLoopLasts, newLasts;
-		currentLoopLasts = newLasts = getPairList(conditionNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
+		currentLoopLasts = newLasts = getPairList(whileNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
 		if (lasts.getFirst() != null) {
 			loopTryIndexes.put(lasts.getFirst(), currentLoopTryIndex);
-			nodesToContinue.put(lasts.getFirst(), conditionNode);
+			nodesToContinue.put(lasts.getFirst(), whileNode);
 			loopLastsMap.put(lasts.getFirst(), newLasts);
 		}
 
-		lastLoopCondition = conditionNode;
+		lastLoopStatement = whileNode;
 
 		// MUCHO OJO AQUí
-		linkLastsCondition(scan(whileLoopTree.getStatement(),
-				getNoNamePair(conditionNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE)), conditionNode);
-		lastLoopCondition = previousLoop;
+		linkLasts(scan(whileLoopTree.getStatement(),
+				getNoNamePair(whileNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE)), whileNode);
+		lastLoopStatement = previousLoop;
 		currentLoopLasts = previousLasts;
 		currentLoopTryIndex = previousTryIndex;
 		if (lasts.getFirst() != null) {
@@ -705,16 +749,18 @@ public class CFGVisitor extends
 	}
 
 	public static void doCFGAnalysis(Node methodNode, MethodTree tree, SimpleTreeNodeCache<Tree> cfgCache,
-			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> invocationsInStatements) {
+			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> invocationsInStatements,
+			Map<Tree, Pair<Node, Node>> finallyCache) {
 		Node lastStatementNode = DatabaseFachade.createSkeletonNode(NodeTypes.CFG_METHOD_END),
-				entryStatement = DatabaseFachade.createSkeletonNode(NodeTypes.CFG_METHOD_ENTRY);
+				entryStatement = DatabaseFachade.createSkeletonNode(NodeTypes.CFG_METHOD_ENTRY),
+				exceptionalEnd = DatabaseFachade.createSkeletonNode(NodeTypes.CFG_EXCEPTIONAL_END);
 		methodNode.createRelationshipTo(entryStatement, CFGRelationTypes.CFG_ENTRY);
 
 		CFGVisitor.linkLasts(
-				new CFGVisitor(lastStatementNode, cfgCache, invocationsInStatements).scan(tree.getBody(),
-						CFGVisitor.getNoNamePair(entryStatement, CFGRelationTypes.CFG_NEXT_STATEMENT)),
+				new CFGVisitor(lastStatementNode, exceptionalEnd, cfgCache, invocationsInStatements, finallyCache).scan(
+						tree.getBody(), CFGVisitor.getNoNamePair(entryStatement, CFGRelationTypes.CFG_NEXT_STATEMENT)),
 				lastStatementNode);
-
+		exceptionalEnd.createRelationshipTo(methodNode, CFGRelationTypes.CFG_END_OF);
 		lastStatementNode.createRelationshipTo(methodNode, CFGRelationTypes.CFG_END_OF);
 	}
 
