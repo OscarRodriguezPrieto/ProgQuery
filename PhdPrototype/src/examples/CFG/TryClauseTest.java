@@ -3,19 +3,23 @@ package examples.CFG;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+
 public class TryClauseTest {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		int i = 0;
-//		BufferedReader brd = m();
+		// BufferedReader brd = m();
+		// w: while (true)
 		try (BufferedReader br = m()) {
 
-		} catch (Exception e) {
-			System.out.println("CAUGHT");
-			e.printStackTrace();
-		} finally {
+				// break w;
+			} catch (Exception e) {
+				System.out.println("CAUGHT");
+			throw e;
+			// break w;
+			} finally {
 			System.out.println("FIRST FINALLY");
-		}
+			}
 		// bb: {
 		// try {
 		// break bb;

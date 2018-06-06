@@ -1,23 +1,33 @@
 package test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.junit.After;
 import org.junit.Before;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
 import database.DatabaseFachade;
+import database.nodes.NodeTypes;
+import database.nodes.NodeUtils;
 import database.querys.MainQuery;
+import database.relations.RelationTypesInterface;
+import test.utils.TestUtils;
 
 public abstract class PluginBasedTestWithCommands {
 	protected GraphDatabaseService graphDb;
-	private static final String[] TEST_COMMANDS = { "pdgTest.bat" };
 
-	private int testCounter = 0;
 	private Transaction transaction;
+	protected List<Node> nodesToTest;
 
 	private void runCommand(String command) throws IOException {
 		Process process = Runtime.getRuntime().exec(command);
@@ -29,12 +39,24 @@ public abstract class PluginBasedTestWithCommands {
 		}
 	}
 
+	private String commandName, initialQuery;
+	private int numberNodes;
+
+	public PluginBasedTestWithCommands(String commandName, String initialQuery, int numberNodes) {
+		super();
+		this.commandName = commandName;
+		this.initialQuery = initialQuery;
+		this.numberNodes = numberNodes;
+	}
+
 	@Before
 	public void prepareTestDatabase() throws Exception {
-		runCommand(TEST_COMMANDS[0]);
+		runCommand(commandName);
 		graphDb = DatabaseFachade.getDB();
 		transaction = graphDb.beginTx();
-		// System.out.println(graphDb.execute(MainQuery.ALL_NODES).resultAsString());
+		// System.out.println(graphDb.execute(initialQuery).resultAsString());
+		nodesToTest = TestUtils.listFromResult(graphDb.execute(initialQuery));
+		assertEquals(numberNodes, nodesToTest.size());
 	}
 
 	@After
@@ -56,4 +78,72 @@ public abstract class PluginBasedTestWithCommands {
 		graphDb.shutdown();
 	}
 
+	protected void hasSingleRel(int starting, int end, RelationTypesInterface r) {
+		hasSingleRel(starting, end, r, Direction.OUTGOING);
+	}
+
+	protected void hasSingleRel(int starting, int end, RelationTypesInterface r, Direction d) {
+		TestUtils.assertHasSingleRel(nodesToTest.get(starting), nodesToTest.get(end), r, d);
+	}
+
+	protected void assertNext(int starting, int end, RelationTypesInterface r, NodeTypes typeNext) {
+		assertNext(starting, r, Direction.OUTGOING, n -> n.equals(nodesToTest.get(end)) && n.hasLabel(typeNext));
+	}
+
+	protected void assertNext(Node starting, int end, RelationTypesInterface r, NodeTypes typeNext) {
+		assertNext(starting, r, Direction.OUTGOING, n -> n.equals(nodesToTest.get(end)) && n.hasLabel(typeNext));
+	}
+
+	protected void assertNext(Node starting, Node end, RelationTypesInterface r, NodeTypes typeNext) {
+		assertNext(starting, r, Direction.OUTGOING, n -> n.equals(end) && n.hasLabel(typeNext));
+	}
+
+	protected void assertNext(int starting, RelationTypesInterface r, Direction d, Predicate<Node> p) {
+		TestUtils.assertHasNextWith(nodesToTest.get(starting), r, d, p);
+	}
+
+	protected void assertNext(Node starting, RelationTypesInterface r, Direction d, Predicate<Node> p) {
+		TestUtils.assertHasNextWith(starting, r, d, p);
+	}
+
+	protected void assertOneRelBetweenMany(int starting, int end, RelationTypesInterface r, Predicate<Relationship> p) {
+		TestUtils.justOneRelationshipWith(nodesToTest.get(starting), nodesToTest.get(end), r, p);
+	}
+
+	protected void assertNRelsBetweenMany(Node starting, Node end, RelationTypesInterface r, Predicate<Relationship> p,
+			int n) {
+		TestUtils.justNRelationshipsWith(starting, end, r, p, n);
+	}
+
+	protected void assertOneRelBetweenMany(Node starting, int end, RelationTypesInterface rel, NodeTypes nodeType,
+			Predicate<Relationship> p) {
+		assertOneRelBetweenMany(starting, nodesToTest.get(end), rel, nodeType, p);
+	}
+
+	protected void assertOneRelBetweenMany(Node starting, Node end, RelationTypesInterface rel, NodeTypes nodeType,
+			Predicate<Relationship> p) {
+		TestUtils.justOneRelationshipWith(starting, end, rel, r -> r.getEndNode().hasLabel(nodeType) && p.test(r));
+	}
+
+	protected void assertOneThrowsRel(int starting, int end, RelationTypesInterface rt, NodeTypes nodeType,
+			String exType) {
+		assertOneRelBetweenMany(starting, end, rt, r -> r.getEndNode().hasLabel(nodeType)
+				&& r.getProperty("exceptionType").toString().contentEquals(exType));
+	}
+
+	protected void assertOneThrowsRel(int starting, Node end, RelationTypesInterface rt, NodeTypes nodeType,
+			String exType) {
+		assertOneRelBetweenMany(nodesToTest.get(starting), end, rt, nodeType,
+				r -> r.getProperty("exceptionType").toString().contentEquals(exType));
+	}
+
+	protected void printNode(int index) {
+		System.out.println(NodeUtils.nodeToString(nodesToTest.get(index)));
+
+	}
+
+	protected void printNode(Node n) {
+		System.out.println(NodeUtils.nodeToString(n));
+
+	}
 }
