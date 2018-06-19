@@ -249,6 +249,7 @@ public class CFGVisitor extends
 		CFGRelationTypes rel = isBreak ? CFGRelationTypes.AFTER_FINALLY_PREVIOUS_BREAK
 				: CFGRelationTypes.AFTER_FINALLY_PREVIOUS_CONTINUE;
 		boolean hasLabel = label != null;
+		System.out.println(label);
 		int limitIndex = hasLabel ? loopTryIndexes.get(label) : currentLoopTryIndex;
 		int i = trys.size() - 1;
 		BlockTree lastFinally = null;
@@ -564,7 +565,7 @@ public class CFGVisitor extends
 		currentLoopTryIndex = trys.size();
 		if (lasts.getFirst() != null) {
 			loopLastsMap.put(lasts.getFirst(), lasts.getSecond());
-			loopTryIndexes.remove(lasts.getFirst());
+			loopTryIndexes.put(lasts.getFirst(), currentLoopTryIndex);
 		}
 		int i = 0;
 		List<PartialRelation<CFGRelationTypes>> newLasts = new ArrayList<PartialRelation<CFGRelationTypes>>();

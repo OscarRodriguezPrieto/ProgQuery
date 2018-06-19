@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import examples.Constructores;
 import examples.OtherClass;
+import examples.pdg.Z;
 
 public class ClassUse implements Interface {
 	Constructores getCOnstructores() {
@@ -12,6 +13,9 @@ public class ClassUse implements Interface {
 	}
 	private ArrayList<String> l;
 
+	public static Z getZ() {
+		return new Z();
+	}
 	public int m() {
 		return Collections.emptyMap().size();
 	}
