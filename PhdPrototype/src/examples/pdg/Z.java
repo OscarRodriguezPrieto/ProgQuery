@@ -14,7 +14,7 @@ import database.relations.RelationTypes;
 public class Z implements Serializable, Cloneable {
 	final int m = 33;
 
-	public transient File f;
+	public static transient File ff;
 
 	public static int X() {
 		return 0;
