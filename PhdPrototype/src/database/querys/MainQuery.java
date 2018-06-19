@@ -43,6 +43,8 @@ public class MainQuery {
 
 	public static final String CFG_NODES_FOR_TESTING = "MATCH (stat) WHERE (stat:VAR_DEC OR stat:TRY_BLOCK OR stat:EXPRESSION_STATEMENT OR stat:IF_STATEMENT  OR stat:THROW_STATEMENT  OR stat:CATCH_BLOCK OR stat:FINALLY_BLOCK OR stat: LABELED_STATEMENT OR stat:FOR_LOOP OR stat:ASSERT_STATEMENT OR stat:CONTINUE_STATEMENT OR stat:BREAK_STATEMENT OR stat:WHILE_LOOP OR stat:ENHANCED_FOR OR stat:DO_WHILE_LOOP OR stat:EMPTY_STATEMENT) AND  (stat.lineNumber>=12 AND stat.lineNumber<=118) RETURN stat, labels(stat) ORDER BY stat.lineNumber, stat.position";
 	public static final String MAY_THROW_REL = "MATCH (stat)-[r:MAY_THROW]->(statDos)  RETURN stat, labels(stat), r, statDos,labels(statDos)";
+	public static final String STATE_MODS = "MATCH (n)-[r :STATE_MAY_BE_MODIFIED | :STATE_MODIFIED_BY]->(m) RETURN n, labels(n),r, m";
+	public static final String MAY_AND_REFER = "MATCH (n)-[r :REFER_TO | :MAY_REFER_TO]->(m) RETURN n, labels(n),r, m";
 
 	// Controlar si se puede sobreescribir el equals metiendo primitivas al
 	// parametro
@@ -72,7 +74,7 @@ public class MainQuery {
 
 		GraphDatabaseService gs = DatabaseFachade.getDB();
 
-		Result res = gs.execute(MAY_THROW_REL);
+		Result res = gs.execute(STATE_MODS);
 		// gs.execute(TYPE_HIERARCHY);
 
 		// System.out.println(res.resultAsString());
