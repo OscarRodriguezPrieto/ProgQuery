@@ -18,7 +18,6 @@ import org.neo4j.graphdb.traversal.Evaluator;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 
 import database.nodes.NodeTypes;
-import database.nodes.NodeUtils;
 import database.relations.PDGRelationTypes;
 import database.relations.RelationTypes;
 import test.OldPluginBasedTest;
@@ -85,8 +84,8 @@ public class PDGTest extends OldPluginBasedTest {
 							- Integer.parseInt(n2.getProperty("position").toString()) : lineDiff;
 				});
 			// System.out.println(NodeUtils.nodeToString(assignList.get(2)));
-			System.out.println(NodeUtils.nodeToString(assignList.get(2)));
-			Node varLocal = assignList.get(2)
+			// System.out.println(NodeUtils.nodeToString(assignList.get(3)));
+			Node varLocal = assignList.get(3)
 					.getSingleRelationship(RelationTypes.HAS_VARIABLEDECL_INIT, Direction.INCOMING).getStartNode();
 
 			// System.out.println(NodeUtils.nodeToString(assignList.get(1)));
@@ -94,51 +93,54 @@ public class PDGTest extends OldPluginBasedTest {
 
 			// OJO EL TRAVERSAL CON IDS COMO PDG2 o new PDG2 línea 16
 			// Line 15
-			TestUtils.assertHasSingleRel(methodParam, assignList.get(1), PDGRelationTypes.MODIFIED_BY,
+			TestUtils.assertHasSingleRel(methodParam, assignList.get(2), PDGRelationTypes.MODIFIED_BY,
 					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(0), idsAndMembers.get(1).get(1), PDGRelationTypes.USED_BY,
+			TestUtils.assertHasSingleRel(attrList.get(0), idsAndMembers.get(2).get(1), PDGRelationTypes.USED_BY,
 					Direction.OUTGOING);
 
 			// Line 16
-			TestUtils.assertHasSingleRel(varLocal, assignList.get(2), PDGRelationTypes.MODIFIED_BY, Direction.OUTGOING);
+			TestUtils.assertHasSingleRel(varLocal, assignList.get(3), PDGRelationTypes.MODIFIED_BY, Direction.OUTGOING);
 			// Line 18
-			TestUtils.assertHasSingleRel(varLocal, assignList.get(4), PDGRelationTypes.STATE_MODIFIED_BY,
-					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(2), assignList.get(4), PDGRelationTypes.STATE_MODIFIED_BY,
-					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(1), assignList.get(4), PDGRelationTypes.STATE_MODIFIED_BY,
-					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(0), assignList.get(3), PDGRelationTypes.MODIFIED_BY,
-					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(varLocal, idsAndMembers.get(4).get(2), PDGRelationTypes.USED_BY,
-					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(2), idsAndMembers.get(4).get(1), PDGRelationTypes.USED_BY,
-					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(0), idsAndMembers.get(4).get(3), PDGRelationTypes.USED_BY,
+			TestUtils.assertHasSingleRel(varLocal, assignList.get(5), PDGRelationTypes.STATE_MODIFIED_BY,
 					Direction.OUTGOING);
 
-			TestUtils.assertHasSingleRel(varLocal, idsAndMembers.get(4).get(5), PDGRelationTypes.USED_BY,
+			TestUtils.assertHasSingleRel(attrList.get(2), assignList.get(1), PDGRelationTypes.MODIFIED_BY,
 					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(1), idsAndMembers.get(4).get(0), PDGRelationTypes.USED_BY,
+			TestUtils.assertHasSingleRel(attrList.get(3), assignList.get(5), PDGRelationTypes.STATE_MODIFIED_BY,
 					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(2), idsAndMembers.get(4).get(4), PDGRelationTypes.USED_BY,
+			TestUtils.assertHasSingleRel(attrList.get(1), assignList.get(5), PDGRelationTypes.STATE_MODIFIED_BY,
 					Direction.OUTGOING);
-			// Line 19
-
-			TestUtils.assertHasSingleRel(attrList.get(0), assignList.get(5), PDGRelationTypes.MODIFIED_BY,
+			TestUtils.assertHasSingleRel(attrList.get(0), assignList.get(6), PDGRelationTypes.MODIFIED_BY,
 					Direction.OUTGOING);
-			// When f(assig) both left and right side of assig are used, the
-			// same as a=assig
-			TestUtils.assertHasSingleRel(attrList.get(0), idsAndMembers.get(5).get(0), PDGRelationTypes.USED_BY,
+			TestUtils.assertHasSingleRel(varLocal, idsAndMembers.get(5).get(2), PDGRelationTypes.USED_BY,
+					Direction.OUTGOING);
+			TestUtils.assertHasSingleRel(attrList.get(3), idsAndMembers.get(5).get(1), PDGRelationTypes.USED_BY,
 					Direction.OUTGOING);
 			TestUtils.assertHasSingleRel(attrList.get(0), idsAndMembers.get(5).get(3), PDGRelationTypes.USED_BY,
 					Direction.OUTGOING);
 
-			TestUtils.assertHasSingleRel(attrList.get(2), idsAndMembers.get(5).get(4), PDGRelationTypes.USED_BY,
-					Direction.OUTGOING);
 			TestUtils.assertHasSingleRel(varLocal, idsAndMembers.get(5).get(5), PDGRelationTypes.USED_BY,
 					Direction.OUTGOING);
-			TestUtils.assertHasSingleRel(attrList.get(1), idsAndMembers.get(5).get(2), PDGRelationTypes.USED_BY,
+			TestUtils.assertHasSingleRel(attrList.get(1), idsAndMembers.get(5).get(0), PDGRelationTypes.USED_BY,
+					Direction.OUTGOING);
+			TestUtils.assertHasSingleRel(attrList.get(3), idsAndMembers.get(5).get(4), PDGRelationTypes.USED_BY,
+					Direction.OUTGOING);
+			// Line 19
+
+			TestUtils.assertHasSingleRel(attrList.get(0), assignList.get(6), PDGRelationTypes.MODIFIED_BY,
+					Direction.OUTGOING);
+			// When f(assig) both left and right side of assig are used, the
+			// same as a=assig
+			TestUtils.assertHasSingleRel(attrList.get(0), idsAndMembers.get(6).get(0), PDGRelationTypes.USED_BY,
+					Direction.OUTGOING);
+			TestUtils.assertHasSingleRel(attrList.get(0), idsAndMembers.get(5).get(3), PDGRelationTypes.USED_BY,
+					Direction.OUTGOING);
+
+			TestUtils.assertHasSingleRel(attrList.get(3), idsAndMembers.get(6).get(4), PDGRelationTypes.USED_BY,
+					Direction.OUTGOING);
+			TestUtils.assertHasSingleRel(varLocal, idsAndMembers.get(6).get(5), PDGRelationTypes.USED_BY,
+					Direction.OUTGOING);
+			TestUtils.assertHasSingleRel(attrList.get(1), idsAndMembers.get(6).get(2), PDGRelationTypes.USED_BY,
 					Direction.OUTGOING);
 
 		}

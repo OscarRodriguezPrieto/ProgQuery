@@ -8,7 +8,10 @@ public class PDG1 {
 	public int[] getArray() {
 		return array;
 	}
-public void setI(){}
+
+	public void setI() {
+	}
+
 	public void setI(int i) {
 		// method that changes the state of this
 		PDG1.this.i = i;
@@ -38,7 +41,7 @@ public void setI(){}
 		pdg.m2(this);
 		PDG1.this.i++;
 		Exception[] d;
-		d=new RuntimeException[5];
+		d = new RuntimeException[5];
 	}
 
 	public static interface I {
@@ -48,8 +51,14 @@ public void setI(){}
 
 		public void m2(PDG1 p);
 
-
 	}
+
+	// public void exx() {
+	// Z a = new A();
+	// a.confusing(0, "JON");
+	// A aa = (A) a;
+	// aa.confusing(00, "KOJO");
+	// }
 	// De comment to fail with Enums and A,B element treated as members of
 	// classes or attributes uninitialized
 	// private enum E {

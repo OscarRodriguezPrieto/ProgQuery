@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 
 import com.sun.source.tree.CompilationUnitTree;
@@ -44,9 +45,10 @@ public abstract class GDBAPIBasedTest {
 		transaction = graphDb.beginTx();
 		graphDb.execute(MainQuery.DELETE_ALL);
 		ASTAuxiliarStorage ast = new ASTAuxiliarStorage();
+		Node cuNode = DatabaseFachade.createSkeletonNode(u, NodeTypes.COMPILATION_UNIT);
 		PDGVisitor pdgUtils;
-		new ASTTypesVisitor(t, true, pdgUtils = new PDGVisitor(), ast).scan(u, Pair.createPair(
-				DatabaseFachade.createSkeletonNode(u, NodeTypes.COMPILATION_UNIT), RelationTypes.CU_PACKAGE_DEC));
+		new ASTTypesVisitor(t, true, pdgUtils = new PDGVisitor(), ast, cuNode).scan(u,
+				Pair.createPair(cuNode, RelationTypes.CU_PACKAGE_DEC));
 		ast.doDynamicMethodCallAnalysis();
 		ast.doInterproceduralPDGAnalysis(pdgUtils.getMethodsMutateThisAndParams(), pdgUtils.getParamsMutatedInMethods(),
 				pdgUtils.getParamsMayMutateInMethods(), pdgUtils.getThisRefsOfMethods());

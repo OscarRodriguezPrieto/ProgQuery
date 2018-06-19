@@ -3,6 +3,8 @@ package tasklisteners;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.tools.JavaFileObject;
+
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
@@ -28,7 +30,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 	private static final boolean DEBUG = false;
 	private final JavacTask task;
 	private final GraphDatabaseService graphDb;
-	private Map<CompilationUnitTree, Integer> classCounter = new HashMap<CompilationUnitTree, Integer>();
+	private Map<JavaFileObject, Integer> classCounter = new HashMap<JavaFileObject, Integer>();
 	// private Set<CompilationUnitTree> unitsInTheSameFile = new
 	// HashSet<CompilationUnitTree>();
 	private boolean started = false;
@@ -52,12 +54,16 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		if (DEBUG)
 			System.out.println("FINISHING " + arg0.getKind());
 		CompilationUnitTree u = arg0.getCompilationUnit();
-		if (arg0.getKind() == Kind.PARSE)
-			classCounter.put(u, u.getTypeDecls().size());
-		else if (arg0.getKind() == Kind.ANALYZE) {
+		if (arg0.getKind() == Kind.PARSE) {
+			if (DEBUG)
+				System.out.println("FIle " + u.getSourceFile().getName() + " , " + u.hashCode() + " , "
+						+ u.getSourceFile().hashCode());
+			classCounter.put(u.getSourceFile(), u.getTypeDecls().size());
+
+		} else if (arg0.getKind() == Kind.ANALYZE) {
 
 			started = true;
-			classCounter.put(u, classCounter.get(u) - 1);
+			classCounter.put(u.getSourceFile(), classCounter.get(u.getSourceFile()) - 1);
 
 			if (firstClass) {
 				firstClass = false;
@@ -65,8 +71,8 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 			} else
 				scan(u.getTypeDecls().get(counter++), false);
 
-			if (classCounter.get(u) == 0) {
-				classCounter.remove(u);
+			if (classCounter.get(u.getSourceFile()) == 0) {
+				classCounter.remove(u.getSourceFile());
 				firstClass = true;
 				counter = 0;
 				// System.out.println("AFTER ANALYZE");
@@ -104,7 +110,8 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 
 			System.out.println(typeDeclaration);
 		}
-		new ASTTypesVisitor(typeDeclaration, first, pdgUtils, ast).scan(cu, argument);
+		new ASTTypesVisitor(typeDeclaration, first, pdgUtils, ast, argument.getFirst().getStartingNode()).scan(cu,
+				argument);
 	}
 
 	@Override
@@ -112,11 +119,9 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		if (DEBUG)
 			System.out.println("STARTING " + arg0.getKind());
 		if (arg0.getKind() == Kind.GENERATE && started) {
-
 			if (classCounter.size() == 0) {
 				// System.out.println("BEFORE CFG");
 				// System.out.println(ast.mm + "\n" + ast.b + "\n" + ast.s1);
-
 				dynamicMethodCallAnalysis();
 				interproceduralPDGAnalysis();
 				shutdownDatabase();
@@ -137,9 +142,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		transaction.close();
 	}
 
-
-	private void dynamicMethodCallAnalysis()
-	{
+	private void dynamicMethodCallAnalysis() {
 		Transaction transaction = DatabaseFachade.beginTx();
 		ast.doDynamicMethodCallAnalysis();
 		transaction.success();

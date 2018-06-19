@@ -2,6 +2,7 @@ package ast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,8 +13,13 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.Tree;
+import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.TryTree;
 import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import com.sun.tools.javac.code.Type;
@@ -53,12 +59,26 @@ public class ASTAuxiliarStorage {
 	// new HashMap<String, List<Type>>();
 	private List<MethodInfo> methodInfo = new ArrayList<MethodInfo>();
 	public final List<Node> typeDecNodes = new ArrayList<Node>();
-
+	private final Set<Node> trustableInvocations = new HashSet<Node>();
 	// public void addThrowsInfoToMethod(String methodName, List<Type>
 	// exceptionTypes) {
 	// methodNamesToExceptionThrowsTypes.put(methodName, exceptionTypes);
 	// }
-
+	public void checkIfTrustableInvocation(MethodInvocationTree methodInvocationTree, MethodSymbol methodSymbol,
+			Node methodInvocationNode) {
+		if (methodInvocationTree.getMethodSelect().getKind() == Kind.IDENTIFIER) {
+			if (!methodSymbol.isConstructor())
+				trustableInvocations.add(methodInvocationNode);
+		} else {
+			ExpressionTree memberSelectionExp = ((MemberSelectTree) methodInvocationTree.getMethodSelect())
+					.getExpression();
+			if (memberSelectionExp.getKind() == Kind.NEW_CLASS)
+				trustableInvocations.add(methodInvocationNode);
+			else if (memberSelectionExp.getKind() == Kind.IDENTIFIER
+					&& ((IdentifierTree) memberSelectionExp).getName().contentEquals("super"))
+				trustableInvocations.add(methodInvocationNode);
+		}
+	}
 	public List<MethodInfo> getMethodsInfo() {
 		return methodInfo;
 	}
@@ -176,7 +196,7 @@ public class ASTAuxiliarStorage {
 
 	// Aquí tenemos dos opciones, bucle o traversal
 	public void doDynamicMethodCallAnalysis() {
-		DynamicMethodCallAnalysis dynMethodCallAnalysis = new DynamicMethodCallAnalysis();
+		DynamicMethodCallAnalysis dynMethodCallAnalysis = new DynamicMethodCallAnalysis(trustableInvocations);
 		for (Node typeDec : typeDecNodes)
 			dynMethodCallAnalysis.dynamicMethodCallAnalysis(typeDec);
 	}
