@@ -1,7 +1,9 @@
 package visitors;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.lang.model.type.TypeMirror;
 
@@ -67,7 +69,6 @@ import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import com.sun.tools.javac.code.Type.ClassType;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
-import com.sun.tools.javac.tree.JCTree.JCIdent;
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.JCTree.JCNewClass;
 
@@ -76,6 +77,7 @@ import cache.DefinitionCache;
 import database.DatabaseFachade;
 import database.nodes.NodeTypes;
 import database.nodes.NodeUtils;
+import database.relations.CDGRelationTypes;
 import database.relations.CGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.PartialRelationWithProperties;
@@ -99,6 +101,11 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 	// Must-May superficial analysis
 	private boolean must = true;
 	private boolean anyBreak;
+	private Set<Node> typeDecUses;
+
+	public Set<Node> getTypeDecUses() {
+		return typeDecUses;
+	}
 
 	public ASTTypesVisitor(Tree typeDec, boolean first, PDGVisitor pdgUtils, ASTAuxiliarStorage ast, Node cu) {
 		this.typeDec = typeDec;
@@ -360,13 +367,15 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		Node classNode = DatabaseFachade.createTypeDecNode(classTree, simpleName, fullyQualifiedType);
 		ast.typeDecNodes.add(classNode);
 		pdgUtils.visitClass(classNode);
+		Set<Node> previousTypeDecUses = typeDecUses;
+		typeDecUses = new HashSet<Node>();
 		if (!pair.getFirst().getStartingNode().hasLabel(NodeTypes.COMPILATION_UNIT))
 			currentCU.createRelationshipTo(classNode, RelationTypes.HAS_INDIRECT_TYPE_DEC);
 		GraphUtils.connectWithParent(classNode, pair, RelationTypes.HAS_TYPE_DEC);
 
-		DefinitionCache.CLASS_TYPE_CACHE.putClassDefinition(classSymbol, classNode, ast.typeDecNodes);
+		DefinitionCache.CLASS_TYPE_CACHE.putClassDefinition(classSymbol, classNode, ast.typeDecNodes, typeDecUses);
 
-		TypeHierarchy.addTypeHierarchy(classSymbol, classNode, ast.typeDecNodes);
+		TypeHierarchy.addTypeHierarchy(classSymbol, classNode, ast.typeDecNodes, this);
 		scan(classTree.getModifiers(), Pair.createPair(classNode, RelationTypes.HAS_CLASS_MODIFIERS));
 		scan(classTree.getTypeParameters(), Pair.createPair(classNode, RelationTypes.HAS_CLASS_TYPEPARAMETERS));
 		scan(classTree.getExtendsClause(), Pair.createPair(classNode, RelationTypes.HAS_CLASS_EXTENDS));
@@ -395,6 +404,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		lastStaticConsVisited = prevStaticCons;
 		// this.fullNamePrecedent = previusPrecedent;
 		pdgUtils.endVisitClass();
+		typeDecUses = previousTypeDecUses;
 		return null;
 
 	}
@@ -566,12 +576,6 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 	@Override
 	public Node visitIdentifier(IdentifierTree identifierTree, Pair<PartialRelation<RelationTypes>, Object> t) {
 
-		if (DEBUG && t.getFirst().getRelationType() == RelationTypes.HAS_METHODDECL_THROWS) {
-			System.out.println(identifierTree);
-			System.out.println(JavacInfo.getTree(((JCIdent) identifierTree).sym));
-			System.out.println(identifierTree.getName().toString());
-			System.out.println("TYPE:\n" + JavacInfo.getTypeDirect(identifierTree));
-		}
 		Node identifierNode = DatabaseFachade.createSkeletonNode(identifierTree, NodeTypes.IDENTIFIER);
 		identifierNode.setProperty("name", identifierTree.getName().toString());
 		// It can be useful or not, by the moment it is not necessary for coding
@@ -580,6 +584,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		// identifierTree).sym.toString());
 		GraphUtils.attachTypeDirect(identifierNode, identifierTree);
 		GraphUtils.connectWithParent(identifierNode, t);
+
 		pdgUtils.relationOnIdentifier(identifierTree, identifierNode, t);
 		return identifierNode;
 	}
@@ -709,11 +714,17 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 	@Override
 	public Node visitMemberSelect(MemberSelectTree memberSelectTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+
 		Node memberSelect = DatabaseFachade.createSkeletonNode(memberSelectTree, NodeTypes.MEMBER_SELECTION);
 		memberSelect.setProperty("memberName", memberSelectTree.getIdentifier().toString());
 
 		GraphUtils.attachTypeDirect(memberSelect, memberSelectTree);
 		GraphUtils.connectWithParent(memberSelect, t);
+
+		Symbol innerSymbol = JavacInfo.getSymbolFromTree(memberSelectTree.getExpression());
+		if (innerSymbol instanceof ClassSymbol)
+			addClassIdentifier(innerSymbol);
+
 		pdgUtils.relationOnAttribute(memberSelectTree, memberSelect, ast.typeDecNodes, t);
 
 		scan(memberSelectTree.getExpression(),
@@ -759,6 +770,31 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		}
 	}
 
+	private void addClassIdentifier(Tree ident) {
+		TypeMirror typeMirror = JavacInfo.getTypeMirror(ident);
+		if (typeMirror instanceof ClassType)
+			addClassIdentifier(((ClassType) typeMirror).tsym);
+
+	}
+
+	private void addClassIdentifier(Symbol symbol) {
+
+		Node newTypeDec;
+		if (DefinitionCache.CLASS_TYPE_CACHE.containsKey(symbol)) {
+			newTypeDec = DefinitionCache.CLASS_TYPE_CACHE.get(symbol);
+			if (!typeDecUses.contains(newTypeDec)) {
+				pdgUtils.getCurrentClassDec().createRelationshipTo(newTypeDec, CDGRelationTypes.USES_TYPE_DEC);
+				typeDecUses.add(newTypeDec);
+			}
+		} else {
+
+			newTypeDec = DefinitionCache.createTypeDec((ClassSymbol) symbol, ast.typeDecNodes);
+			pdgUtils.getCurrentClassDec().createRelationshipTo(newTypeDec, CDGRelationTypes.USES_TYPE_DEC);
+			typeDecUses.add(newTypeDec);
+		}
+
+	}
+
 	@Override
 	public Node visitMethod(MethodTree methodTree, Pair<PartialRelation<RelationTypes>, Object> t) {
 		if (DEBUG)
@@ -796,11 +832,8 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		ast.newMethodDeclaration();
 		scan(methodTree.getReturnType(), Pair.createPair(methodNode, RelationTypes.HAS_METHODDECL_RETURNS));
 
-		if (!methodSymbol.isConstructor()) {
-			TypeMirror typeMirror = JavacInfo.getTypeMirror(methodTree.getReturnType());
-			if (typeMirror instanceof ClassType)
-				DefinitionCache.createTypeDecIfNecessary((ClassSymbol) ((ClassType) typeMirror).tsym, ast.typeDecNodes);
-		}
+		if (!methodSymbol.isConstructor())
+			addClassIdentifier(methodTree.getReturnType());
 
 		scan(methodTree.getTypeParameters(), Pair.createPair(methodNode, RelationTypes.HAS_METHODDECL_TYPEPARAMETERS));
 
@@ -808,7 +841,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 			scan(methodTree.getParameters().get(i),
 					Pair.createPair(new PartialRelationWithProperties<RelationTypes>(methodNode,
 							RelationTypes.HAS_METHODDECL_PARAMETERS, "paramIndex", i + 1)));
-
+		methodTree.getThrows().forEach(this::addClassIdentifier);
 		scan(methodTree.getThrows(), Pair.createPair(methodNode, RelationTypes.HAS_METHODDECL_THROWS));
 		scan(methodTree.getBody(), Pair.createPair(methodNode, RelationTypes.HAS_METHODDECL_BODY));
 		scan(methodTree.getDefaultValue(), Pair.createPair(methodNode, RelationTypes.HAS_DEFAULT_VALUE));
@@ -979,7 +1012,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 	public Node visitNewClass(NewClassTree newClassTree, Pair<PartialRelation<RelationTypes>, Object> pair) {
 
 		Node newClassNode = DatabaseFachade.createSkeletonNode(newClassTree, NodeTypes.NEW_INSTANCE);
-
+		addClassIdentifier(newClassTree.getIdentifier());
 		// Igual no hace falta el attachType porque la expresión siempre es del
 		// tipo de la clase pero paquete + identifier no vale, igual se puede
 		// hacer algo con el Symbol s y el getTypeMirror para obtener el nombre
@@ -1024,21 +1057,6 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		callRelation.setProperty("mustBeExecuted", must);
 		if (consSymbol.getThrownTypes().size() > 0)
 			currentMethodInvocations.add(consSymbol);
-
-		if (DEBUG) {
-			System.out.println("CONSTRUCTOR TYPE=" + ((JCNewClass) newClassTree).constructorType);
-
-			System.out.println("CONSTRUCTOR TYPE=" + ((JCNewClass) newClassTree).def);
-			System.out.println("CONSTRUCTOR TYPE=" + ((JCNewClass) newClassTree).constructor);
-			System.out.println("CONSTRUCTOR TYPE=" + ((JCNewClass) newClassTree).type);
-			System.out.println("CONSTRUCTOR TYPE=" + ((JCNewClass) newClassTree));
-			System.out.println(newClassNode.getProperty("lineNumber"));
-			// String fullyQualifiedName = s + ":" + "<init>";
-			System.out.println(newClassTree.getEnclosingExpression());
-			System.out.println(newClassTree.getIdentifier());
-			System.out.println(newClassTree.getClassBody());
-			System.out.println(newClassTree.getKind());
-		}
 
 		// Si no podemos sacar el methodType de la expresión como con las
 		// invocaciones, tendremos que buscar entre los contructores de la clase
@@ -1236,7 +1254,7 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 				isAttr ? NodeTypes.ATTR_DEC : isMethodParam ? NodeTypes.PARAMETER_DEC : NodeTypes.VAR_DEC);
 		variableNode.setProperty("name", variableTree.getName().toString());
 		GraphUtils.attachTypeDirect(variableNode, variableTree);
-
+		addClassIdentifier(variableTree.getType());
 		if (DEBUG)
 			System.out
 					.println("VARIABLE:" + variableTree.getName() + "(" + variableNode.getProperty("actualType") + ")");
