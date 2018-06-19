@@ -331,7 +331,6 @@ public class PDGVisitor {
 
 	public void relationOnIdentifier(IdentifierTree identifierTree, Node identifierNode,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
-
 		addRels(((JCIdent) identifierTree).sym, identifierNode, t.getSecond(), () -> currentClassDec,
 				(Boolean hasNoDec, Node nodeDec, Boolean isNotThis, Symbol s) -> {
 					if (Modifier.isStatic((int) s.flags_field))
@@ -368,11 +367,13 @@ public class PDGVisitor {
 
 	}
 
-	public void relationOnAttribute(MemberSelectTree memberSelectTree, Node memberSelectNode,
+	public void relationOnAttribute(MemberSelectTree memberSelectTree,
+			Node memberSelectNode,
 			List<Node> typeDecNodeList, Pair<PartialRelation<RelationTypes>, Object> t) {
 		// This takes into account the case of Class.this inside of a inner
 		// class
-		addRels(((JCFieldAccess) memberSelectTree).sym, memberSelectNode, t.getSecond(),
+		Symbol symbol = ((JCFieldAccess) memberSelectTree).sym;
+		addRels(symbol, memberSelectNode, t.getSecond(),
 				() -> DefinitionCache.getOrCreateTypeDec(
 						(ClassSymbol) JavacInfo.getSymbolFromTree(memberSelectTree.getExpression()), typeDecNodeList),
 				(Boolean hasDec, Node nodeDec, Boolean isNotThis, Symbol s) -> null);
@@ -392,4 +393,9 @@ public class PDGVisitor {
 				.forEach(rel -> attrsInClassDec.add(rel.getEndNode()));
 
 	}
+
+	public Node getCurrentClassDec() {
+		return currentClassDec;
+	}
+
 }

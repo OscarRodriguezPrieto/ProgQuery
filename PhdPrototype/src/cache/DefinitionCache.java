@@ -3,6 +3,7 @@ package cache;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.neo4j.graphdb.Direction;
@@ -14,6 +15,7 @@ import com.sun.tools.javac.code.Symbol.ClassSymbol;
 
 import database.DatabaseFachade;
 import database.nodes.NodeTypes;
+import database.relations.CDGRelationTypes;
 import database.relations.RelationTypes;
 import typeInfo.TypeHierarchy;
 
@@ -34,7 +36,8 @@ public class DefinitionCache<TKEY> {
 			auxNodeCache.put(k, v);
 	}
 
-	public void putClassDefinition(TKEY classSymbol, Node classDec, List<Node> typeDecNodeList) {
+	public void putClassDefinition(TKEY classSymbol, Node classDec, List<Node> typeDecNodeList,
+			Set<Node> typeDecsUses) {
 		boolean containsKey;
 		if (containsKey = auxNodeCache.containsKey(classSymbol)) {
 			Node oldClassNode = auxNodeCache.get(classSymbol);
@@ -42,7 +45,8 @@ public class DefinitionCache<TKEY> {
 					RelationTypes.DECLARES_CONSTRUCTOR))
 				r.delete();
 			typeDecNodeList.remove(oldClassNode);
-
+			oldClassNode.getRelationships(CDGRelationTypes.USES_TYPE_DEC, Direction.OUTGOING)
+					.forEach(usesTypeDecRel -> typeDecsUses.add(usesTypeDecRel.getEndNode()));
 		}
 
 		putDefinition(classSymbol, classDec, containsKey);
@@ -135,7 +139,7 @@ public class DefinitionCache<TKEY> {
 	public static Node createTypeDec(ClassSymbol classSymbol, Supplier<Node> supplier, List<Node> typeDecList) {
 		Node classNode = supplier.get();
 		typeDecList.add(classNode);
-		TypeHierarchy.addTypeHierarchy(classSymbol, classNode, typeDecList);
+		TypeHierarchy.addTypeHierarchy(classSymbol, classNode, typeDecList, null);
 		DefinitionCache.CLASS_TYPE_CACHE.put(classSymbol, classNode);
 		return classNode;
 	}

@@ -45,6 +45,7 @@ public class MainQuery {
 	public static final String MAY_THROW_REL = "MATCH (stat)-[r:MAY_THROW]->(statDos)  RETURN stat, labels(stat), r, statDos,labels(statDos)";
 	public static final String STATE_MODS = "MATCH (n)-[r :STATE_MAY_BE_MODIFIED | :STATE_MODIFIED_BY]->(m) RETURN n, labels(n),r, m";
 	public static final String MAY_AND_REFER = "MATCH (n)-[r :REFER_TO | :MAY_REFER_TO]->(m) RETURN n, labels(n),r, m";
+	public static final String CDG = "MATCH (n)-[r :USES_TYPE_DEC ]->(m) RETURN n.fullyQualifiedName, m.fullyQualifiedName ORDER BY n.fullyQualifiedName";
 
 	// Controlar si se puede sobreescribir el equals metiendo primitivas al
 	// parametro
@@ -74,14 +75,14 @@ public class MainQuery {
 
 		GraphDatabaseService gs = DatabaseFachade.getDB();
 
-		Result res = gs.execute(STATE_MODS);
+		Result res = gs.execute(CDG);
 		// gs.execute(TYPE_HIERARCHY);
 
 		// System.out.println(res.resultAsString());
 		// res = gs.execute(METHOD_INV_RELATIONS_IN);
 		// FileUtil.writeFile("selfAnalisysOutput.txt", res.resultAsString());
 		System.out.println(res.resultAsString());
-		gs.execute(DELETE_ALL);
+		// gs.execute(DELETE_ALL);
 		// String cad = "Hoy +";
 		// cad += "apruebo";
 		// System.out.println(cad.contentEquals("Hoy apruebo"));
