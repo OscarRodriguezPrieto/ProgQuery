@@ -9,7 +9,7 @@ public class LocalVars {
 		System.out.println(new A().m);
 		int c=0;
 		c++;
-//
+		//
 //		{
 //			final int a = 2, b = 3, c = new A().m;
 //			System.out.println(a + b + c);

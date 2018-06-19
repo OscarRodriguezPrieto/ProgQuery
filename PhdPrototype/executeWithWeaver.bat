@@ -1,1 +1,2 @@
-javac -cp C:\Users\Oscar\Desktop\Oskar\weaveJ\JavaAgentWeaveJ\src;C:\Users\Oscar\Desktop\Oskar\weaveJ\JavaAgentWeaveJ\lib\asm-all-5.0.4.jar;build/libs/*;build/libs/neo4j/*; -Xplugin:WiggleIndexerPlugin -d bon -Xplugin:WiggleIndexerPlugin  C:\Users\Oscar\Desktop\Oskar\weaveJ\JavaAgentWeaveJ\src\es\uniovi\reflection\weaver\Weaver.java
+javac -cp src;C:\Users\Oscar\Desktop\Oskar\weaveJ\JavaAgentWeaveJ\src;C:\Users\Oscar\Desktop\Oskar\weaveJ\JavaAgentWeaveJ\lib\asm-all-5.0.4.jar;build/libs/*;build/libs/neo4j/*; -Xplugin:WiggleIndexerPlugin -d bon -Xplugin:WiggleIndexerPlugin  C:\Users\Oscar\Desktop\Oskar\weaveJ\JavaAgentWeaveJ\src\es\uniovi\reflection\weaver\Weaver.java
+pause

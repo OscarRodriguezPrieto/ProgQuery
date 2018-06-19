@@ -288,7 +288,10 @@ public class PDGVisitor {
 	}
 
 	private void addRel(List<Consumer<Node>> list, Node dec, Node concrete, PDGRelationTypes rel) {
-
+		// System.out.println("DEC:\n" + NodeUtils.nodeToString(dec));
+		// System.out.println("CONCRETE:\n" + NodeUtils.nodeToString(concrete));
+		// System.out.println(rel);
+		// System.out.println(list);
 		Node end;
 		if (rel == PDGRelationTypes.USED_BY)
 			end = concrete;
@@ -329,27 +332,6 @@ public class PDGVisitor {
 	public void relationOnIdentifier(IdentifierTree identifierTree, Node identifierNode,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
 
-		// System.out.println();
-		// System.out.println("ID TREE:\t" + identifierTree);
-		// System.out.println("ID SYMBOL:\t" + ((JCIdent) identifierTree).sym);
-		// System.out.println("ID SYMBOL:\t" + ((JCIdent)
-		// identifierTree).sym.getClass());
-		// if (((JCIdent) identifierTree).sym instanceof ClassSymbol) {
-		// System.out.println(
-		// "ID SYMBOL SI INTERFACE:" + ((ClassSymbol) ((JCIdent)
-		// identifierTree).sym).type.getClass());
-		// System.out.println(
-		// "ID SYMBOL SI INTERFACE:" + ((ClassSymbol) ((JCIdent)
-		// identifierTree).sym).type.isInterface());
-		//
-		// System.out.println("ID SYMBOL IS INT:" + ((ClassSymbol) ((JCIdent)
-		// identifierTree).sym).isInterface());
-		//
-		// System.out.println("ID SYMBOL IS ENUM:" + ((ClassSymbol) ((JCIdent)
-		// identifierTree).sym).isEnum());
-		// }
-		// System.out.println("SYMBOL HASH:\t" + ((JCIdent)
-		// identifierTree).sym.hashCode());
 		addRels(((JCIdent) identifierTree).sym, identifierNode, t.getSecond(), () -> currentClassDec,
 				(Boolean hasNoDec, Node nodeDec, Boolean isNotThis, Symbol s) -> {
 					if (Modifier.isStatic((int) s.flags_field))
@@ -387,12 +369,12 @@ public class PDGVisitor {
 	}
 
 	public void relationOnAttribute(MemberSelectTree memberSelectTree, Node memberSelectNode,
-			Pair<PartialRelation<RelationTypes>, Object> t) {
+			List<Node> typeDecNodeList, Pair<PartialRelation<RelationTypes>, Object> t) {
 		// This takes into account the case of Class.this inside of a inner
 		// class
 		addRels(((JCFieldAccess) memberSelectTree).sym, memberSelectNode, t.getSecond(),
 				() -> DefinitionCache.getOrCreateTypeDec(
-						(ClassSymbol) JavacInfo.getSymbolFromTree(memberSelectTree.getExpression())),
+						(ClassSymbol) JavacInfo.getSymbolFromTree(memberSelectTree.getExpression()), typeDecNodeList),
 				(Boolean hasDec, Node nodeDec, Boolean isNotThis, Symbol s) -> null);
 	}
 

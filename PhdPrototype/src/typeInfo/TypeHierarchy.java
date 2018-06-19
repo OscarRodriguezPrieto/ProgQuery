@@ -1,5 +1,7 @@
 package typeInfo;
 
+import java.util.List;
+
 import org.neo4j.graphdb.Node;
 
 import com.sun.tools.javac.code.Symbol;
@@ -14,55 +16,27 @@ public class TypeHierarchy {
 
 	private static final boolean DEBUG = false;
 
-	public static void visitClass(ClassSymbol classSymbol, Node classNode) {
-		Symbol superSymbol = classSymbol.getSuperclass().tsym;
+	public static void addTypeHierarchy(ClassSymbol symbol, Node classNode, List<Node> typeDecs) {
+		// System.out.println(symbol);
+		Symbol superSymbol = symbol.getSuperclass().tsym;
+		// System.out.println("BASE:");
+		// System.out.println(superSymbol);
+		// System.out.println("INTERFACES:");
+		// symbol.getInterfaces().forEach(interfaceType ->
+		// System.out.println((ClassSymbol) interfaceType.tsym));
 		if (superSymbol != null)
-			classNode.createRelationshipTo(DefinitionCache
-					.getOrCreateTypeDec((ClassSymbol) classSymbol.getSuperclass().tsym, NodeTypes.CLASS_DECLARATION),
-					RelationTypes.IS_SUBTYPE_EXTENDS);
+			scanBaseClassSymbol((ClassSymbol) superSymbol, classNode, RelationTypes.IS_SUBTYPE_EXTENDS,
+					NodeTypes.CLASS_DECLARATION, typeDecs);
 
 		// implements
-		for (Type interfaceType : classSymbol.getInterfaces())
-			classNode.createRelationshipTo(DefinitionCache.getOrCreateTypeDec((ClassSymbol) interfaceType.tsym,
-					NodeTypes.INTERFACE_DECLARATION), RelationTypes.IS_SUBTYPE_IMPLEMENTS);
+		for (Type interfaceType : symbol.getInterfaces())
+			scanBaseClassSymbol((ClassSymbol) interfaceType.tsym, classNode, RelationTypes.IS_SUBTYPE_IMPLEMENTS,
+					NodeTypes.INTERFACE_DECLARATION, typeDecs);
+
 	}
 
-	// public static void visitClass(ClassTree classTree, Node classNode) {
-	//
-	// Tree extendsTree = classTree.getExtendsClause();
-	// // extends
-	// connectSubType(extendsTree, classNode, RelationTypes.IS_SUBTYPE_EXTENDS);
-	//
-	// // implements
-	// for (Tree implementsTree : classTree.getImplementsClause())
-	// connectSubType(implementsTree, classNode,
-	// RelationTypes.IS_SUBTYPE_IMPLEMENTS);
-	//
-	// }
-	//
-	// private static void connectSubType(Tree superTree, Node baseClassNode,
-	// RelationTypes r) {
-	// if (DEBUG) {
-	// System.out.println("--------NEW CONNECT SUBTYPE--------" + r.toString());
-	// System.out.println("BASE CLASS NODE " + baseClassNode);
-	// }
-	// JCTree jcTree = (JCTree) superTree;
-	// if (DEBUG) {
-	// System.out.println("SUPER TREE :" + superTree);
-	// System.out.println("SUPER TREE cast to JCTREE:" + jcTree);
-	// }
-	// if (jcTree != null) {
-	// Symbol s = TreeInfo.symbol(jcTree);
-	// if (DEBUG) {
-	// System.out.println("JCTREE SYMBOL:" + s + " " + s.toString().length() + "
-	// " + s.getClass());
-	// System.out.println(s + " " + s.getClass() + " " + ((ClassSymbol)
-	// s).classfile.getKind() + " "
-	// + ((ClassSymbol) s).sourcefile.getKind());
-	// }
-	// baseClassNode.createRelationshipTo(DefinitionCache.getOrCreateTypeDec((ClassSymbol)
-	// s), r);
-	//
-	// }
-	// }
+	private static void scanBaseClassSymbol(ClassSymbol baseSymbol, Node classNode, RelationTypes rel,
+			NodeTypes nodeType, List<Node> typeDecs) {
+		classNode.createRelationshipTo(DefinitionCache.getOrCreateTypeDec(baseSymbol, nodeType, typeDecs), rel);
+	}
 }
