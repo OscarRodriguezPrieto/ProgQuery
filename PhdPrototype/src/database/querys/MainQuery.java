@@ -51,42 +51,12 @@ public class MainQuery {
 	// parametro
 	public static void main(String[] args) throws IOException {
 
-		// GraphDatabaseService db = DatabaseFachade.getDB();
-		// DatabaseFachade.setDB(db);
-		// Transaction t = db.beginTx();
-		// Node n = DatabaseFachade.createNode();
-		// n.createRelationshipTo(DatabaseFachade.createNode(),
-		// PDGRelationTypes.MAY_RETURN);
-		// t.success();
-		// System.out.println(n.getSingleRelationship(PDGRelationTypes.MAY_RETURN,
-		// Direction.OUTGOING));
-		// System.out.println(n.getSingleRelationship(PDGRelationTypes.MAY_RETURN,
-		// Direction.OUTGOING).getType());
-		// System.out.println(n.getSingleRelationship(PDGRelationTypes.MAY_RETURN,
-		// Direction.OUTGOING)
-		// .getType() == PDGRelationTypes.MAY_RETURN);
-		// System.out
-		// .println(n.getSingleRelationship(PDGRelationTypes.MAY_RETURN,
-		// Direction.OUTGOING).getType().getClass());
-		// System.out
-		// .println(n.getSingleRelationship(PDGRelationTypes.MAY_RETURN,
-		// Direction.OUTGOING).getType()
-		// .getProperty("name"));
-
 		GraphDatabaseService gs = DatabaseFachade.getDB();
 
 		Result res = gs.execute(CDG);
-		// gs.execute(TYPE_HIERARCHY);
-
-		// System.out.println(res.resultAsString());
-		// res = gs.execute(METHOD_INV_RELATIONS_IN);
-		// FileUtil.writeFile("selfAnalisysOutput.txt", res.resultAsString());
 		System.out.println(res.resultAsString());
 		// gs.execute(DELETE_ALL);
-		// String cad = "Hoy +";
-		// cad += "apruebo";
-		// System.out.println(cad.contentEquals("Hoy apruebo"));
-		// System.out.println((int) Math.random() * 1);
+
 	}
 
 }

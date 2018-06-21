@@ -19,9 +19,9 @@ import utils.JavacInfo;
 public class DatabaseFachade {
 
 	public static String getDBPath() {
-		String dbPath = System.getenv("AST_ANALYZER_DB_PATH");
+		String dbPath = System.getenv("PROQUERY_DB_PATH");
 		if (dbPath == null)
-			dbPath = "./neo4j/data/ASTAnalyzer.db";
+			dbPath = "./neo4j/data/ProQuery.db";
 		return dbPath;
 	}
 
