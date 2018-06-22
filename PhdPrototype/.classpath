@@ -91,4 +91,5 @@
 	<classpathentry kind="lib" path="build/libs/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="build/libs/neo4j/neo4j-kernel-3.3.4-tests.jar"/>
 	<classpathentry kind="output" path="bin"/>
+
 </classpath>
