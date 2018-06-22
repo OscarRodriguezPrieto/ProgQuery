@@ -1,3 +1,8 @@
 *.class
 PhdPrototype/build/*
 PhdPrototype/neo4j/*
+PhdPrototype/neo4j/data/wiggle.db
+PhdPrototype/neo4j/data/ASTAnalyzer
+PhdPrototype/bin/
+PhdPrototype/build/libs
+PhdPrototype/bon/

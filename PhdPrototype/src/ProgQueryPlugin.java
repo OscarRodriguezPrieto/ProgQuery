@@ -4,9 +4,9 @@ import com.sun.source.util.JavacTask;
 import database.DatabaseFachade;
 import tasklisteners.GetStructuresAfterAnalyze;
 
-public class ProQueryPlugin implements com.sun.source.util.Plugin {
+public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 
-	private static final String PLUGIN_NAME = "ProQueryPlugin";
+	private static final String PLUGIN_NAME = "ProgQueryPlugin";
 
 	@Override
 	public void init(JavacTask task, String[] args) {

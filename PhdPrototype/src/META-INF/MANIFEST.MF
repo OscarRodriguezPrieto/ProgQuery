@@ -1,1 +1,1 @@
-ProQueryPlugin   # ProQueryPlugin
+ProgQueryPlugin   # ProgQueryPlugin
