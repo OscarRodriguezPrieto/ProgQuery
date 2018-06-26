@@ -1,1 +1,0 @@
-java -cp src;build\libs\*;build\libs\neo4j\*; database.querys.RuleDetectionQueries 1 > temp/output.txt

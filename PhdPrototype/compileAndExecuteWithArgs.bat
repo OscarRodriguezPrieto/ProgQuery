@@ -1,2 +1,0 @@
-compilePlugin
-executePlugin < args.txt
