@@ -25,15 +25,6 @@ public class RuleDetectionQueries {
 	public static final String COUNT_DISTINCT_ONLY_METHODS = "MATCH (c)-[:DECLARES_METHOD]->(n:METHOD_DEC) "
 			+ "WHERE c:CLASS_DECLARATION OR c:INTERFACE_DECLARATION   RETURN n.fullyQualifiedName";
 
-	public static final String COUNT_DISTINCT_ONLY_METHODS_BIS_BIS = "MATCH (c)-[:DECLARES_METHOD]->(n) "
-			+ "WHERE c:CLASS_DECLARATION OR c:INTERFACE_DECLARATION   RETURN n.fullyQualifiedName";
-
-	public static final String COUNT_DISTINCT_ONLY_METHODS_BIS_BIS_BIS = "MATCH (c)-[:DECLARES_METHOD]->(n) "
-			+ "  RETURN n.fullyQualifiedName";
-
-	public static final String COUNT_DISTINCT_ONLY_METHODS_BIS_BIS_BIS_BIS = "MATCH (c)-[]->(n:METHOD_DEC) "
-			+ "  RETURN n.fullyQualifiedName";
-
 	public static final String GET_DISTINCT_METHODS_SIMPLE = "MATCH (n:METHOD_DEC) "
 			+ "  RETURN DISTINCT n.fullyQualifiedName";
 
@@ -61,9 +52,7 @@ public class RuleDetectionQueries {
 			+ "WHERE l.typeKind='ARRAY'  AND l.actualType<>r.actualType " + "return distinct a,l,r,m,c";
 
 	public static final String OVERLOADED_FETCH = "MATCH ()-[:DECLARES_METHOD]->(n) WITH count(n.completeName) as overloadedCount, n.completeName as name WHERE overloadedCount>1 RETURN name,overloadedCount ;";
-	// -[:USED_BY]->(id)
-	// WHERE param.actualType=c.fullyQualifiedName AND
-	// QUERY HERENCIA WIGGLE MÁS LENTO, EL RESTO NO SE PUEDEN HACER
+
 	public static final String FOR_PARAMS_FAVOR_INTERFACES_OVER_CLASSES = "MATCH (c)-[:DECLARES_METHOD]->(m)"
 			+ "-[:HAS_METHODDECL_PARAMETERS]->(param)-[:USED_BY]->(id)<-[:MEMBER_SELECT_EXPR]-(ms)<-[:METHODINVOCATION_METHOD_SELECT]-(mi)-[:HAS_DEC]->(mid)<-[:DECLARES_METHOD]-(interface),"
 			+ "(paramClass)-[:IS_SUBTYPE_IMPLEMENTS]->(interface) "
