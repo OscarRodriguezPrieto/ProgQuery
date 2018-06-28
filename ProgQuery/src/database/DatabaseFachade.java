@@ -19,7 +19,7 @@ import utils.JavacInfo;
 public class DatabaseFachade {
 
 	public static String getDBPath() {
-		String dbPath = System.getenv("PROQUERY_DB_PATH");
+		String dbPath = System.getenv("PROGQUERY_DB_PATH");
 		if (dbPath == null)
 			dbPath = "./neo4j/data/ProgQuery.db";
 		return dbPath;

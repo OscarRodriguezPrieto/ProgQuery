@@ -323,7 +323,6 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		// pasa
 		boolean prev = must;
 		must = caseTree.getExpression() == null && prev && !anyBreak;
-		ast.putCfgNodeInCache(caseTree.getExpression(), caseNode);
 		scan(caseTree.getExpression(), Pair.createPair(caseNode, RelationTypes.CASE_EXPR));
 		scan(caseTree.getStatements(), Pair.createPair(caseNode, RelationTypes.CASE_STATEMENTS));
 		must = prev;
@@ -351,7 +350,8 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 		// if (DEBUG) {
 		// System.out.println("Visitando calse " + classTree.getSimpleName() +
 		// "\n" + classTree);
-		System.out.println(" clase " + classTree.getSimpleName() + "(" + classTree.getClass() + ")");
+		// System.out.println(" clase " + classTree.getSimpleName() + "(" +
+		// classTree.getClass() + ")");
 
 		// }
 		ClassSymbol classSymbol = ((JCClassDecl) classTree).sym;
@@ -1125,7 +1125,6 @@ public class ASTTypesVisitor extends TreeScanner<Node, Pair<PartialRelation<Rela
 
 	@Override
 	public Node visitSwitch(SwitchTree switchTree, Pair<PartialRelation<RelationTypes>, Object> t) {
-
 		Node switchNode = DatabaseFachade.createSkeletonNode(switchTree, NodeTypes.SWITCH_STATEMENT);
 		GraphUtils.connectWithParent(switchNode, t);
 		scan(switchTree.getExpression(), Pair.createPair(switchNode, RelationTypes.SWITCH_EXPR));

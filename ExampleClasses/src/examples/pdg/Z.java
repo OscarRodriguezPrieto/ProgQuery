@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 import com.sun.javafx.UnmodifiableArrayList;
 
-import database.relations.RelationTypes;
+import examples.util.EnumExample;
 
 public class Z implements Serializable, Cloneable {
 	final int m = 33;
@@ -21,15 +21,15 @@ public class Z implements Serializable, Cloneable {
 	}
 
 	public void ordinal() {
-		RelationTypes.ARRAYACCESS_EXPR.ordinal();
+		EnumExample.FIRST.ordinal();
 	}
 
 	public void confusing(int i, String g) {
-		RelationTypes.ARRAYACCESS_EXPR.ordinal();
+		EnumExample.SECOND.ordinal();
 	}
 
 	public int confusing(String g, int i) {
-		return RelationTypes.ARRAYACCESS_EXPR.ordinal();
+		return EnumExample.THIRD.ordinal();
 	}
 
 	@Override
