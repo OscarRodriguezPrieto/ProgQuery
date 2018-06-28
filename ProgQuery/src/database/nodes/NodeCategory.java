@@ -1,0 +1,5 @@
+package database.nodes;
+
+public enum NodeCategory {
+	TYPE_DECLARATION, STATEMENT, EXPRESSION, TYPE, VAR_DECLARATION, VIRTUAL_STATEMENT
+}
