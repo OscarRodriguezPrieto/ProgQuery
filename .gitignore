@@ -3,7 +3,7 @@ ProgQuery/build/*
 ProgQuery/neo4j/*
 ProgQuery/bin/
 ProgQuery/bon/
-ProgQuery/temp/output/*
+ProgQuery/temp/*
 ProgQuery/.gradle/*
 ProgQuery/.classpath
 ProgQuery/.project
