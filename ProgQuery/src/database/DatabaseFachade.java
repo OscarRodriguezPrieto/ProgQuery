@@ -1,109 +1,139 @@
 package database;
 
-import java.io.File;
+import java.util.Set;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeMirror;
 
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.Tree.Kind;
-import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Flags;
+import com.sun.tools.javac.code.Symbol.ClassSymbol;
+import com.sun.tools.javac.code.Type.ClassType;
 
+import database.nodes.NodeCategory;
 import database.nodes.NodeTypes;
+import node_wrappers.NodeWrapper;
+import node_wrappers.WrapperUtils;
 import utils.JavacInfo;
 
 public class DatabaseFachade {
+	private final InsertionStrategy insertionStrategy;
+	public static InsertionStrategy CURRENT_INSERTION_STRATEGY;
 
-	public static String getDBPath() {
-		String dbPath = System.getenv("PROGQUERY_DB_PATH");
-		if (dbPath == null)
-			dbPath = "./neo4j/data/ProgQuery.db";
-		return dbPath;
+	public static DatabaseFachade CURRENT_DB_FACHADE;
+
+	public static void init(InsertionStrategy current) {
+		CURRENT_INSERTION_STRATEGY = current;
+//		System.out.println(current);
+		CURRENT_DB_FACHADE = new DatabaseFachade(current);
+		// System.out.println(current);
 	}
 
-	public static GraphDatabaseService getDB() {
-		return new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(new File(getDBPath()))
-				.setConfig(GraphDatabaseSettings.node_keys_indexable, "nodeType")
-				.setConfig(GraphDatabaseSettings.relationship_keys_indexable, "typeKind")
-				.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
-				.setConfig(GraphDatabaseSettings.relationship_auto_indexing, "true").newGraphDatabase();
+	public DatabaseFachade(InsertionStrategy insertionStrategy) {
+		this.insertionStrategy = insertionStrategy;
 	}
 
-	public static void setDB(GraphDatabaseService db) {
-		graphDb = db;
+	public NodeWrapper createNodeWithoutExplicitTree(NodeTypes type) {
+		return createNode(type, new Object[] {});
 	}
 
-	private static GraphDatabaseService graphDb;
-
-	public static Node createSkeletonNode(NodeTypes type) {
-
-		Node node = graphDb.createNode();
-
-		node.addLabel(type);
-		return node;
-
-	}
-
-	public static Node createSkeletonNode(Tree tree, NodeTypes nodeType) {
-
-		Node node = graphDb.createNode();
-		setMetaInfo(tree, node, nodeType);
-
-		return node;
-
-	}
-
-	private static void setMetaInfo(Tree tree, Node node, NodeTypes nodeType) {
-
-		node.addLabel(nodeType);
-		setPosition(node, tree);
-	}
-
-	private static void setPosition(Node node, Tree tree) {
-
-		node.setProperty("lineNumber", JavacInfo.getLineNumber(tree));
-		node.setProperty("position", JavacInfo.getPosition(tree));
-		// node.setProperty("size", JavacInfo.getSize(tree));
-	}
-
-	public static Transaction beginTx() {
-		return graphDb.beginTx();
-	}
-
-	public static Node createNode() {
-		return graphDb.createNode();
-	}
-
-	public static Node createNode(NodeTypes nodeType) {
-		Node node = graphDb.createNode();
-		node.addLabel(nodeType);
+	private NodeWrapper createNode(NodeTypes type, Object[] properties) {
+		NodeWrapper node = insertionStrategy.createNode(type, properties);
+		addMultiLabelHypernyms(node, type);
 		return node;
 	}
-
-	private static void setTypeDecProperties(Node classNode, String simpleName, String fullyQualifiedType,
-			boolean declared) {
-		classNode.setProperty("simpleName", simpleName);
-		classNode.setProperty("fullyQualifiedName", fullyQualifiedType);
-		classNode.setProperty("isDeclared", declared);
+	
+	private static void addMultiLabelHypernyms(NodeWrapper node, NodeTypes type) {
+		for (NodeCategory nodeCategory : type.hypernyms)
+			node.addLabel(nodeCategory);
 	}
 
-	public static Node createTypeDecNode(ClassTree classTree, String simpleName, String fullyQualifiedType) {
-		Node classNode = DatabaseFachade.createSkeletonNode(classTree, classTree.getKind() == Kind.CLASS
-				? NodeTypes.CLASS_DECLARATION
-				: classTree.getKind() == Kind.INTERFACE ? NodeTypes.INTERFACE_DECLARATION : NodeTypes.ENUM_DECLARATION);
-		setTypeDecProperties(classNode, simpleName, fullyQualifiedType, true);
-		return classNode;
+	public NodeWrapper createSkeletonNode(Tree tree, NodeTypes nodeType) {
+		NodeWrapper node = createNodeWithoutExplicitTree(nodeType);
+		node.setProperties(getPosition(tree));
+		return node;
+	}
+	public NodeWrapper createSkeletonNodeExplicitCats(Tree tree, NodeTypes nodeType, NodeCategory... cats) {
+		NodeWrapper node = createSkeletonNode(tree, nodeType);
+		for (NodeCategory cat : cats)
+			node.addLabel(cat);
+		return node;
+	}
+	private static Object[] getPosition(Tree tree) {
+		return JavacInfo.getPosition(tree);
 	}
 
-	public static Node createTypeDecNode(Symbol s, NodeTypes type) {
-		Node classNode = DatabaseFachade.createSkeletonNode(type);
-		setTypeDecProperties(classNode, s.getSimpleName().toString(), s.toString(), false);
-		return classNode;
+	/*
+	 * public static Transaction beginTxXX() { return graphDb.beginTx(); }
+	 * 
+	 * public static Node createNodeXX() { return graphDb.createNode(); }
+	 * 
+	 * public static Node createNodeXX(NodeTypes nodeType) { Node node =
+	 * graphDb.createNode(); node.addLabel(nodeType); return node; }
+	 */
+	private static Object[] getTypeDecProperties(String simpleName, String fullyQualifiedType, boolean declared) {
+		return new Object[] { "simpleName", WrapperUtils.stringToNeo4jQueryString(simpleName), "fullyQualifiedName",
+				WrapperUtils.stringToNeo4jQueryString(fullyQualifiedType), "isDeclared", declared };
+	}
+
+	private static Object[] getTypeDecProperties(String simpleName, String fullyQualifiedType, boolean declared,
+			boolean isFinal) {
+		return new Object[] { "simpleName", WrapperUtils.stringToNeo4jQueryString(simpleName), "fullyQualifiedName",
+				WrapperUtils.stringToNeo4jQueryString(fullyQualifiedType), "isDeclared", declared, "isFinal", isFinal };
+	}
+
+	private static Object[] getTypeDecProperties(ClassSymbol symbol, boolean isDeclared) {
+		Set<Modifier> modifiers = Flags.asModifierSet(symbol.flags_field);
+		return symbol.isEnum()
+				? new Object[] { "simpleName", WrapperUtils.stringToNeo4jQueryString(symbol.getSimpleName().toString()),
+						"fullyQualifiedName",
+						WrapperUtils.stringToNeo4jQueryString(symbol.getQualifiedName().toString()), "isDeclared",
+						isDeclared, "isFinal", true, "isStatic", true, "accessLevel", "public" }
+				: symbol.isInterface() ? new Object[] { "simpleName",
+						WrapperUtils.stringToNeo4jQueryString(symbol.getSimpleName().toString()), "fullyQualifiedName",
+						WrapperUtils.stringToNeo4jQueryString(symbol.getQualifiedName().toString()), "isDeclared",
+						isDeclared, "isAbstract", modifiers.contains(Modifier.ABSTRACT), "accessLevel",
+						modifiers.contains(Modifier.PUBLIC) ? "public" : "package" }
+						: new Object[] { "simpleName",
+								WrapperUtils.stringToNeo4jQueryString(symbol.getSimpleName().toString()),
+								"fullyQualifiedName",
+								WrapperUtils.stringToNeo4jQueryString(symbol.getQualifiedName().toString()),
+								"isDeclared", isDeclared, "isAbstract", modifiers.contains(Modifier.ABSTRACT),
+								"isStatic", modifiers.contains(Modifier.STATIC), "isFinal",
+								modifiers.contains(Modifier.FINAL), "accessLevel", modifiers.contains(Modifier.PUBLIC)
+										? "public" : modifiers.contains(Modifier.PRIVATE) ? "private" : "package" };
 
 	}
 
+	public NodeWrapper createTypeDecNode(ClassTree classTree, String simpleName, String fullyQualifiedType) {
+		NodeWrapper typeDef= createNode(
+				classTree.getKind() == Kind.CLASS ? NodeTypes.CLASS_DEF
+						: classTree.getKind() == Kind.INTERFACE ? NodeTypes.INTERFACE_DEF : NodeTypes.ENUM_DEF,
+				getTypeDecProperties(simpleName, fullyQualifiedType, true));
+		typeDef.setProperties(getPosition(classTree));
+	return typeDef;	
+	}
+
+	public NodeWrapper createNonDeclaredTypeDecNodeExplicitCats(TypeMirror t, NodeTypes type, 
+			NodeCategory... categories) {
+
+		NodeWrapper res = createNonDeclaredTypeDecNode(t, type);
+		for (NodeCategory cat : categories)
+			res.addLabel(cat);
+		return res;
+	}
+
+	public NodeWrapper createNonDeclaredTypeDecNode(TypeMirror t, NodeTypes type) {
+
+		String[] names = t.toString().split("\\.");
+		return createNode(type, getTypeDecProperties(names[names.length - 1], t.toString(), false));
+
+	}
+
+	public NodeWrapper createNonDeclaredCLASSTypeDecNode(ClassType c, NodeTypes type) {
+		return createNode(type, getTypeDecProperties((ClassSymbol) c.tsym, false));
+
+	}
 }

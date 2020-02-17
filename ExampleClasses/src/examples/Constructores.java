@@ -4,17 +4,19 @@ import java.io.BufferedReader;
 
 import examples.classesDependencies.ClassUse;
 import examples.classesDependencies.Interface;
+import examples.cmu.SubA;
+import examples.cmu.SubA2;
 
 public class Constructores {
-
+	SubA a;
+	SubA2 a2;
 	double b;
-	
+
 	public Constructores() {
-		
 	}
 
 	public Constructores(Object a) {
-		// b = a / 2.0;
+		this.b = a.hashCode() / 2.0;
 	}
 
 	public Constructores(Integer a) {
@@ -30,9 +32,10 @@ public class Constructores {
 	}
 
 	public Constructores(int a) {
-		b = a / 2.0;
+		b *= a / 2.0;
 
 		new Interface() {
+
 			public int a() {
 				return 2;
 			}

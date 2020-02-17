@@ -1,8 +1,12 @@
 package examples.classesDependencies;
 
 import examples.OtherClass;
+import examples.cmu.SubE;
 
 public class ExtraClass implements Interface {
+	public SubE getE() {
+		return null;
+	}
 
 	static {
 		ExtraClass e;

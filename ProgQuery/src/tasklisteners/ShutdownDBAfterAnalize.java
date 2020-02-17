@@ -1,24 +1,20 @@
 package tasklisteners;
 
-import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
-
-import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskEvent.Kind;
 import com.sun.source.util.TaskListener;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class ShutdownDBAfterAnalize implements TaskListener {
 
 	private final JavacTask task;
-	private final GraphDatabaseBuilder graphDbBuilder;
+	// private final GraphDatabaseBuilder graphDbBuilder;
 	private int classCounter = 0;
 
-	public ShutdownDBAfterAnalize(JavacTask task, GraphDatabaseBuilder graphDbBuilder) {
-		this.graphDbBuilder = graphDbBuilder;
+	public ShutdownDBAfterAnalize(JavacTask task
+	// , GraphDatabaseBuilder graphDbBuilder
+	) {
+		// this.graphDbBuilder = graphDbBuilder;
 		this.task = task;
 	}
 

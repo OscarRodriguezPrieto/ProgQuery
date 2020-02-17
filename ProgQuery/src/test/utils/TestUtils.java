@@ -7,18 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Result;
-
 import database.nodes.NodeTypes;
 import database.nodes.NodeUtils;
+import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.RelationTypes;
 import database.relations.RelationTypesInterface;
+import node_wrappers.NodeWrapper;
+import node_wrappers.RelationshipWrapper;
 
 public class TestUtils {
-
+/* TEST DESIGNED TO USE EMBEEDDED, MUST BE RE-IMPLEMENTED
 	public static <T> int getCount(Iterable<T> it) {
 		int i = 0;
 		for (T t : it)
@@ -26,14 +24,14 @@ public class TestUtils {
 		return i;
 	}
 
-	public static void assertExpressionStatement(Node statement, NodeTypes type) {
+	public static void assertExpressionStatement(NodeWrapper statement, NodeTypes type) {
 
 		assertEquals(statement.getProperty("nodeType"), NodeTypes.EXPRESSION_STATEMENT.toString());
 		assertEquals(statement.getSingleRelationship(RelationTypes.ENCLOSES_EXPR, Direction.OUTGOING).getEndNode()
 				.getProperty("nodeType"), type.toString());
 	}
 
-	public static List<Node> listFromResult(Result res) {
+	public static List<NodeWrapper> listFromResult(Result res) {
 		List<Node> ret = new ArrayList<Node>();
 		String uniqueColumnName = res.columns().get(0);
 		while (res.hasNext())
@@ -54,55 +52,57 @@ public class TestUtils {
 		return ret;
 	}
 
-	public static void assertBinopCondition(Node cond, String operator) {
+	public static void assertBinopCondition(NodeWrapper cond, String operator) {
 
 		assertEquals(cond.getProperty("nodeType"), NodeTypes.BINARY_OPERATION.toString());
 		assertEquals(cond.getProperty("operator"), operator);
 	}
 
-	public static Node getNextNode(Node previous, RelationTypesInterface r) {
+	public static NodeWrapper getNextNode(NodeWrapper previous, RelationTypesInterface r) {
 		return getNextNode(previous, r, Direction.OUTGOING);
 	}
 
-	public static Node getNextNode(Node previous, RelationTypesInterface r, Direction d) {
+	public static NodeWrapper getNextNode(NodeWrapper previous, RelationTypesInterface r, Direction d) {
 		Relationship rel = previous.getSingleRelationship(r, d);
 		return d == Direction.OUTGOING ? rel.getEndNode() : rel.getStartNode();
 	}
 
-	public static Node assertHasNextWith(Node previous, RelationTypesInterface r, Predicate<Node> p) {
+	public static NodeWrapper assertHasNextWith(NodeWrapper previous, RelationTypesInterface r, Predicate<Node> p) {
 		return assertHasNextWith(previous, r, Direction.OUTGOING, p);
 	}
 
-	public static Node assertHasNextWith(Node previous, RelationTypesInterface r, NodeTypes nodeType) {
+	public static NodeWrapper assertHasNextWith(NodeWrapper previous, RelationTypesInterface r, NodeTypes nodeType) {
 		return assertHasNextWith(previous, r, Direction.OUTGOING, nodeType);
 	}
 
-	public static Node assertHasNextWith(Node previous, RelationTypesInterface r, Direction d, Predicate<Node> p) {
-		Node n = getNextNode(previous, r, d);
+	public static NodeWrapper assertHasNextWith(NodeWrapper previous, RelationTypesInterface r, Direction d,
+			Predicate<Node> p) {
+		NodeWrapper n = getNextNode(previous, r, d);
 		assertEquals(true, p.test(n));
 		return n;
 	}
 
-	public static Node assertHasNextWith(Node previous, RelationTypesInterface r, Direction d, NodeTypes nodeType) {
+	public static NodeWrapper assertHasNextWith(NodeWrapper previous, RelationTypesInterface r, Direction d,
+			NodeTypes nodeType) {
 		return assertHasNextWith(previous, r, d, n -> n.hasLabel(nodeType));
 	}
 
-	public static int relationshipsWith(Node b, Iterable<Relationship> rels) {
+	public static int relationshipsWith(NodeWrapper b, Iterable<Relationship> rels) {
 		int total = 0;
-		for (Relationship r : rels)
+		for (RelationshipWrapper r : rels)
 			if (r.getStartNode().equals(b) || r.getEndNode().equals(b))
 				total++;
 		return total;
 
 	}
 
-	public static void justOneRelationshipWith(Node st, Node end, RelationTypesInterface rt,
+	public static void justOneRelationshipWith(NodeWrapper st, NodeWrapper end, RelationTypesInterface rt,
 			Predicate<Relationship> p) {
 		justNRelationshipsWith(st, end, rt, p, 1);
 	}
 
-	public static void justNRelationshipsWith(Node st, Node end, RelationTypesInterface rt, Predicate<Relationship> p,
-			int n) {
+	public static void justNRelationshipsWith(NodeWrapper st, NodeWrapper end, RelationTypesInterface rt,
+			Predicate<Relationship> p, int n) {
 		int count = 0;
 		for (Relationship r : st.getRelationships(rt))
 			if (r.getStartNode().equals(st) && r.getEndNode().equals(end) && p.test(r))
@@ -110,32 +110,33 @@ public class TestUtils {
 		assertEquals(n, count);
 	}
 
-	public static boolean hasAnyRelationshipsWith(Node a, Node b) {
+	public static boolean hasAnyRelationshipsWith(NodeWrapper a, NodeWrapper b) {
 		return relationshipsWith(b, a.getRelationships()) > 0;
 	}
 
-	public static void assertNoRels(Node a, Node b) {
+	public static void assertNoRels(NodeWrapper a, NodeWrapper b) {
 		assert (!hasAnyRelationshipsWith(a, b));
 	}
 
-	public static void assertHasSingleRel(Node a, Node b, RelationTypesInterface r, Direction d) {
+	public static void assertHasSingleRel(NodeWrapper a, NodeWrapper b, RelationTypesInterface r, Direction d) {
 		assertEquals(1, relationshipsWith(b, a.getRelationships(r, d)));
 	}
 
-	public static Node getNodePredicate(Node previous, RelationTypesInterface r, Predicate<Node> pred) {
-		for (Relationship rel : previous.getRelationships(r, Direction.OUTGOING))
+	public static NodeWrapper getNodePredicate(NodeWrapper previous, RelationTypesInterface r,
+			Predicate<NodeWrapper> pred) {
+		for (RelationshipWrapper rel : previous.getRelationships(EdgeDirection.OUTGOING, r))
 			if (pred.test(rel.getEndNode()))
 				return rel.getEndNode();
 		throw new IllegalArgumentException(String.format("No nodes for Rel:s%, with this previous and predicate", r));
 	}
 
-	public static void printNodeInfo(Node... nodes) {
-		for (Node n : nodes)
+	public static void printNodeInfo(NodeWrapper... nodes) {
+		for (NodeWrapper n : nodes)
 			System.out.println(NodeUtils.nodeToString(n));
 	}
 
-	public static void printNodeInfo(Iterable<Node> nodes) {
-		for (Node n : nodes)
+	public static void printNodeInfo(Iterable<NodeWrapper> nodes) {
+		for (NodeWrapper n : nodes)
 			System.out.println(NodeUtils.nodeToString(n));
-	}
+	}*/
 }

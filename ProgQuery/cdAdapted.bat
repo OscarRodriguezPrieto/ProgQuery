@@ -1,1 +1,0 @@
-cd ..\..\Wiggle_Adapted

@@ -6,7 +6,7 @@ public class AssertTest {
 		System.out.println("START");
 		try {
 			assert (args.length > 0);
-		} catch (AssertionError  | Exception e) {
+		} catch (AssertionError | Exception e) {
 			System.out.println("CACHADO");
 			e.printStackTrace();
 		}

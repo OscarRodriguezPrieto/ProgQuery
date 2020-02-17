@@ -1,29 +1,8 @@
 package test;
 
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
-
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.Tree;
-import com.sun.tools.javac.api.JavacTaskImpl;
-
-import ast.ASTAuxiliarStorage;
-import database.DatabaseFachade;
-import database.nodes.NodeTypes;
-import database.querys.MainQuery;
-import database.relations.RelationTypes;
-import test.utils.CompilerUtils;
-import utils.JavacInfo;
-import utils.Pair;
-import visitors.ASTTypesVisitor;
-import visitors.PDGVisitor;
-
 public abstract class GDBAPIBasedTest {
+
+/* TEST DESIGNED TO USE EMBEEDDED, MUST BE RE-IMPLEMENTED
 	protected GraphDatabaseService graphDb;
 
 	private Transaction transaction;
@@ -47,11 +26,10 @@ public abstract class GDBAPIBasedTest {
 		ASTAuxiliarStorage ast = new ASTAuxiliarStorage();
 		Node cuNode = DatabaseFachade.createSkeletonNode(u, NodeTypes.COMPILATION_UNIT);
 		PDGVisitor pdgUtils;
-		new ASTTypesVisitor(t, true, pdgUtils = new PDGVisitor(), ast, cuNode).scan(u,
-				Pair.createPair(cuNode, RelationTypes.CU_PACKAGE_DEC));
+		new ASTTypesVisitor((ClassTree) t, true, pdgUtils = new PDGVisitor(), ast, cuNode).scan(u,
+				Pair.createPair(cuNode, null));
 		ast.doDynamicMethodCallAnalysis();
-		ast.doInterproceduralPDGAnalysis(pdgUtils.getMethodsMutateThisAndParams(), pdgUtils.getParamsMutatedInMethods(),
-				pdgUtils.getParamsMayMutateInMethods(), pdgUtils.getThisRefsOfMethods());
+		ast.doInterproceduralPDGAnalysis();
 	}
 
 	@After
@@ -70,5 +48,5 @@ public abstract class GDBAPIBasedTest {
 		}
 		graphDb.shutdown();
 	}
-
+*/ 
 }

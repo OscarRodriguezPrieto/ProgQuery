@@ -17,3 +17,13 @@ ProgQuery/compilePlugin.bat
 ProgQuery/compileAndExecuteWithArgs.bat
 ProgQuery/executePlugin--.bat
 ProgQuery/loadExecuteAndView.bat
+*.pyc
+*.py
+*.csv
+*.bat
+*.txt
+*.log
+*.exe
+*.gexf
+binaries_bad/*
+__pycache__/*

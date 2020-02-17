@@ -5,31 +5,32 @@ import java.util.Map;
 
 import javax.tools.JavaFileObject;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
-
+import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskEvent.Kind;
 import com.sun.source.util.TaskListener;
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 
 import ast.ASTAuxiliarStorage;
+import cache.DefinitionCache;
 import database.DatabaseFachade;
 import database.nodes.NodeTypes;
+import database.relations.CDGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.RelationTypes;
+import node_wrappers.NodeWrapper;
+import typeInfo.PackageInfo;
 import utils.JavacInfo;
-import utils.Pair;
+import utils.dataTransferClasses.Pair;
 import visitors.ASTTypesVisitor;
-import visitors.PDGVisitor;
+import visitors.PDGProcessing;
 
 public class GetStructuresAfterAnalyze implements TaskListener {
 	private static final boolean DEBUG = false;
 	private final JavacTask task;
-	private final GraphDatabaseService graphDb;
 	private Map<JavaFileObject, Integer> classCounter = new HashMap<JavaFileObject, Integer>();
 	// private Set<CompilationUnitTree> unitsInTheSameFile = new
 	// HashSet<CompilationUnitTree>();
@@ -38,47 +39,74 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 
 	private int counter = 0;
 
-	private Transaction transaction;
+	// private Transaction transaction;
 	private Pair<PartialRelation<RelationTypes>, Object> argument;
 	private CompilationUnitTree cu;
-	private PDGVisitor pdgUtils = new PDGVisitor();
+	private PDGProcessing pdgUtils = new PDGProcessing();
 	private ASTAuxiliarStorage ast = new ASTAuxiliarStorage();
+	// private final GraphDatabaseService graphDb;
 
-	public GetStructuresAfterAnalyze(JavacTask task, GraphDatabaseService graphDb) {
+	public GetStructuresAfterAnalyze(JavacTask task, String programID) {
 		this.task = task;
-		this.graphDb = graphDb;
+		// this.graphDb = graphDb;
+		DatabaseFachade.CURRENT_INSERTION_STRATEGY.startAnalysis();
+		PackageInfo.createCurrentProgram(programID);
+
 	}
 
 	@Override
 	public void finished(TaskEvent arg0) {
 		if (DEBUG)
 			System.out.println("FINISHING " + arg0.getKind());
-		CompilationUnitTree u = arg0.getCompilationUnit();
+		CompilationUnitTree cuTree = arg0.getCompilationUnit();
 		if (arg0.getKind() == Kind.PARSE) {
-			if (DEBUG)
-				System.out.println("FIle " + u.getSourceFile().getName() + " , " + u.hashCode() + " , "
-						+ u.getSourceFile().hashCode());
-			classCounter.put(u.getSourceFile(), u.getTypeDecls().size());
-
+			// if (DEBUG)
+			// System.out.println("FIle " + cuTree.getSourceFile().getName() + "
+			// , " + cuTree.hashCode() + " , "
+			// + cuTree.getSourceFile().hashCode());
+			// System.out.println(
+			// "TOTAL DECS FOR " + cuTree.getSourceFile().getName() + " : " +
+			// cuTree.getTypeDecls().size());
+			classCounter.put(cuTree.getSourceFile(), cuTree.getTypeDecls().size());
+			// System.out.println("PUTTING FOR " +
+			// cuTree.getSourceFile().getName() + "\t"
+			// + classCounter.get(cuTree.getSourceFile()));
 		} else if (arg0.getKind() == Kind.ANALYZE) {
 
 			started = true;
-			classCounter.put(u.getSourceFile(), classCounter.get(u.getSourceFile()) - 1);
-
+			classCounter.put(cuTree.getSourceFile(), classCounter.get(cuTree.getSourceFile()) - 1);
+			// System.out.println("DELETING FOR " +
+			// cuTree.getSourceFile().getName() + ":\t"
+			// + classCounter.get(cuTree.getSourceFile()));
 			if (firstClass) {
 				firstClass = false;
-				firstScan(u, u.getTypeDecls().get(counter++));
-			} else
-				scan(u.getTypeDecls().get(counter++), false);
+				// Node packageNode = DatabaseFachade.createSkeletonNode(
+				// NodeTypes.PACKAGE_DEC);
+				//// packageNode.setProperty("name",
+				// ((JCCompilationUnit)cuTree).);
+				// System.out.println(((JCCompilationUnit)
+				// cuTree).getPackageName());
+				// if (DEBUG)
+				// System.out.println("TYPE_DECS_IN_CU:\t" +
+				// cuTree.getTypeDecls().size());
+//				System.out.println("BEFORE SCAN");
+				if (cuTree.getTypeDecls().size() > 0)
+					firstScan(cuTree, (ClassTree) cuTree.getTypeDecls().get(counter++));
+				else
+					firstScanIfNoTypeDecls(cuTree);
+//				System.out.println("AFTER SCAN");
+			} else if (cuTree.getTypeDecls().size() > 0)
+				scan((ClassTree) cuTree.getTypeDecls().get(counter++), false);
 
-			if (classCounter.get(u.getSourceFile()) == 0) {
-				classCounter.remove(u.getSourceFile());
+			if (classCounter.get(cuTree.getSourceFile()) <= 0) {
+				// END OF THE ANALYSIS OF ALL TYPEDECS IN THE COMPILATION UNIT
+				classCounter.remove(cuTree.getSourceFile());
 				firstClass = true;
 				counter = 0;
 				// System.out.println("AFTER ANALYZE");
 				// System.out.println(ast.mm + "\n" + ast.b + "\n" + ast.s1);
-				transaction.success();
-				transaction.close();
+				// transaction.success();
+				// transaction.close();
 
 			}
 
@@ -87,72 +115,145 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 			System.out.println("FINISHED " + arg0.getKind());
 	}
 
-	private void firstScan(CompilationUnitTree u, Tree typeDeclaration) {
+	private void firstScanIfNoTypeDecls(CompilationUnitTree u) {
+//		System.out.println("BEFORE SETTING JAVAC INFO");
 		JavacInfo.setJavacInfo(new JavacInfo(u, task));
-		DatabaseFachade.setDB(graphDb);
-
+//		System.out.println("AFTER SETTING JAVAC INFO");
 		String fileName = u.getSourceFile().toUri().toString();
-		transaction = DatabaseFachade.beginTx();
-		Node compilationUnitNode = DatabaseFachade.createSkeletonNode(u, NodeTypes.COMPILATION_UNIT);
+		// transaction = DatabaseFachade.beginTx();
+
+		NodeWrapper compilationUnitNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(u,
+				NodeTypes.COMPILATION_UNIT);
+
+		addPackageInfo(((JCCompilationUnit) u).packge, compilationUnitNode);
 		compilationUnitNode.setProperty("fileName", fileName);
 
-		argument = Pair.createPair(compilationUnitNode, RelationTypes.CU_PACKAGE_DEC);
+		argument = Pair.createPair(compilationUnitNode, null);
 		cu = u;
-		scan(typeDeclaration, true);
 
 	}
 
-	private void scan(Tree typeDeclaration, boolean first) {
-		if (DEBUG) {
-			System.err.println("-*-*-*-*-*-*-* NEW TYPE DECLARATION AND VISITOR-*-*-*-*-*-*-*");
-			System.err.println(cu.getSourceFile().getName());
-			System.out.println("Final State:\n");
+	private NodeWrapper addPackageInfo(Symbol currentPackage, NodeWrapper compilationUnitNode) {
 
-			System.out.println(typeDeclaration);
-		}
+		PackageInfo.PACKAGE_INFO.currentPackage = currentPackage;
+		NodeWrapper packageNode = PackageInfo.PACKAGE_INFO.putDeclaredPackage(currentPackage);
+		packageNode.createRelationshipTo(compilationUnitNode, CDGRelationTypes.PACKAGE_HAS_COMPILATION_UNIT);
+		// packageNode.setProperty("isDeclared", true);
+		return packageNode;
+	}
+
+	private void firstScan(CompilationUnitTree u, ClassTree typeDeclaration) {
+//		System.out.println("BEFORE SETTING JAVAC INFOf");
+		JavacInfo.setJavacInfo(new JavacInfo(u, task));
+//		System.out.println("AFTER SETTING JAVAC INFOf");
+
+		String fileName = u.getSourceFile().getName();
+		// transaction = DatabaseFachade.beginTx();
+
+		// InsertionStrategy.CURRENT_INSERTION_STRATEGY.startAnalysis();
+
+		NodeWrapper compilationUnitNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(u,
+				NodeTypes.COMPILATION_UNIT);
+		addPackageInfo(((JCCompilationUnit) u).packge, compilationUnitNode);
+		// System.out.println(fileName);
+		compilationUnitNode.setProperty("fileName", fileName);
+
+		argument = Pair.createPair(compilationUnitNode, null);
+		cu = u;
+//		System.out.println("BEFORE SCAN TYPEDEC");
+		scan(typeDeclaration, true);
+//		System.out.println("AFTER SCAN TYPEDEC");
+
+	}
+
+	private void scan(ClassTree typeDeclaration, boolean first) {
+		// if (DEBUG) {
+		// System.err.println("-*-*-*-*-*-*-* NEW TYPE DECLARATION AND
+		// VISITOR-*-*-*-*-*-*-*");
+		// System.err.println(cu.getSourceFile().getName());
+		// System.out.println("Final State:\n");
+		//
+		// // System.out.println(typeDeclaration);
+		// }
+		DefinitionCache.ast = ast;
+
 		new ASTTypesVisitor(typeDeclaration, first, pdgUtils, ast, argument.getFirst().getStartingNode()).scan(cu,
 				argument);
 	}
 
 	@Override
 	public void started(TaskEvent arg0) {
-		if (DEBUG)
-			System.out.println("STARTING " + arg0.getKind());
-		if (arg0.getKind() == Kind.GENERATE && started) {
-			if (classCounter.size() == 0) {
-				// System.out.println("BEFORE CFG");
-				// System.out.println(ast.mm + "\n" + ast.b + "\n" + ast.s1);
-				dynamicMethodCallAnalysis();
-				interproceduralPDGAnalysis();
-				shutdownDatabase();
-				started = false;
-			}
-		}
-		if (DEBUG)
-			System.out.println("STARTED " + arg0.getKind());
 
+		if (DEBUG)
+			System.out.println("STARTING FOR " + arg0.getSourceFile() + " " + arg0.getKind());
+		if (arg0.getKind() == Kind.GENERATE && started)
+			// System.out.println(classCounter.size());
+			if (classCounter.size() == 0) {
+//			System.out.println("BEFORE 2nd phase ");
+			pdgUtils.createNotDeclaredAttrRels(ast);
+			createStoredPackageDeps();
+			dynamicMethodCallAnalysis();
+			interproceduralPDGAnalysis();
+			initializationAnalysis();
+
+			shutdownDatabase();
+			started = false;
+			}
+
+		// if (DEBUG)
+		// System.out.println("STARTED FOR " + arg0.getSourceFile() + " " +
+		// arg0.getKind());
+
+	}
+
+	private void createStoredPackageDeps() {
+
+		// Transaction transaction = DatabaseFachade.beginTx();
+		PackageInfo.PACKAGE_INFO.createStoredPackageDeps();
+		// transaction.success();
+		// transaction.close();
+
+	}
+
+	private void createAllParamsToMethodsPDGRels() {
+
+		// Transaction transaction = DatabaseFachade.beginTx();
+		ast.createAllParamsToMethodsPDGRels();
+		// transaction.success();
+		// transaction.close();
+	}
+
+	private void initializationAnalysis() {
+
+		// Transaction transaction = DatabaseFachade.beginTx();
+		ast.doInitializationAnalysis();
+		// transaction.success();
+		// transaction.close();
 	}
 
 	private void interproceduralPDGAnalysis() {
 
-		Transaction transaction = DatabaseFachade.beginTx();
-		ast.doInterproceduralPDGAnalysis(pdgUtils.getMethodsMutateThisAndParams(), pdgUtils.getParamsMutatedInMethods(),
-				pdgUtils.getParamsMayMutateInMethods(), pdgUtils.getThisRefsOfMethods());
-		transaction.success();
-		transaction.close();
+		// Transaction transaction = DatabaseFachade.beginTx();
+		ast.doInterproceduralPDGAnalysis();
+		// transaction.success();
+		// transaction.close();
+
+		createAllParamsToMethodsPDGRels();
 	}
 
 	private void dynamicMethodCallAnalysis() {
-		Transaction transaction = DatabaseFachade.beginTx();
+		// Transaction transaction = DatabaseFachade.beginTx();
 		ast.doDynamicMethodCallAnalysis();
-		transaction.success();
-		transaction.close();
+		// transaction.success();
+		// transaction.close();
 	}
 
 	public void shutdownDatabase() {
 		if (DEBUG)
 			System.out.println("SHUTDOWN THE DATABASE");
-		graphDb.shutdown();
+		// graphDb.shutdown();
+		// AQUí IRÍA EL CÓDIGO DE INSERCIÓN AL SERVER
+		DatabaseFachade.CURRENT_INSERTION_STRATEGY.endAnalysis();
 		if (DEBUG)
 			System.out.println("SHUTDOWN THE DATABASE ENDED");
 
