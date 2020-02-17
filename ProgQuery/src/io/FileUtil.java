@@ -2,7 +2,6 @@ package io;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,7 +13,11 @@ public class FileUtil {
 		bw.write(text);
 		bw.close();
 	}
-
+	public static void appendFile(String fileName, String text) throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(fileName,true));
+		bw.write(text);
+		bw.close();
+	}
 	public static String getTextFromFile(String fileName) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		String text = "";

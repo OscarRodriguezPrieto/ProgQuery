@@ -1,29 +1,17 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.function.Predicate;
-
-import org.junit.After;
-import org.junit.Before;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
-
-import database.DatabaseFachade;
-import database.nodes.NodeTypes;
-import database.nodes.NodeUtils;
-import database.querys.MainQuery;
-import database.relations.RelationTypesInterface;
-import test.utils.TestUtils;
-
 public abstract class PluginBasedTestWithCommands {
+
+	private String commandName, initialQuery;
+	private int numberNodes;
+
+	public PluginBasedTestWithCommands(String commandName, String initialQuery, int numberNodes) {
+		super();
+		this.commandName = commandName;
+		this.initialQuery = initialQuery;
+		this.numberNodes = numberNodes;
+	}
+/* TEST DESIGNED TO USE EMBEEDDED, MUST BE RE-IMPLEMENTED
 	protected GraphDatabaseService graphDb;
 
 	private Transaction transaction;
@@ -39,15 +27,8 @@ public abstract class PluginBasedTestWithCommands {
 		}
 	}
 
-	private String commandName, initialQuery;
-	private int numberNodes;
 
-	public PluginBasedTestWithCommands(String commandName, String initialQuery, int numberNodes) {
-		super();
-		this.commandName = commandName;
-		this.initialQuery = initialQuery;
-		this.numberNodes = numberNodes;
-	}
+
 
 	@Before
 	public void prepareTestDatabase() throws Exception {
@@ -145,5 +126,5 @@ public abstract class PluginBasedTestWithCommands {
 	protected void printNode(Node n) {
 		System.out.println(NodeUtils.nodeToString(n));
 
-	}
+	}*/
 }

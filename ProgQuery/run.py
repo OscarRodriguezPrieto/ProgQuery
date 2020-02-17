@@ -5,9 +5,8 @@ import steady
 import launcher
 
 import datetime
+import bench
 
-isInstrumented=False
-dbRefresh=True
 def run_startup_ins(list):
 ##    run_startup(list)
     launcher.instrumentation_time=True
@@ -21,8 +20,6 @@ def run_startup(list):
         file.write("Timestamp: {}\tComputerName: {}\n".format(datetime.datetime.now(), os.environ['COMPUTERNAME']))
         file.close()
     for command, it in list:
-        if dbRefresh:
-            os.system("refreshDb.bat");
         startup.run(command, command, out_files[0])
 
 
@@ -58,8 +55,35 @@ if __name__ == "__main__":
 
     run_startup_ins(benchmarks_info)
     '''
-    dbRefresh=False
+    dbRefresh=False#NOS ESTABA DESTROZANDO LAS EXTRACCIONES Para compilacion solo en Java no es necesario
+    #Limpiar en cada ejecucion del benchmark solo necesario para insercion
+    bench.dbRefresh=False
     launcher.instrumentation_time=False
+    '''
+    for i in range(9):
+        launcher.capture("getJavaFiles"+str(i)+".bat")
+        benchmarks_info = [["executeEvaluationProject"+ str(i)+".bat" , 500000]]
+        run_startup(benchmarks_info)'''
+    for i in range(9):
+        os.system("refreshDB.bat")
+        os.system("getJavaFiles"+str(i)+".bat")
+        os.system("executeEvaluationProject"+str(i)+"PQ.bat")
+        #os.system("newClassZ.bat")
+        
+        for j in range(13):
+        #launcher.capture("getJavaFiles"+str(i)+".bat")
+            print("executeEvaluationProject"+str(i)+"PQ.bat")
+            benchmarks_info = [["executeRule"+ str(j)+".bat" , 500000]]
+            run_startup(benchmarks_info)
+            benchmarks_info = [["executeRule"+ str(j)+"_1RAM.bat" , 500000]]
+            run_startup(benchmarks_info)
+        
+    '''
+        for i in range(9):
+        launcher.capture("getJavaFiles"+str(i)+".bat")
+        benchmarks_info = [["executeEvaluationProject"+ str(i)+"Wiggle.bat" , 500000]]
+        run_startup(benchmarks_info)'''
+    '''
     benchmarks_info = [
 
     ["executeQuery.bat" , 500000],
@@ -70,7 +94,7 @@ if __name__ == "__main__":
     ["executeQuery5.bat" , 500000]
                         ]
 
-    run_startup(benchmarks_info)
+    run_startup(benchmarks_info)'''
     #run_steady(benchmarks_info)
 
    # run_startup(benchmarks_info)

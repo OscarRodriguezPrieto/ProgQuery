@@ -1,18 +1,7 @@
 package test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import org.junit.After;
-import org.junit.Before;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import database.DatabaseFachade;
-import database.querys.MainQuery;
-
 public abstract class OldPluginBasedTest {
+	/* TEST DESIGNED TO USE EMBEEDDED, MUST BE RE-IMPLEMENTED
 	protected GraphDatabaseService graphDb;
 	private static final String[] TEST_COMMANDS = { "pdgTest.bat" };
 
@@ -55,5 +44,5 @@ public abstract class OldPluginBasedTest {
 		}
 		graphDb.shutdown();
 	}
-
+*/
 }

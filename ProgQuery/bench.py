@@ -8,6 +8,8 @@ import os
 import time
 import launcher
 
+dbRefresh=''
+
 def confidence(samples, confidence_level):
   """This function determines the confidence interval for a given set of samples, 
   as well as the mean, the standard deviation, and the size of the confidence 
@@ -28,6 +30,9 @@ def startup(command, confidence_level, p_iterations, break_if_interval_percentag
 
     execution_times = []
     for i in range(1, p_iterations+1):
+      print(dbRefresh)
+      if dbRefresh !='':
+          os.system("refreshDB.bat")
       execution_time = launcher.capture(command)
       #print("Iteration ", i, ". Times in millis ", execution_time, ".")
       execution_times.append(execution_time)

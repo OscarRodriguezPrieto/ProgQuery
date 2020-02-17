@@ -12,7 +12,6 @@ public class AnnotationsAndWarningsTest<E> {
 
 	public String toString(){
 		E[] array=(E[]) new ArrayList<E>().toArray();
-		
 		return array.toString();
 	}
 	

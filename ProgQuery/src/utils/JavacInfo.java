@@ -35,33 +35,40 @@ public class JavacInfo {
 	private final SourcePositions sourcePositions;
 	private final Trees trees;
 	private final CompilationUnitTree currCompilationUnit;
-	private final Types types;
+	private final Types javaxTypes;
+	private final com.sun.tools.javac.code.Types types;
 	private final Symtab symTab;
 
 	public JavacInfo(CompilationUnitTree currCompilationUnit, JavacTask task) {
 		this.currCompilationUnit = currCompilationUnit;
 		this.trees = Trees.instance(task);
-		types = task.getTypes();
+		javaxTypes = task.getTypes();
+		types = com.sun.tools.javac.code.Types.instance(((com.sun.tools.javac.api.BasicJavacTask) task).getContext());
 		this.sourcePositions = trees.getSourcePositions();
 		symTab = Symtab.instance(((com.sun.tools.javac.api.BasicJavacTask) task).getContext());
-
 	}
 
-	// private CompilationUnitTree currentCompilationUnit;
-	// private Trees trees;
-	public static long getLineNumber(Tree tree) {
-
+	public static Object[] getPosition(Tree tree) {
 		// map offsets to line numbers in source file
 		LineMap lineMap = currentJavacInfo.currCompilationUnit.getLineMap();
 		if (lineMap == null)
-			return -1;
+			return new Object[0];
 		// find offset of the specified AST node
 		long position = currentJavacInfo.sourcePositions.getStartPosition(currentJavacInfo.currCompilationUnit, tree);
-		return lineMap.getLineNumber(position);
-	}
+		// return lineMap.getLineNumber(position);
+		// return
+		// currentJavacInfo.sourcePositions.getStartPosition(currentJavacInfo.currCompilationUnit,
+		// tree);
+		// System.out.println();
+		return new Object[] { "lineNumber", lineMap.getLineNumber(position), "column",
+				lineMap.getColumnNumber(position), "position", position
+				// "endColumn"
 
-	public static long getPosition(Tree tree) {
-		return currentJavacInfo.sourcePositions.getStartPosition(currentJavacInfo.currCompilationUnit, tree);
+				// , lineMap.get(arg0, arg1)(
+				// currentJavacInfo.sourcePositions.getEndPosition(currentJavacInfo.currCompilationUnit,
+				// tree))
+		};
+
 	}
 
 	public static long getSize(Tree tree) {
@@ -114,11 +121,11 @@ public class JavacInfo {
 	}
 
 	public static boolean isSubtype(Type t1, Type t2) {
-		return currentJavacInfo.types.isSubtype(t1, t2);
+		return currentJavacInfo.javaxTypes.isSubtype(t1, t2);
 	}
 
 	public static boolean isSuperType(Type t1, Type t2) {
-		return currentJavacInfo.types.isSubtype(t2, t1);
+		return currentJavacInfo.javaxTypes.isSubtype(t2, t1);
 	}
 
 	public static Symtab getSymtab() {
@@ -127,5 +134,10 @@ public class JavacInfo {
 
 	public static Symbol getSymbolFromTree(Tree t) {
 		return TreeInfo.symbol((JCTree) t);
+	}
+
+	public static Type erasure(Type t) {
+		return t.tsym.erasure(currentJavacInfo.types);
+//		return currentJavacInfo.javaxTypes.erasure(t.ty);
 	}
 }

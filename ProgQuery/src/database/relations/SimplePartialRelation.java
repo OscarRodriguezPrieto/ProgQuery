@@ -1,18 +1,23 @@
 package database.relations;
 
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
+import java.util.ArrayList;
+import java.util.List;
+
+import database.nodes.NodeUtils;
+import node_wrappers.NodeWrapper;
+import node_wrappers.RelationshipWrapper;
+import utils.dataTransferClasses.Pair;
 
 public class SimplePartialRelation<T extends RelationTypesInterface> implements PartialRelation<T> {
-	private final Node startingNode;
+	private final NodeWrapper startingNode;
 	private final T relationType;
 
-	public SimplePartialRelation(Node startingNode, T relationType) {
+	public SimplePartialRelation(NodeWrapper startingNode, T relationType) {
 		this.startingNode = startingNode;
 		this.relationType = relationType;
 	}
 
-	public Node getStartingNode() {
+	public NodeWrapper getStartingNode() {
 		return startingNode;
 	}
 
@@ -23,7 +28,7 @@ public class SimplePartialRelation<T extends RelationTypesInterface> implements 
 	// private static int i = 0;
 
 	@Override
-	public Relationship createRelationship(Node endNode) {
+	public RelationshipWrapper createRelationship(NodeWrapper endNode) {
 		//
 		// if (startingNode.hasLabel(NodeTypes.CFG_LAST_STATEMENT_IN_FINALLY) &&
 		// endNode.hasLabel(NodeTypes.FINALLY_BLOCK)
@@ -32,4 +37,12 @@ public class SimplePartialRelation<T extends RelationTypesInterface> implements 
 		return startingNode.createRelationshipTo(endNode, relationType);
 	}
 
+	@Override
+	public String toString() {
+		return NodeUtils.nodeToString(getStartingNode()) + "\n" + getRelationType() + "\n";
+	}
+
+	public List<Pair<String, Object>> getProperties() {
+		return new ArrayList<Pair<String,Object>>();
+	}
 }

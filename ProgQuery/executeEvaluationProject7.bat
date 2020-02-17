@@ -1,0 +1,1 @@
+javac -cp C:\Users\Oscar\Desktop\libs\\client-jar-5.2.0-M2-SR2.jar;C:\Users\Oscar\Desktop\libs\\jsf-api-2.1.29-11.jar -d C:\Users\Oscar\Desktop\java_projects_old\yschool-mini-jeyakaran\\PQScan @sources.txt

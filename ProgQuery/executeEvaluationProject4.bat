@@ -1,0 +1,1 @@
+javac -cp C:\Users\Oscar\Desktop\libs\\mockito-core-2.2.5.jar;C:\Users\Oscar\Desktop\libs\\akuma-1.7.jar;C:\Users\Oscar\Desktop\libs\\cascading-flink-0.1.jar;C:\Users\Oscar\Desktop\libs\\org.apache.servicemix.bundles.oauth-provider-20100527_1.jar -d C:\Users\Oscar\Desktop\java_projects_old\thumbslug\\PQScan @sources.txt

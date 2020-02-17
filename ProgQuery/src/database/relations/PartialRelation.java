@@ -1,14 +1,17 @@
 package database.relations;
 
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
+import java.util.List;
 
-public interface PartialRelation<T extends RelationTypesInterface> {
+import node_wrappers.NodeWrapper;
+import node_wrappers.RelationshipWrapper;
+import utils.dataTransferClasses.Pair;
 
-	public Node getStartingNode();
+public interface PartialRelation<T extends RelationTypesInterface>  {
 
-	public T getRelationType();
+	NodeWrapper getStartingNode();
 
-	Relationship createRelationship(Node endNode);
+	T getRelationType();
 
+	RelationshipWrapper createRelationship(NodeWrapper endNode);
+	 List<Pair<String, Object>> getProperties();
 }
