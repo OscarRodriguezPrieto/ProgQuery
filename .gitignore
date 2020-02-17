@@ -25,4 +25,5 @@ ProgQuery/loadExecuteAndView.bat
 *.log
 *.exe
 *.gexf
-binaries_bad/
+binaries_bad/*
+__pycache__/*

@@ -1,1 +1,0 @@
-javac -cp C:\Users\Oscar\Desktop\libs\\junit-dep-4.8.2-0000.jar -d C:\Users\Oscar\Desktop\java_projects_old\Arithmetic-Expression-Evaluator\\PQScan @sources.txt
