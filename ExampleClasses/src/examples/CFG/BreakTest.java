@@ -1,7 +1,7 @@
 package examples.CFG;
 
 public class BreakTest {
-
+static final String F="FFF";
 	public static void main(final String[] args) {
 		final int index=0;
 		// System.out.println("A");
@@ -66,9 +66,9 @@ public class BreakTest {
 			i++;
 		}
 		final String s2 = "J";
-		String s = "D";
+		final String s = "DDD";
 		switch (s) {
-		case "A":
+		case s:
 			System.out.println("A");
 		case "B": {
 		}
@@ -84,11 +84,11 @@ public class BreakTest {
 				break;
 			case 89:
 			}
-		case "C": {
+		case BreakTest.F: {
 			System.out.println("C");
 			break;
 		}
-		case "A"+"B":
+		case (int)2.9+"":
 		default:
 			System.out.println("DEFAULT");
 

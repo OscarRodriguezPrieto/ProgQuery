@@ -1,0 +1,1 @@
+javac -cp C:\Users\Oscar\Desktop\libs\\junit-4.3.jar;C:\Users\Oscar\Desktop\libs\\cascading-flink-0.1.jar -d C:\Users\Oscar\Desktop\java_projects_old\OpenNLP-Maxent-Joliciel\\PQScan @sources.txt

@@ -1,11 +1,14 @@
 package examples.pdg;
 
+import examples.cmu.A;
+
 public class LocalVars {
 
-	private static int a;
+	private  int a;
 
 	public void m() {
-		LocalVars.a--;
+		new LocalVars().a--;
+		a--;
 		System.out.println(new A().m);
 		int c=0;
 		c++;

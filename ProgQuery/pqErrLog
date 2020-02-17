@@ -1,0 +1,24 @@
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+C:\Users\Oscar\Desktop\java_projects_old\comm\src\main\java\io\s4\comm\zk\ZkUtil.java:121: warning: non-varargs call of varargs method with inexact argument type for last parameter;
+            Object ret = method.invoke(zkUtil, methodArgs);
+                                               ^
+  cast to Object for a varargs call
+  cast to Object[] for a non-varargs call and to suppress this warning
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 warning
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+warning: Supported source version 'RELEASE_6' from annotation processor 'org.apache.openjpa.persistence.meta.AnnotationProcessor6' less than -source '1.8'
+Note: C:\Users\Oscar\Desktop\java_projects_old\yschool-mini-jeyakaran\src\main\java\org\ymini\yschool\dao\StudentDAO.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 warning
+Note: C:\Users\Oscar\Desktop\java_projects_old\Accelerometer-for-Android\src\com\kanasansoft\android\Accelerometer\Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.

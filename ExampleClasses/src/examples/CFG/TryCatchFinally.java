@@ -63,7 +63,9 @@ public class TryCatchFinally {
 							throw n;
 						else if (a == 7)
 							assert (a == 8);
-						else
+						else if(a==9)
+							continue fr;
+							else
 							throw new IllegalAccessError();
 					}
 			}

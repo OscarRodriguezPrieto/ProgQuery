@@ -1,30 +1,9 @@
 package test.pdg;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.Test;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Path;
-import org.neo4j.graphdb.PathExpander;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.traversal.BranchState;
-import org.neo4j.graphdb.traversal.Evaluation;
-import org.neo4j.graphdb.traversal.Evaluator;
-import org.neo4j.graphdb.traversal.TraversalDescription;
-
-import database.nodes.NodeTypes;
-import database.relations.PDGRelationTypes;
-import database.relations.RelationTypes;
 import test.OldPluginBasedTest;
-import test.utils.TestUtils;
 
 public class PDGTest extends OldPluginBasedTest {
-
+	/* TEST DESIGNED TO USE EMBEEDDED, MUST BE RE-IMPLEMENTED
 	private static List<Node> getIdsAndMemberSelections(Node assign, GraphDatabaseService graphDB) {
 		TraversalDescription td = graphDB.traversalDescription().expand(new PathExpander() {
 
@@ -145,5 +124,5 @@ public class PDGTest extends OldPluginBasedTest {
 
 		}
 	}
-
+*/
 }

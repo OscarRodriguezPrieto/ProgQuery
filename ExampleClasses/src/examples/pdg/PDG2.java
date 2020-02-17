@@ -44,6 +44,19 @@ public class PDG2 implements PDG1.I {
 		pdg.setI(2);
 	}
 
+	public void m22(PDG1 pdg) {
+		// pdg state mod through method
+		if (pdg.i == 9)
+			pdg = null;
+		pdg.setI(2);
+	}
+
+	public void m23(PDG1 pdg) {
+		// pdg state mod through method
+		pdg = null;
+		pdg.setI(2);
+	}
+
 	public void m3(PDG1 pdg) {
 
 		this.pdg = null;
@@ -71,6 +84,7 @@ public class PDG2 implements PDG1.I {
 	}
 
 	public void m7(PDG1 pdg) {
+		m6(pdg);
 		if (pdg.i == 5)
 			pdg = new PDG1();
 		// pdg state mod
@@ -122,6 +136,5 @@ public class PDG2 implements PDG1.I {
 		p.m();
 		return p;
 	}
-
 
 }

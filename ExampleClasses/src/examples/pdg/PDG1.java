@@ -10,12 +10,17 @@ public class PDG1 {
 	}
 
 	public void setI() {
+		array[0] = 7;
 	}
 
 	public void setI(int i) {
 		// method that changes the state of this
 		PDG1.this.i = i;
+	}
+
+	public void setSt() {
 		si = 2;
+
 	}
 
 	public void m(String param) {

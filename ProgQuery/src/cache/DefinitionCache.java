@@ -1,90 +1,119 @@
 package cache;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
+import javax.lang.model.type.TypeMirror;
 
 import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Symbol.ClassSymbol;
 
-import database.DatabaseFachade;
-import database.nodes.NodeTypes;
+import ast.ASTAuxiliarStorage;
+import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.CDGRelationTypes;
 import database.relations.RelationTypes;
-import typeInfo.TypeHierarchy;
+import database.relations.TypeRelations;
+import node_wrappers.NodeWrapper;
+import node_wrappers.RelationshipWrapper;
+import visitors.KeyTypeVisitor;
+import visitors.TypeVisitor;
 
 public class DefinitionCache<TKEY> {
 	private static final boolean DEBUG = false;
-	public static final DefinitionCache<Symbol> CLASS_TYPE_CACHE = new DefinitionCache<Symbol>();
+	public static ASTAuxiliarStorage ast;
+	public static final DefinitionCache<Object> CLASS_TYPE_CACHE = new DefinitionCache<Object>();
+	// public static final DefinitionCache<TypeSymbol> PRIMITIVE_TYPE_CACHE =
+	// new DefinitionCache<TypeSymbol>();
+
 	public static final DefinitionCache<Symbol> METHOD_TYPE_CACHE = new DefinitionCache<Symbol>();
 
-	private final Map<TKEY, Node> auxNodeCache = new HashMap<TKEY, Node>();
-	private final Map<TKEY, Node> definitionNodeCache = new HashMap<TKEY, Node>();
+	private final Map<TKEY, NodeWrapper> auxNodeCache = new HashMap<>();
+	final Map<TKEY, NodeWrapper> definitionNodeCache = new HashMap<>();
 
-	public void put(TKEY k, Node v) {
+	public void put(TKEY k, NodeWrapper v) {
 		if (DEBUG)
 			System.out.println("putting " + k + " " + v);
+		// System.out.println("Trying to put ");
 		if (auxNodeCache.containsKey(k))
 			throw new IllegalArgumentException("Key " + k + " twice ");
+
 		if (!definitionNodeCache.containsKey(k))
 			auxNodeCache.put(k, v);
+		// System.out.println("PUTTNG n=" + v.getId() + " k=" + k);
+		else
+			throw new IllegalArgumentException("Key " + k + " already in definition");
 	}
 
-	public void putClassDefinition(TKEY classSymbol, Node classDec, List<Node> typeDecNodeList,
-			Set<Node> typeDecsUses) {
-		boolean containsKey;
-		if (containsKey = auxNodeCache.containsKey(classSymbol)) {
-			Node oldClassNode = auxNodeCache.get(classSymbol);
-			for (Relationship r : oldClassNode.getRelationships(Direction.OUTGOING, RelationTypes.DECLARES_METHOD,
-					RelationTypes.DECLARES_CONSTRUCTOR))
+	public void putClassDefinition(TKEY classSymbol, NodeWrapper classDec, Set<NodeWrapper> typeDecNodeList,
+			Set<NodeWrapper> typeDecsUses) {
+		NodeWrapper oldClassNode = null;
+		// AuxDebugInfo.lastMessage = "BEFORE PUTTING DEFINITION " +
+		// classSymbol.toString();
+
+		if (auxNodeCache.containsKey(classSymbol)) {
+			oldClassNode = auxNodeCache.get(classSymbol);
+			for (RelationshipWrapper r : oldClassNode.getRelationships(EdgeDirection.OUTGOING,
+					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR, RelationTypes.DECLARES_FIELD,
+					TypeRelations.IS_SUBTYPE_EXTENDS, TypeRelations.IS_SUBTYPE_IMPLEMENTS))
 				r.delete();
+			// System.out.println("TRYING TO REMOVE n=" + oldClassNode.getId());
+			// System.out.println("CONTAINS = " +
+			// typeDecNodeList.contains(oldClassNode));
+			// System.out.println("INDEX OF = " +
+			// typeDecNodeList.indexOf(oldClassNode));
+			// System.out.println(typeDecNodeList.get(typeDecNodeList.indexOf(oldClassNode)).getId());
+			// System.out.println("TYPE DEC LIST BEFORE
+			// "+typeDecNodeList.size());
+			// typeDecNodeList.forEach(n -> System.out.print(n.getId() + ", "));
+			// System.out.println();
 			typeDecNodeList.remove(oldClassNode);
-			oldClassNode.getRelationships(CDGRelationTypes.USES_TYPE_DEC, Direction.OUTGOING)
-					.forEach(usesTypeDecRel -> typeDecsUses.add(usesTypeDecRel.getEndNode()));
+			// System.out.println("TYPE DEC LIST AFTER"+typeDecNodeList.size());
+			// typeDecNodeList.forEach(n -> System.out.print(n.getId() + ", "));
+			// System.out.println();
+			oldClassNode.getRelationships(EdgeDirection.OUTGOING, CDGRelationTypes.USES_TYPE_DEF)
+					.forEach(usesTypeDecRel ->
+
+			// LOS PAQUETES NO SON DECLARADOS O NO...SIEMPRE SE CREAN...
+			typeDecsUses.add(usesTypeDecRel.getEndNode()));
 		}
 
-		putDefinition(classSymbol, classDec, containsKey);
+		putDefinition(classSymbol, classDec, oldClassNode);
+		// AuxDebugInfo.lastMessage = null;
 	}
 
-	public void putDefinition(TKEY k, Node v) {
-		putDefinition(k, v, auxNodeCache.containsKey(k));
+	public void putDefinition(TKEY k, NodeWrapper v) {
+		putDefinition(k, v, auxNodeCache.get(k));
 	}
 
-	private void putDefinition(TKEY k, Node v, boolean containsKey) {
+	private void putDefinition(TKEY k, NodeWrapper v, NodeWrapper previousNode) {
 		if (DEBUG)
 			System.out.println("putting def " + k + " " + v);
 
-		if (containsKey) {
-			if (DEBUG)
-				System.out.println("Removing " + auxNodeCache.get(k));
+		if (previousNode != null) {
+			// if (DEBUG)
+			// System.out.println("Removing " + previousNode.getId() + " from
+			// cache");
 			// No me deja eliminalo porque todavía tiene relaciones
 
 			// Habria que pasar las relaciones al nuevo type
 			// Igual es más eficiente iterar todas y un if??? con direction
-			Node cachedNode = auxNodeCache.get(k);
-			for (Relationship r : cachedNode.getRelationships(Direction.INCOMING)) {
+			for (RelationshipWrapper r : previousNode.getRelationships(EdgeDirection.INCOMING)) {
 				r.getStartNode().createRelationshipTo(v, r.getType());
 				r.delete();
 			}
-			for (Relationship r : cachedNode.getRelationships(Direction.OUTGOING)) {
+			for (RelationshipWrapper r : previousNode.getRelationships(EdgeDirection.OUTGOING)) {
 				v.createRelationshipTo(r.getEndNode(), r.getType());
 				r.delete();
 			}
-			auxNodeCache.get(k).delete();
 
 			auxNodeCache.remove(k);
+			previousNode.delete();
 		}
 
 		definitionNodeCache.put(k, v);
 	}
 
-	public Node get(TKEY k) {
+	public NodeWrapper get(TKEY k) {
 		return definitionNodeCache.containsKey(k) ? definitionNodeCache.get(k) : auxNodeCache.get(k);
 	}
 
@@ -103,44 +132,112 @@ public class DefinitionCache<TKEY> {
 	public int totalDefsCached() {
 		return definitionNodeCache.size();
 	}
+	/*
+	 * private final static Map<TypeKind,
+	 * 
+	 * Pair<NodeTypes, BiConsumer<Type, NodeWrapper>>>
+	 * fromKindToCreateStrategyXX = initMap();
+	 * 
+	 * // private final static Map<TypeKind, BiFunction<Type, Symbol, Object>>
+	 * // fromKindToKey = initKeyStrategyMap();
+	 * 
+	 * private static <T extends NodeWrapper> Map<TypeKind, Pair<NodeTypes,
+	 * BiConsumer<Type, NodeWrapper>>> initMap() { // Aqui puedo poner la
+	 * creación particular de cada uno Tupla NodeType, // Strategy
+	 * BiConsumer<Type, NodeWrapper> voidF = (type, node) -> {
+	 * DefinitionCache.CLASS_TYPE_CACHE.put(type, node); }, voidFPrimitive =
+	 * (type, node) -> { DefinitionCache.CLASS_TYPE_CACHE.put(type.tsym, node);
+	 * };
+	 * 
+	 * Map<TypeKind, Pair<NodeTypes, BiConsumer<Type, NodeWrapper>>> map = new
+	 * HashMap<TypeKind, Pair<NodeTypes, BiConsumer<Type, NodeWrapper>>>();
+	 * map.put(TypeKind.ARRAY, Pair.create(NodeTypes.ARRAY_TYPE, (type, node) ->
+	 * { node.createRelationshipTo(DefinitionCache.getOrCreateType(((ArrayType)
+	 * type).elemtype), RelationTypes.ELEMENT_TYPE);
+	 * DefinitionCache.CLASS_TYPE_CACHE.put(type, node); }));
+	 * map.put(TypeKind.BOOLEAN, Pair.create(NodeTypes.PRIMITIVE_TYPE,
+	 * voidFPrimitive)); map.put(TypeKind.BYTE,
+	 * Pair.create(NodeTypes.PRIMITIVE_TYPE, voidFPrimitive));
+	 * map.put(TypeKind.CHAR, Pair.create(NodeTypes.PRIMITIVE_TYPE,
+	 * voidFPrimitive)); map.put(TypeKind.DOUBLE,
+	 * Pair.create(NodeTypes.PRIMITIVE_TYPE, voidFPrimitive));
+	 * 
+	 * map.put(TypeKind.ERROR, Pair.create(NodeTypes.ERROR_TYPE, voidF));
+	 * 
+	 * map.put(TypeKind.EXECUTABLE, Pair.create(NodeTypes.EXECUTABLE_TYPE,
+	 * (type, node) -> { throw new IllegalStateException(); }));
+	 * map.put(TypeKind.FLOAT, Pair.create(NodeTypes.PRIMITIVE_TYPE,
+	 * voidFPrimitive)); map.put(TypeKind.INT,
+	 * Pair.create(NodeTypes.PRIMITIVE_TYPE, voidFPrimitive));
+	 * map.put(TypeKind.INTERSECTION, Pair.create(NodeTypes.INTERSECTION_TYPE,
+	 * voidF));
+	 * 
+	 * map.put(TypeKind.LONG, Pair.create(NodeTypes.PRIMITIVE_TYPE,
+	 * voidFPrimitive)); map.put(TypeKind.NONE, Pair.create(NodeTypes.NONE_TYPE,
+	 * voidF)); map.put(TypeKind.NULL, Pair.create(NodeTypes.NULL_TYPE, voidF));
+	 * map.put(TypeKind.PACKAGE, Pair.create(NodeTypes.PACKAGE_TYPE, voidF));
+	 * map.put(TypeKind.SHORT, Pair.create(NodeTypes.PRIMITIVE_TYPE,
+	 * voidFPrimitive));
+	 * 
+	 * // ESTUIDAR EL CASO DEL TYPEVAR DE MOMENTO SIN METER
+	 * map.put(TypeKind.UNION, Pair.create(NodeTypes.PRIMITIVE_TYPE,
+	 * voidFPrimitive)); map.put(TypeKind.VOID,
+	 * Pair.create(NodeTypes.PRIMITIVE_TYPE, voidFPrimitive));
+	 * map.put(TypeKind.WILDCARD, Pair.create(NodeTypes.WILDCARD, voidF));
+	 * 
+	 * return map; }
+	 * 
+	 * private static Object fromTypeToKey(Type type) { // return
+	 * fromKindToKey.get(t.getKind()).apply(t); return type.isPrimitiveOrVoid()
+	 * ? type.tsym : type; }
+	 */
 
-	public static Node getOrCreateTypeDec(ClassSymbol classSymbol, List<Node> typeDecNodeList) {
+	public static NodeWrapper getOrCreateType(TypeMirror type, Object key, ASTAuxiliarStorage ast) {
+		// System.out.println(type + " inspected in cache");
+		// System.out.println("looking for key " + key);
+		// System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.toString());
+		// System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.size());
+		if (DefinitionCache.CLASS_TYPE_CACHE.containsKey(key)) {
 
-		return getOrCreateTypeDec(classSymbol,
-				classSymbol.isInterface() ? NodeTypes.INTERFACE_DECLARATION
-						: classSymbol.isEnum() ? NodeTypes.ENUM_DECLARATION : NodeTypes.CLASS_DECLARATION,
-				typeDecNodeList);
+			// System.out.println("RECOVERED FROM KEY " + key + "\n\t FROM " +
+			// type);
+			// DefinitionCache.CLASS_TYPE_CACHE.get(key).getLabels().forEach(System.out::print);
+			// System.out.println();
+			// System.out.println(type + " already in cache");
+			return DefinitionCache.CLASS_TYPE_CACHE.get(key);
+		}
+		// System.out.println("CREATING NEW TYPE " + type);
+		return createTypeDec(type, key, ast);
 	}
 
-	public static Node getOrCreateTypeDec(ClassSymbol classSymbol, NodeTypes type, List<Node> typeDecNodeList) {
-		return getOrCreateNode(classSymbol, () -> DatabaseFachade.createTypeDecNode(classSymbol, type),
-				typeDecNodeList);
+	public static NodeWrapper getExistingType(TypeMirror type) {
+		if (DefinitionCache.CLASS_TYPE_CACHE.containsKey(type)) {
+
+			// System.out.println(type + " already in cache");
+			return DefinitionCache.CLASS_TYPE_CACHE.get(type);
+		}
+		throw new IllegalArgumentException("Not Type dounf for " + type);
 	}
 
-	public static Node getOrCreateNode(ClassSymbol classSymbol, Supplier<Node> supplier, List<Node> typeDecList) {
-
-		return DefinitionCache.CLASS_TYPE_CACHE.containsKey(classSymbol)
-				? DefinitionCache.CLASS_TYPE_CACHE.get(classSymbol) : createTypeDec(classSymbol, supplier, typeDecList);
+	public static NodeWrapper getOrCreateType(TypeMirror type, ASTAuxiliarStorage ast) {
+		// System.out.println("Creating type key for" + type);
+		// System.out.println("KEY WAS:\t" + type.accept(new KeyTypeVisitor(),
+		// null));
+		return getOrCreateType(type, type.accept(new KeyTypeVisitor(), null), ast);
 	}
 
-	public static void createTypeDecIfNecessary(ClassSymbol classSymbol, List<Node> typeDecList) {
-		if (!DefinitionCache.CLASS_TYPE_CACHE.containsKey(classSymbol))
-			createTypeDec(classSymbol, typeDecList);
+	public static NodeWrapper createTypeDec(TypeMirror typeSymbol, ASTAuxiliarStorage ast) {
+		// System.out.println("Creating type key for" + typeSymbol);
+		// System.out.println("KEY WAS:\t" + typeSymbol.accept(new
+		// KeyTypeVisitor(), null));
+		return createTypeDec(typeSymbol, typeSymbol.accept(new KeyTypeVisitor(), null), ast);
 	}
 
-	public static Node createTypeDec(ClassSymbol classSymbol, List<Node> typeDecList) {
-		return createTypeDec(classSymbol,
-				() -> DatabaseFachade.createTypeDecNode(classSymbol,
-						classSymbol.isInterface() ? NodeTypes.INTERFACE_DECLARATION
-								: classSymbol.isEnum() ? NodeTypes.ENUM_DECLARATION : NodeTypes.CLASS_DECLARATION),
-				typeDecList);
-	}
+	private static NodeWrapper createTypeDec(TypeMirror type, Object key, ASTAuxiliarStorage ast) {
+		// System.out.println("Creating " + typeSymbol);
+		// System.out.println("VREATING TYPE SPEC " + type);
+		NodeWrapper ret = type.accept(new TypeVisitor(ast), key);
 
-	public static Node createTypeDec(ClassSymbol classSymbol, Supplier<Node> supplier, List<Node> typeDecList) {
-		Node classNode = supplier.get();
-		typeDecList.add(classNode);
-		TypeHierarchy.addTypeHierarchy(classSymbol, classNode, typeDecList, null);
-		DefinitionCache.CLASS_TYPE_CACHE.put(classSymbol, classNode);
-		return classNode;
+		return ret;
 	}
 }

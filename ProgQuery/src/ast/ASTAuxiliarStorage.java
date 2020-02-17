@@ -8,32 +8,35 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
-
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
+import java.util.stream.Collectors;
 
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.source.tree.TryTree;
 import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import com.sun.tools.javac.code.Type;
 
-import cache.SimpleTreeNodeCache;
 import database.nodes.NodeTypes;
+import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.CFGRelationTypes;
 import database.relations.CGRelationTypes;
+import database.relations.PDGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.PartialRelationWithProperties;
-import mig.DynamicMethodCallAnalysis;
+import database.relations.TypeRelations;
+import mig.HierarchyAnalysis;
+import node_wrappers.NodeWrapper;
+import node_wrappers.RelationshipWrapper;
+import node_wrappers.WrapperUtils;
 import pdg.GetDeclarationFromExpression;
 import pdg.InterproceduralPDG;
-import utils.Pair;
+import utils.dataTransferClasses.MethodInfo;
+import utils.dataTransferClasses.MethodState;
+import utils.dataTransferClasses.Pair;
 
 public class ASTAuxiliarStorage {
 	private static final String OBJECT_CLASS_NAME = "java.lang.Object";
@@ -43,29 +46,28 @@ public class ASTAuxiliarStorage {
 	// public static Map<MethodTree, List<StatementTree>>
 	// nestedConstructorsToBlocks = new HashMap<MethodTree,
 	// List<StatementTree>>();
-	// public static List<Pair<AssertTree, Node>> assertList = new
-	// ArrayList<Pair<AssertTree, Node>>();
+	// public static List<Pair<AssertTree, NodeWrapper>> assertList = new
+	// ArrayList<Pair<AssertTree, NodeWrapper>>();
 
-	private SimpleTreeNodeCache<Tree> cfgNodeCache;
-	private SimpleTreeNodeCache<Tree> previousCfgNodeCache;
-	private Map<Tree, Pair<Node, Node>> finallyCache;
-	private Map<Tree, Pair<Node, Node>> previousFinallyCache;
-
-	private Map<TryTree, List<Pair<Node, List<MethodSymbol>>>> invocationsInStatements;
-	private Stack<List<Pair<Node, List<MethodSymbol>>>> lastInvocationInStatementLists = new Stack<List<Pair<Node, List<MethodSymbol>>>>();
-	private Map<TryTree, List<Pair<Node, List<MethodSymbol>>>> previousInvStatements;
+	private Stack<List<Pair<NodeWrapper, List<MethodSymbol>>>> lastInvocationInStatementLists = new Stack<List<Pair<NodeWrapper, List<MethodSymbol>>>>();
 
 	// private final Map<String, List<Type>> methodNamesToExceptionThrowsTypes =
 	// new HashMap<String, List<Type>>();
-	private List<MethodInfo> methodInfo = new ArrayList<MethodInfo>();
-	public final List<Node> typeDecNodes = new ArrayList<Node>();
-	private final Set<Node> trustableInvocations = new HashSet<Node>();
+	private Map<NodeWrapper, MethodInfo> methodInfo = new HashMap<>();
+	public final Set<NodeWrapper> typeDecNodes = new HashSet<NodeWrapper>();
+	private final Set<NodeWrapper> trustableInvocations = new HashSet<NodeWrapper>();
+
+	// METHOD_DEC,CALL
+	// private final Set<Pair<Node, NodeWrapper>> calls = new HashSet<>();
+	private final Map<MethodSymbol, NodeWrapper> accesibleMethods = new HashMap<>();
+	private final Map<NodeWrapper, Set<NodeWrapper>> callGraph = new HashMap<>();
+
 	// public void addThrowsInfoToMethod(String methodName, List<Type>
 	// exceptionTypes) {
 	// methodNamesToExceptionThrowsTypes.put(methodName, exceptionTypes);
 	// }
 	public void checkIfTrustableInvocation(MethodInvocationTree methodInvocationTree, MethodSymbol methodSymbol,
-			Node methodInvocationNode) {
+			NodeWrapper methodInvocationNode) {
 		if (methodInvocationTree.getMethodSelect().getKind() == Kind.IDENTIFIER) {
 			if (!methodSymbol.isConstructor())
 				trustableInvocations.add(methodInvocationNode);
@@ -79,32 +81,28 @@ public class ASTAuxiliarStorage {
 				trustableInvocations.add(methodInvocationNode);
 		}
 	}
-	public List<MethodInfo> getMethodsInfo() {
+
+	public Map<NodeWrapper, MethodInfo> getMethodsInfo() {
 		return methodInfo;
 	}
 
-	public Map<Tree, Pair<Node, Node>> getFinallyCache() {
-		return finallyCache;
+	public void addInfo(MethodTree methodTree, NodeWrapper methodNode, MethodState methodState) {
+
+		methodInfo.put(methodNode,
+				new MethodInfo(methodTree, methodNode, methodState.identificationForLeftAssignExprs,
+						methodState.thisNode, methodState.thisRelationsOnThisMethod, methodState.paramsToPDGRelations,
+						methodState.callsToParamsPreviouslyModified, methodState.callsToParamsMaybePreviouslyModified));
 	}
 
-	public SimpleTreeNodeCache<Tree> getCfgNodeCache() {
-		return cfgNodeCache;
+	public void addAccesibleMethod(MethodSymbol ms, NodeWrapper method) {
+		accesibleMethods.put(ms, method);
+
 	}
 
-	public void putCfgNodeInCache(Tree t, Node n) {
-		cfgNodeCache.put(t, n);
+	public void deleteAccesibleMethod(MethodSymbol ms) {
+		accesibleMethods.remove(ms);
 	}
-
-	public void putFinallyInCache(Tree t, Node finallyNode, Node lastStatement) {
-		finallyCache.put(t, Pair.create(finallyNode, lastStatement));
-	}
-
-	public void addInfo(MethodTree methodTree, Node methodNode, Map<Node, Node> identificationForLeftAssignExprs) {
-
-		methodInfo.add(new MethodInfo(methodTree, methodNode, identificationForLeftAssignExprs));
-	}
-
-	// public void putConditionInCfgCache(ExpressionTree tree, Node n) {
+	// public void putConditionInCfgCache(ExpressionTree tree, NodeWrapper n) {
 	// if (tree instanceof ParenthesizedTree)
 	// n = n.getSingleRelationship(RelationTypes.PARENTHESIZED_ENCLOSES,
 	// Direction.OUTGOING).getEndNode();
@@ -112,51 +110,54 @@ public class ASTAuxiliarStorage {
 	// cfgNodeCache.put(tree, n);
 	// }
 
-	public void enterInNewTry(TryTree tryTree) {
-		lastInvocationInStatementLists.push(new ArrayList<Pair<Node, List<MethodSymbol>>>());
-		invocationsInStatements.put(tryTree, lastInvocationInStatementLists.peek());
+	public void enterInNewTry(TryTree tryTree, MethodState m) {
+		lastInvocationInStatementLists.push(new ArrayList<Pair<NodeWrapper, List<MethodSymbol>>>());
+		m.invocationsInStatements.put(tryTree, lastInvocationInStatementLists.peek());
 	}
 
 	public void exitTry() {
 		lastInvocationInStatementLists.pop();
 	}
 
-	public void addInvocationInStatement(Node statement, List<MethodSymbol> methodNames) {
+	public void addInvocationInStatement(NodeWrapper statement, List<MethodSymbol> methodNames) {
 		if (methodNames.size() > 0)
 			lastInvocationInStatementLists.peek().add(Pair.create(statement, methodNames));
 	}
 
-	public void newMethodDeclaration() {
-		previousInvStatements = invocationsInStatements;
-		invocationsInStatements = new HashMap<TryTree, List<Pair<Node, List<MethodSymbol>>>>();
-		enterInNewTry(null);
-		previousCfgNodeCache = cfgNodeCache;
-		cfgNodeCache = new SimpleTreeNodeCache<Tree>();
-		previousFinallyCache = finallyCache;
-		finallyCache = new HashMap<Tree, Pair<Node, Node>>();
+	public void newMethodDeclaration(MethodState s) {
+
+		// s with INIT INVSTATEMENS
+		enterInNewTry(null, s);
+
 	}
 
 	public void endMethodDeclaration() {
-		invocationsInStatements = previousInvStatements;
-		cfgNodeCache = previousCfgNodeCache;
-		finallyCache = previousFinallyCache;
 		exitTry();
 	}
 
-	public Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> getTrysToExceptionalPartialRelations() {
+	public Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> getTrysToExceptionalPartialRelations(
+			Map<TryTree, List<Pair<NodeWrapper, List<MethodSymbol>>>> invocationsInStatements) {
 		Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> throwsTypesInStatementsGrouped = new HashMap<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>>();
-		for (Entry<TryTree, List<Pair<Node, List<MethodSymbol>>>> entry : invocationsInStatements.entrySet()) {
+		for (Entry<TryTree, List<Pair<NodeWrapper, List<MethodSymbol>>>> entry : invocationsInStatements.entrySet()) {
 			Map<Type, List<PartialRelation<CFGRelationTypes>>> typesToRelations = new HashMap<Type, List<PartialRelation<CFGRelationTypes>>>();
-			for (Pair<Node, List<MethodSymbol>> invocationsInStatement : entry.getValue()) {
+			for (Pair<NodeWrapper, List<MethodSymbol>> invocationsInStatement : entry.getValue()) {
 				for (MethodSymbol methodSymbol : invocationsInStatement.getSecond())
 					for (Type excType : methodSymbol.getThrownTypes()) {
 						if (!typesToRelations.containsKey(excType))
 							typesToRelations.put(excType, new ArrayList<PartialRelation<CFGRelationTypes>>());
+						
+						String methodName=methodSymbol.owner.getQualifiedName() +":"+methodSymbol.toString();
+						if(methodSymbol.isConstructor())
+							methodName=	methodName.replaceAll(":(\\w)+\\(", ":<init>(");
+						
 						typesToRelations.get(excType)
 								.add(new PartialRelationWithProperties<CFGRelationTypes>(
-										invocationsInStatement.getFirst(), CFGRelationTypes.MAY_THROW,
-										Pair.create("methodName", methodSymbol.getQualifiedName().toString()),
-										Pair.create("exceptionType", excType.toString())));
+										invocationsInStatement.getFirst(), CFGRelationTypes.CFG_MAY_THROW,
+										Pair.create("methodName",
+												WrapperUtils.stringToNeo4jQueryString(
+														methodName)),
+										Pair.create("exceptionType",
+												WrapperUtils.stringToNeo4jQueryString(excType.toString()))));
 					}
 
 			}
@@ -166,38 +167,128 @@ public class ASTAuxiliarStorage {
 		return throwsTypesInStatementsGrouped;
 	}
 
-	public void doInterproceduralPDGAnalysis(Set<Node> methodsMutateThisAndParams,
-			Map<Node, Set<Node>> paramsMutatedInMethods, Map<Node, Set<Node>> paramsMayMutateInMethods,
-			Map<Node, Node> thisRefsOfMethods) {
+	public void doInterproceduralPDGAnalysis() {
 
-		// TODO Return analysis
-
-		Map<Node, Iterable<Relationship>> methodDecToCalls = new HashMap<Node, Iterable<Relationship>>();
+		Map<NodeWrapper, Iterable<RelationshipWrapper>> methodDecToCalls = new HashMap<NodeWrapper, Iterable<RelationshipWrapper>>();
 		// Get Declarations Analysis
-		GetDeclarationFromExpression getDecs = new GetDeclarationFromExpression(thisRefsOfMethods);
-		methodInfo.forEach(mInfo -> {
-			getDecs.setIdentificationForLeftAssignIdents(mInfo.identificationForLeftAssignExprs);
-			Iterable<Relationship> callRels = mInfo.methodNode.getRelationships(CGRelationTypes.CALLS,
-					Direction.OUTGOING);
+		GetDeclarationFromExpression getDecs = new GetDeclarationFromExpression();
+		// thisRefsOfMethods.entrySet().forEach(e -> {
+		// System.out.println(
+		// "ENTRY :\n" + NodeUtils.nodeToString(e.getKey()) + "\n" +
+		// NodeUtils.nodeToString(e.getValue()));
+		// });
+
+		methodInfo.values().forEach(mInfo -> {
+			getDecs.setInfoForMethod(mInfo);
+			Iterable<RelationshipWrapper> callRels = mInfo.methodNode.getRelationships(EdgeDirection.OUTGOING,
+					CGRelationTypes.CALLS);
 			methodDecToCalls.put(mInfo.methodNode, callRels);
-			for (Relationship callRel : callRels)
+			for (RelationshipWrapper callRel : callRels) {
+				addCallToCallCache(callRel);
 				if (callRel.getEndNode().hasLabel(NodeTypes.NEW_INSTANCE))
 					getDecs.scanNewClass(callRel.getEndNode());
 				else
 					getDecs.scanMethodInvocation(callRel.getEndNode());
+			}
 		});
 
 		// Interprocedural analysis
-		InterproceduralPDG pdgAnalysis = new InterproceduralPDG(methodsMutateThisAndParams, paramsMutatedInMethods,
-				paramsMayMutateInMethods, thisRefsOfMethods, methodDecToCalls, getDecs.getInvocationsMayModifyVars());
-		methodInfo.forEach(mInfo -> pdgAnalysis.doInterproceduralPDGAnalysis(mInfo.methodNode));
+		InterproceduralPDG pdgAnalysis = new InterproceduralPDG(methodDecToCalls, getDecs.getInvocationsMayModifyVars(),
+				methodInfo);
+		methodInfo.values().forEach(mInfo -> pdgAnalysis.doInterproceduralPDGAnalysis(mInfo));
 
+	}
+
+	private void addCallToCallCache(RelationshipWrapper callRel) {
+		NodeWrapper caller = callRel.getStartNode();
+		Set<NodeWrapper> calleeList = callGraph.get(caller);
+		if (calleeList == null)
+			callGraph.put(caller, calleeList = new HashSet<NodeWrapper>());
+		for (RelationshipWrapper r : callRel.getEndNode().getRelationships(EdgeDirection.OUTGOING,
+				CGRelationTypes.REFERS_TO, CGRelationTypes.MAY_REFER_TO))
+			calleeList.add(r.getEndNode());
 	}
 
 	// Aquí tenemos dos opciones, bucle o traversal
 	public void doDynamicMethodCallAnalysis() {
-		DynamicMethodCallAnalysis dynMethodCallAnalysis = new DynamicMethodCallAnalysis(trustableInvocations);
-		for (Node typeDec : typeDecNodes)
+		HierarchyAnalysis dynMethodCallAnalysis = new HierarchyAnalysis(trustableInvocations);
+//		System.out.println("TYPE DEC LIST PREV ANALYSIS ");
+//		System.out.println(typeDecNodes);
+		for (NodeWrapper typeDec : typeDecNodes)
 			dynMethodCallAnalysis.dynamicMethodCallAnalysis(typeDec);
+	}
+
+	public void doInitializationAnalysis() {
+		Set<NodeWrapper> newAccessibleMethods = new HashSet<>(accesibleMethods.values());
+
+		for (NodeWrapper accMethod : accesibleMethods.values())
+			addAllOverriders(newAccessibleMethods,
+					accMethod.getRelationships(EdgeDirection.INCOMING, TypeRelations.OVERRIDES));
+
+		for (NodeWrapper accMethod : new HashSet<>(newAccessibleMethods))
+			addAllCallees(newAccessibleMethods, callGraph.get(accMethod));
+		// newAccessibleMethods.forEach(n ->
+		// System.out.println(n.getProperty("fullyQualifiedName")));
+		for (MethodInfo mInfo : methodInfo.values())
+			// SI NO TIENE NADIE QUE LO LLAME ... SE LO PREGUNTAMOS A ORTIN
+
+			mInfo.methodNode.setProperty("isInitializer", !newAccessibleMethods.contains(mInfo.methodNode));
+		// mInfo.instanceAssignments.entrySet().forEach(instanceAssignPair -> {
+		//
+		// if (isInitMethod)
+		// instanceAssignPair.getKey().addLabel(NodeTypes.INITIALIZATION);
+		// else if (instanceAssignPair.getValue())
+		// // IF NEEDS TO BE LABELED AS ASIGNMENT
+		// instanceAssignPair.getKey().addLabel(NodeTypes.ASSIGNMENT);
+		// });
+		// mInfo.getDecToInstanceInvRels().forEach(rel -> {
+		// rel.setProperty("isInit", isInitMethod);
+		// });
+
+		// AWUI VENDRÍA LA PREGUNTA DE, ALGUNO LO LLAMÓ???
+
+	}
+
+	private void addAllCallees(Set<NodeWrapper> newNodes, Set<NodeWrapper> callees) {
+		if (callees == null)
+			return;
+		for (NodeWrapper callee : callees)
+			if (!newNodes.contains(callee) && (Boolean) callee.getProperty("isDeclared")
+					&& callee.hasLabel(NodeTypes.METHOD_DEF)) {
+				newNodes.add(callee);
+				addAllCallees(newNodes, callGraph.get(callee));
+			}
+
+	}
+
+	private void addAllOverriders(Set<NodeWrapper> newNodes, Iterable<RelationshipWrapper> overriders) {
+		if (overriders == null)
+			return;
+		for (RelationshipWrapper ovRel : overriders)
+			if (!newNodes.contains(ovRel.getStartNode())) {
+				newNodes.add(ovRel.getStartNode());
+				addAllCallees(newNodes,
+						ovRel.getStartNode().getRelationships(EdgeDirection.INCOMING, TypeRelations.OVERRIDES).stream()
+								.map(r -> r.getStartNode()).collect(Collectors.toSet()));
+			}
+
+	}
+
+	public void createAllParamsToMethodsPDGRels() {
+		// System.out.println("STARTING CREATING PARAMS RELS ");
+		methodInfo.values().forEach(methodInfo -> {
+			// PORQUE LOS CONSTRUCTORES SE QUEDAN FUERA?!?!?! TIENE SENTIDO,
+			// PORQUE AUNQUE TENGAN ARCOS CON THIS, LOS DE LOS PARAMETROS
+			// DEBERÍAN PROPAGARLOS
+			// System.out.println("CREATING FOR METHOD " +
+			// methodInfo.methodNode.getProperty("name"));
+			for (Entry<NodeWrapper, PDGRelationTypes> paramEntry : methodInfo.paramsToPDGRelations.entrySet()) {
+				// System.out.println(paramEntry.getKey().getLabels().iterator().next());
+				// System.out.println(paramEntry.getValue());
+
+				paramEntry.getKey().createRelationshipTo(methodInfo.methodNode, paramEntry.getValue());
+			}
+
+		});
 	}
 }

@@ -3,25 +3,25 @@ package mig;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.neo4j.graphdb.Node;
+import node_wrappers.NodeWrapper;
 
 public class AttributeInitializationCalls {
 
 	public static AttributeInitializationCalls CURRENT_CLASS_INFO;
-	private List<Node> lastConstructors = new ArrayList<Node>(), lastAttributes = new ArrayList<Node>(),
-			lastStaticAttributes = new ArrayList<Node>();
+	private List<NodeWrapper> lastConstructors = new ArrayList<>(), lastAttributes = new ArrayList<>(),
+			lastStaticAttributes = new ArrayList<>();
 
-	public Node lastStaticConstructor;
+	public NodeWrapper lastStaticConstructor;
 
-	public static void addConstructor(Node n) {
+	public static void addConstructor(NodeWrapper n) {
 		CURRENT_CLASS_INFO.lastConstructors.add(n);
 	}
 
-	public static void addAttribute(Node attr) {
+	public static void addAttribute(NodeWrapper attr) {
 		CURRENT_CLASS_INFO.lastAttributes.add(attr);
 	}
 
-	public static void addStaticAttribute(Node attr) {
+	public static void addStaticAttribute(NodeWrapper attr) {
 
 		CURRENT_CLASS_INFO.lastStaticAttributes.add(attr);
 	}

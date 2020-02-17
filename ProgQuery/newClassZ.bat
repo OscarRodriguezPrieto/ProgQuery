@@ -1,0 +1,1 @@
+javac -cp bin;build\libs\neo4j\*;..\ExampleClasses\src; -Xplugin:"ProgQueryPlugin Z L" -d bon ..\ExampleClasses\src\examples\cmu\Z.java

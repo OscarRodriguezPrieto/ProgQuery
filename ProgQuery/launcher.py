@@ -4,6 +4,7 @@ import time
 
 instrumentation_time= False
 
+
 def capture(command):
   #command = command + " > .\\temp\\output.txt"
   print("> Command: " + command)
@@ -15,7 +16,7 @@ def capture(command):
   file.close()  
   #print(time)
   return endTime-iniTime if instrumentation_time else execTime
-
+'''
 # original version
 if __name__ == "__main__":
   command = ""
@@ -29,5 +30,6 @@ if __name__ == "__main__":
   file.close()  
   #print(time)
   sys.exit(time)
+'''
 
     
