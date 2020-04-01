@@ -10,14 +10,9 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
-import org.neo4j.graphdb.DependencyResolver;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.helpers.collection.MapUtil;
-import org.neo4j.kernel.api.exceptions.KernelException;
-import org.neo4j.kernel.impl.proc.Procedures;
 import org.neo4j.kernel.internal.GraphDatabaseAPI;
 import org.neo4j.kernel.lifecycle.LifecycleException;
-import org.neo4j.test.TestGraphDatabaseFactory;
 
 import database.embedded.EmbeddedDBManager;
 import database.procedures.AnySucc;
@@ -29,6 +24,8 @@ import database.relations.RelationTypesInterface;
 import evaluation.Rule;
 
 public class QueriesWithProcedures {
+	
+	/*
 	private static final RelationTypes[] assignToOutExprNoCond = new RelationTypes[] { RelationTypes.ARRAYACCESS_EXPR,
 			RelationTypes.ARRAYACCESS_INDEX, RelationTypes.ASSIGNMENT_RHS, RelationTypes.BINOP_LHS,
 			RelationTypes.BINOP_RHS, RelationTypes.CAST_ENCLOSES, RelationTypes.COMPOUND_ASSIGNMENT_RHS,
@@ -324,5 +321,5 @@ public class QueriesWithProcedures {
 			bw.close();
 			System.out.println("-1");
 		}
-	}
+	}*/
 }

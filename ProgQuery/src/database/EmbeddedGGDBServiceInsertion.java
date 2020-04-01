@@ -23,12 +23,12 @@ public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 	}
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode() {
-		return new Neo4jEmbeddedWrapperNode(gDBService.createNode());
+		return new Neo4jEmbeddedWrapperNode(t.createNode());
 	}
 
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode(NodeTypes label) {
-		Node n = gDBService.createNode();
+		Node n = t.createNode();
 		n.addLabel(label);
 		return new Neo4jEmbeddedWrapperNode(n);
 
@@ -36,7 +36,7 @@ public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode(NodeTypes label, Object[] props) {
-		Node n = gDBService.createNode();
+		Node n = t.createNode();
 		n.addLabel(label);
 		for (int i = 0; i < props.length; i = i + 2)
 			n.setProperty(props[i].toString(), props[i + 1]);
@@ -47,7 +47,7 @@ public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode(Object[] props) {
-		Node n = gDBService.createNode();
+		Node n = t.createNode();
 		for (int i = 0; i < props.length; i = i + 2)
 			n.setProperty(props[i].toString(), props[i + 1]);
 
@@ -64,9 +64,9 @@ public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 	public void endAnalysis() {
 		// System.out.println("END");
 //		System.out.println("BEFORE SHUTDOWN");
-		t.success();
+		t.commit();;
 		t.close();
-		gDBService.shutdown();
+		EmbeddedDBManager.shutdownCurrent();
 	}
 
 }

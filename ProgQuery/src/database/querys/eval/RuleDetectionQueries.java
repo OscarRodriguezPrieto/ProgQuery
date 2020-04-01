@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
+import org.neo4j.graphdb.Transaction;
 
 import database.embedded.EmbeddedDBManager;
 
@@ -67,13 +68,15 @@ public class RuleDetectionQueries {
 	public static void main(String[] args) throws IOException {
 		int queryIndex = args.length == 0 ? 4 : Integer.parseInt(args[0]);
 		GraphDatabaseService gs = EmbeddedDBManager.getNewEmbeddedDBService();
+		Transaction tx=gs.beginTx();
 		String query = QUERIES[queryIndex];
 		System.err.println(queryIndex + "\n" + query);
 		long ini = System.nanoTime();
-		Result res = gs.execute(query);
+		Result res = tx.execute(query);
 		long end = System.nanoTime();
 		res.toString().length();
 		System.out.print((end - ini) / 1000_000);
+		tx.close();
 		// gs.execute(DELETE_ALL);
 	}
 }

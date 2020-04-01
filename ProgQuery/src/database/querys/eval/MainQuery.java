@@ -2,6 +2,7 @@ package database.querys.eval;
 
 import java.io.IOException;
 
+import org.neo4j.driver.Transaction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 
@@ -51,10 +52,13 @@ public class MainQuery {
 	public static void main(String[] args) throws IOException {
 
 		GraphDatabaseService gs = EmbeddedDBManager.getNewEmbeddedDBService();
-
-		Result res = gs.execute(args[0]);
+		org.neo4j.graphdb.Transaction tx= gs.beginTx();
+		if(args.length==0)
+			args=new String[] {"MATCH (N) RETURN N"};
+		Result res = tx.execute(args[0]);
 		System.out.println(res.resultAsString());
-		// gs.execute(DELETE_ALL);
+		tx.commit();
+		tx.close();
 
 	}
 

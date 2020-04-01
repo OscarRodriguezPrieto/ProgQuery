@@ -223,12 +223,15 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 				methodName, completeName);
 		// System.out.println(classNode + " DECLARES METHOD IN DURING TYPE " +
 		// methodDec);
+//		System.out.println("CREATING FROM " + classNode.getProperty("fullyQualifiedName") + "  "
+//				+ classNode.getProperty("isDeclared") + " to " + methodDec.getProperty("fullyQualifiedName"));
 		classNode.createRelationshipTo(methodDec, RelationTypes.DECLARES_METHOD);
 		return methodDec;
 	}
 
 	private static NodeWrapper createNonDeclaredMethodDuringTypeCreation(boolean isInterface, ASTAuxiliarStorage ast,
 			MethodSymbol symbol, String fullyQualifiedName, String methodName, String completeName) {
+
 		NodeWrapper
 		// Se hacen muchas cosas y es posible que se visite la
 		// declaración después
@@ -361,22 +364,20 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	//
 	// }
 	/*
-	 * private boolean enclosesCurrentClass(Symbol classSymbol, ClassSymbol
-	 * current) { do if (current == classSymbol || (current =
-	 * current.enclClass()) == classSymbol) return true; while (current != null
-	 * && current != current.enclClass()); /* do { System.out.println("CURR:" +
-	 * current);
+	 * private boolean enclosesCurrentClass(Symbol classSymbol, ClassSymbol current)
+	 * { do if (current == classSymbol || (current = current.enclClass()) ==
+	 * classSymbol) return true; while (current != null && current !=
+	 * current.enclClass()); /* do { System.out.println("CURR:" + current);
 	 * 
 	 * System.out.println("CURR ENCL:" + current.enclClass());
-	 * System.out.println("CURR B:" + (ClassSymbol)
-	 * current.getSuperclass().tsym); if (current == classSymbol || (current =
-	 * (ClassSymbol) current.getSuperclass().tsym) == classSymbol) return true;
-	 * } while (current != null && current != current.enclClass()); return
-	 * false;
+	 * System.out.println("CURR B:" + (ClassSymbol) current.getSuperclass().tsym);
+	 * if (current == classSymbol || (current = (ClassSymbol)
+	 * current.getSuperclass().tsym) == classSymbol) return true; } while (current
+	 * != null && current != current.enclClass()); return false;
 	 * 
 	 * boolean isInstanceAssign =
-	 * IsInstanceFieldExpression.GET_ID_VISITOR.scan(assignmentTree.getVariable(
-	 * ), null); }
+	 * IsInstanceFieldExpression.GET_ID_VISITOR.scan(assignmentTree.getVariable( ),
+	 * null); }
 	 */
 
 	private NodeWrapper beforeScanAnyAssign(NodeWrapper assignmentNode,
@@ -410,15 +411,15 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		attachTypeDirect(assignmentNode, assignmentTree);
 		if (outsideAnnotation) {
 			NodeWrapper previousLastASsignInfo = beforeScanAnyAssign(assignmentNode, t);
-			scan(assignmentTree.getVariable(),
-					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS, PDGProcessing.getLefAssignmentArg(t)));
+			scan(assignmentTree.getVariable(), Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS,
+					PDGProcessing.getLefAssignmentArg(t)));
 
 			afterScanAnyAssign(previousLastASsignInfo);
 			scan(assignmentTree.getExpression(),
 					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_RHS, PDGProcessing.USED));
 		} else {
-			scan(assignmentTree.getVariable(),
-					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS, PDGProcessing.getLefAssignmentArg(t)));
+			scan(assignmentTree.getVariable(), Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS,
+					PDGProcessing.getLefAssignmentArg(t)));
 			scan(assignmentTree.getExpression(),
 					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_RHS, PDGProcessing.USED));
 		}
@@ -557,7 +558,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			simpleName = split[split.length - 1];
 			simpleName = simpleName.substring(0, simpleName.length() - 1);
 		}
-
+//		System.out.println("VISITING CLASS " + fullyQualifiedType);
 		NodeWrapper classNode = DatabaseFachade.CURRENT_DB_FACHADE.createTypeDecNode(classTree, simpleName,
 				fullyQualifiedType);
 		classNode.addLabel(NodeCategory.AST_NODE);
@@ -1201,9 +1202,14 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		}
 		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol))
 			ast.deleteAccesibleMethod(methodSymbol);
-		else
-			GraphUtils.connectWithParent(methodNode, t, rel);
+//		t.getFirst().getStartingNode().getRelationships(EdgeDirection.OUTGOING, RelationTypes.DECLARES_METHOD)
+//				.forEach(r -> System.out.println(r.getEndNode().getProperty("fullyQualifiedName")));
+//		NodeUtils.nodeToString(t.getFirst().getStartingNode());
+
 		DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
+		//For methods that are invoked in this class, after the removal of the non-declared edges of the class and before the visit of the method
+		if (!methodNode.hasRelationship(rel, EdgeDirection.INCOMING))
+			GraphUtils.connectWithParent(methodNode, t, rel);
 
 		setMethodModifiersAndAnnotations(methodTree.getModifiers().getFlags(), methodNode,
 				t.getFirst().getStartingNode().hasLabel(NodeTypes.INTERFACE_DEF),
@@ -1803,11 +1809,10 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	public ASTVisitorResult visitVariable(VariableTree variableTree, Pair<PartialRelation<RelationTypes>, Object> t) {
 		/*
 		 * 
-		 * 1º buscar los scans en este metodo u otros que llame, init o algo así
-		 * 2º asegurarse de que el tipo no se visita 3º visitarlo (con el de
-		 * tipos) y usar el retorno de NodeWrapper tipo parametrizered type 4º
-		 * en vez de las dos llamadas es VAR_DEC - itsTYPEis-> tipo
-		 * <-USES_TYPE-current
+		 * 1º buscar los scans en este metodo u otros que llame, init o algo así 2º
+		 * asegurarse de que el tipo no se visita 3º visitarlo (con el de tipos) y usar
+		 * el retorno de NodeWrapper tipo parametrizered type 4º en vez de las dos
+		 * llamadas es VAR_DEC - itsTYPEis-> tipo <-USES_TYPE-current
 		 */
 		boolean isAttr = t.getFirst().getRelationType().equals(RelationTypes.HAS_STATIC_INIT);
 		boolean isMethodParam = t.getFirst().getRelationType().equals(RelationTypes.CALLABLE_HAS_PARAMETER)
@@ -1820,8 +1825,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		variableNode.setProperty("name", variableTree.getName().toString());
 
 		/*
-		 * TODO variableTree.getType() instead of ((JCVariableDecl)
-		 * variableTree).type
+		 * TODO variableTree.getType() instead of ((JCVariableDecl) variableTree).type
 		 */
 		Type type = ((JCVariableDecl) variableTree).type;
 		// System.out.println("Attributing var " + variableTree);

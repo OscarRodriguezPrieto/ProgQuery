@@ -1,6 +1,7 @@
 
 //import org.neo4j.graphdb.GraphDatabaseService;
 
+  
 import java.time.ZonedDateTime;
 
 import com.sun.source.util.JavacTask;
@@ -14,7 +15,8 @@ import tasklisteners.GetStructuresAfterAnalyze;
 public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 
 	private static final String PLUGIN_NAME = "ProgQueryPlugin";
-
+public static void main(String[] args) {
+}  
 	@Override
 	public void init(JavacTask task, String[] args) {
 		// final GraphDatabaseService graphDb = args.length > 0 ?
@@ -36,7 +38,7 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 	}
 
 	private InsertionStrategy invalidArgs() {
-		throw new IllegalArgumentException("You need to specify the connection string to run PQ Server");
+		throw new IllegalArgumentException("You need  to specify the connection string to run PQ Server");
 	}
 
 	private InsertionStrategy serverTwoArgs(String arg2) {

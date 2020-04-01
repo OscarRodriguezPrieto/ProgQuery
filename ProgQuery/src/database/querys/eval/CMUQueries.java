@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
 
 import database.embedded.EmbeddedDBManager;
 import database.querys.cypherWrapper.Any;
@@ -67,9 +68,9 @@ public class CMUQueries {
 			RelationTypes.FOREACH_VAR, RelationTypes.FORLOOP_INIT, RelationTypes.FORLOOP_STATEMENT,
 			RelationTypes.FORLOOP_UPDATE, RelationTypes.CALLABLE_HAS_PARAMETER, RelationTypes.HAS_STATIC_INIT,
 			RelationTypes.HAS_VARIABLEDECL_INIT, RelationTypes.IF_THEN, RelationTypes.IF_ELSE,
-			RelationTypes.LABELED_STMT_ENCLOSES, RelationTypes.SWITCH_ENCLOSES_CASE, RelationTypes.SYNCHRONIZED_ENCLOSES_BLOCK,
-			RelationTypes.TRY_BLOCK, RelationTypes.TRY_CATCH, RelationTypes.TRY_FINALLY, RelationTypes.TRY_RESOURCES };
-
+			RelationTypes.LABELED_STMT_ENCLOSES, RelationTypes.SWITCH_ENCLOSES_CASE,
+			RelationTypes.SYNCHRONIZED_ENCLOSES_BLOCK, RelationTypes.TRY_BLOCK, RelationTypes.TRY_CATCH,
+			RelationTypes.TRY_FINALLY, RelationTypes.TRY_RESOURCES };
 
 	private static final RelationTypes[] exprToStat = new RelationTypes[] { RelationTypes.ASSERT_CONDITION,
 			RelationTypes.DO_WHILE_CONDITION, RelationTypes.ENCLOSES_EXPR, RelationTypes.FOREACH_EXPR,
@@ -89,8 +90,8 @@ public class CMUQueries {
 			CFGRelationTypes.CFG_FOR_EACH_NO_MORE_ELEMENTS, CFGRelationTypes.CFG_IF_THERE_IS_UNCAUGHT_EXCEPTION,
 			CFGRelationTypes.CFG_NO_EXCEPTION, CFGRelationTypes.CFG_CAUGHT_EXCEPTION,
 			CFGRelationTypes.CFG_AFTER_FINALLY_PREVIOUS_BREAK, CFGRelationTypes.CFG_AFTER_FINALLY_PREVIOUS_CONTINUE,
-			CFGRelationTypes.CFG_SWITCH_CASE_IS_EQUAL_TO, CFGRelationTypes.CFG_SWITCH_DEFAULT_CASE, CFGRelationTypes.CFG_MAY_THROW,
-			CFGRelationTypes.CFG_THROWS, CFGRelationTypes.CFG_ENTRIES };
+			CFGRelationTypes.CFG_SWITCH_CASE_IS_EQUAL_TO, CFGRelationTypes.CFG_SWITCH_DEFAULT_CASE,
+			CFGRelationTypes.CFG_MAY_THROW, CFGRelationTypes.CFG_THROWS, CFGRelationTypes.CFG_ENTRIES };
 	private static final CFGRelationTypes[] toCFGSuccesorNoEx = new CFGRelationTypes[] {
 			CFGRelationTypes.CFG_NEXT_STATEMENT, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE,
 			CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE, CFGRelationTypes.CFG_FOR_EACH_HAS_NEXT,
@@ -103,7 +104,8 @@ public class CMUQueries {
 			CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE, CFGRelationTypes.CFG_FOR_EACH_HAS_NEXT,
 			CFGRelationTypes.CFG_FOR_EACH_NO_MORE_ELEMENTS, CFGRelationTypes.CFG_NO_EXCEPTION,
 			CFGRelationTypes.CFG_AFTER_FINALLY_PREVIOUS_BREAK, CFGRelationTypes.CFG_AFTER_FINALLY_PREVIOUS_CONTINUE,
-			CFGRelationTypes.CFG_SWITCH_CASE_IS_EQUAL_TO, CFGRelationTypes.CFG_SWITCH_DEFAULT_CASE, CFGRelationTypes.CFG_THROWS };
+			CFGRelationTypes.CFG_SWITCH_CASE_IS_EQUAL_TO, CFGRelationTypes.CFG_SWITCH_DEFAULT_CASE,
+			CFGRelationTypes.CFG_THROWS };
 	private static final String cfgSuccesor = getAnyRel(toCFGSuccesor);
 
 	public static String getAnyRel(RelationTypesInterface[] rels) {
@@ -183,13 +185,13 @@ public class CMUQueries {
 	 *
 	 * Y LAS REGLAS DE EN MEDIO NO PERMITEN ESTO??
 	 *
-	 * for() { a=b; Sysout(a) //PORQUE LA MODIF SE PUEDE ALCANZAR DESDE EL USO,
-	 * PERO NUNCA SE EJECUTA ANTES EL USO QUE LA MODIFICACION }
+	 * for() { a=b; Sysout(a) //PORQUE LA MODIF SE PUEDE ALCANZAR DESDE EL USO, PERO
+	 * NUNCA SE EJECUTA ANTES EL USO QUE LA MODIFICACION }
 	 *
 	 * for() { Sysout(a) a=b; }
 	 * 
-	 * Y LOS ATRIBUTOS NO PUEDEN SER PÚBLICOS DE CLASES PúBLICAS, PORQUE
-	 * ENTONCES IGUAL SIRVE PARA ALGO...
+	 * Y LOS ATRIBUTOS NO PUEDEN SER PÚBLICOS DE CLASES PúBLICAS, PORQUE ENTONCES
+	 * IGUAL SIRVE PARA ALGO...
 	 */
 
 	// Que le preceda una modif
@@ -233,7 +235,7 @@ public class CMUQueries {
 			+ " RETURN 'Warning [CMU-DCL53] You must minimize the scope of the varaibles. You can minimize the scope of the attribute '+attr+'(declared in line '+line+') in class '+className + ' by transforming it into a local varaible (as everytime its value is used in a method, there is a previous unconditional assignment).' as war ORDER BY war"// Movida
 																																																																																								// de
 	; // los
-	
+
 	private static final String DCL53_MINIMIZE_SCOPE_OF_VARIABLES_V2 = " MATCH (typeDec)-[:DECLARES_FIELD]->(attr:ATTR_DEF) "
 			+ " WHERE NOT ((attr.accessLevel='public' OR attr.accessLevel='protected' AND NOT typeDec.isFinal) AND typeDec.accessLevel='public') AND "
 			+ " NOT( attr.isStatic AND attr.actualType='long' AND attr.isFinal AND attr.name='serialVersionUID') "
@@ -298,8 +300,8 @@ public class CMUQueries {
 	 * private static final String DCL53_MINIMIZE_SCOPE_OF_VARIABLES =
 	 * " MATCH (typeDec)-[:DECLARES_FIELD]->(attr:ATTR_DEC) " +
 	 * "OPTIONAL MATCH (attr)-[:USED_BY]->(exprUse)<-[" + exprToOutExprQuery +
-	 * "*0..]-(outUseExpr)<-[" + exprToStatQueryWithReturn +
-	 * "]-(exprUseStat)<-[" + getAnyRel(statToOuterBlock) +
+	 * "*0..]-(outUseExpr)<-[" + exprToStatQueryWithReturn + "]-(exprUseStat)<-[" +
+	 * getAnyRel(statToOuterBlock) +
 	 * "*]-(outerBlock)<-[:CALLABLE_HAS_BODY]-() WITH typeDec.fullyQualifiedName as className, attr,outerBlock, exprUseStat, exprUse"
 	 * + " OPTIONAL MATCH (attr)-[:MODIFIED_BY]->(modif)<-[" +
 	 * getAnyRel(assignToOutExprNoCond) + "*0..]-(outModExpr)<-[" +
@@ -315,8 +317,7 @@ public class CMUQueries {
 	 * + " OPTIONAL MATCH q=(exprModStat)<-[" + getAnyRel(statToOuterBlock) +
 	 * "*0..]-(minimumCommonBlock), (minimumCommonBlock)-[" +
 	 * getAnyRel(statToOuterBlock) + "*0..]->(exprUseStat) " +
-	 * " WITH className, attr, exprUse,line, " + " ANY(x IN " + "COLLECT(" +
-	 * "  " +
+	 * " WITH className, attr, exprUse,line, " + " ANY(x IN " + "COLLECT(" + "  " +
 	 * "( NOT ANY(rel IN RELS(q) WHERE type(rel)='IF_ELSE' OR type(rel)='FORLOOP_UPDATE' OR type(rel)='FORLOOP_STATEMENT' OR  type(rel)='FORLOOP_INIT' OR  type(rel)='FOREACH_STATEMENT' OR type(rel)='TRY_CATCH' OR type(rel)='SWITCH_ENCLOSES_CASES' OR type(rel)='IF_THEN') "
 	 * + " AND (" +
 	 * " (exprUse:IDENTIFIER OR (NOT memberSelectExprUse IS NULL AND memberSelectExprUse:IDENTIFIER AND (memberSelectExprUse.name='this' OR memberSelectExprUse.name='super')))"
@@ -630,22 +631,18 @@ public class CMUQueries {
 			new Rule(MET55_RETURN_EMPTY_COLLECTIONS_INSTEAD_NULL), new Rule(SEC56_DONT_SERIALIZE_SYSTEM_RESOURCES),
 			new Rule(DECL56_ORDINAL_ENUM), new Rule(MET50_AVOID_CONFUSING_OVERLOADING),
 			/*
-			 * new Rule(
-			 * DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART1_B
+			 * new Rule( DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART1_B
 			 * 
-			 * +
-			 * DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART2_B
-			 * +
-			 * DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART3_B)
-			 * ,
+			 * + DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART2_B +
+			 * DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART3_B) ,
 			 */
 			new Rule(DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_END), new Rule(
 
 					new OBJ54(true).queryToString()),
 			// new Rule(new OBJ50_SIMPLIFIED().queryToString())
 			new Rule(OBJ50_Q7_PAPER_VERSION), new Rule(ERR54_USE_TRY_RESOURCES_TO_SAFELY_CLOSE),
-			new Rule(MET52_DO_NOT_USE_CLONE_WITH_UNTRUSTED_PARAMETERS), 
-			//MINIMIZE V2
+			new Rule(MET52_DO_NOT_USE_CLONE_WITH_UNTRUSTED_PARAMETERS),
+			// MINIMIZE V2
 			new Rule(DCL53_MINIMIZE_SCOPE_OF_VARIABLES_V3),
 			// new
 			// Rule(OBJ51_MINIMIZE_ACCESSIBILITY_OF_CLASSES_AND_MEMBERS_PART_ONE
@@ -657,18 +654,18 @@ public class CMUQueries {
 
 	public static void main(String[] args) throws IOException {
 		final boolean MEASURING_MEMORY = false;
-		int queryIndex = args.length == 0 ? 7: Integer.parseInt(args[0]);
+		int queryIndex = args.length == 0 ? 7 : Integer.parseInt(args[0]);
+
+		GraphDatabaseService gs = EmbeddedDBManager.getNewEmbeddedDBService();
+		Transaction tx = null;
 		try {
-			GraphDatabaseService gs = EmbeddedDBManager.getNewEmbeddedDBService();
-
-			Rule rule =
-					 RULES[queryIndex];
-
+			tx = gs.beginTx();
+			Rule rule = RULES[queryIndex];
 
 			if (args.length == 0)
 				System.out.println(rule.queries[0]);
 			long ini = System.nanoTime();
-			String res = rule.execute(gs).resultAsString();
+			String res = rule.execute(tx).resultAsString();
 			long end = System.nanoTime();
 			if (!MEASURING_MEMORY) {
 				System.err.println(res);
@@ -703,6 +700,9 @@ public class CMUQueries {
 			bw.write(RULES[queryIndex].queries[0]);
 			bw.close();
 			System.out.println("-1");
+		} finally {
+			tx.commit();
+			tx.close();
 		}
 	}
 }

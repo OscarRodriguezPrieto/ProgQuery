@@ -98,7 +98,7 @@ public class Neo4jEmbeddedWrapperNode implements NodeWrapper {
 	@Override
 	public boolean hasRelationship(RelationTypesInterface relType, EdgeDirection direction) {
 		// TODO Auto-generated method stub
-		return node.hasRelationship(relType, fromPQToNeoDiretion(direction));
+		return node.hasRelationship( fromPQToNeoDiretion(direction),relType);
 	}
 
 	@Override
