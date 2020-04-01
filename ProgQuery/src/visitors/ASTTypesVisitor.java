@@ -1199,12 +1199,24 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			// METHOD IN VISIT " + methodTree);
 			rel = RelationTypes.DECLARES_METHOD;
 		}
-		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol))
+		
+		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol)) {
 			ast.deleteAccesibleMethod(methodSymbol);
-		else
+			//For methods that are invoked in this class, after the removal of the non-declared edges of the class and before the visit of the method
+			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
+			
+			if (!methodNode.hasRelationship(rel, EdgeDirection.INCOMING))
+				GraphUtils.connectWithParent(methodNode, t, rel);	
+		}else {
+			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
 			GraphUtils.connectWithParent(methodNode, t, rel);
-		DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
+					}
+//		t.getFirst().getStartingNode().getRelationships(EdgeDirection.OUTGOING, RelationTypes.DECLARES_METHOD)
+//				.forEach(r -> System.out.println(r.getEndNode().getProperty("fullyQualifiedName")));
+//		NodeUtils.nodeToString(t.getFirst().getStartingNode());
 
+		
+		
 		setMethodModifiersAndAnnotations(methodTree.getModifiers().getFlags(), methodNode,
 				t.getFirst().getStartingNode().hasLabel(NodeTypes.INTERFACE_DEF),
 				methodTree.getModifiers().getAnnotations());
