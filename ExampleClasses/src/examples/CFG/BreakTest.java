@@ -1,9 +1,10 @@
 package examples.CFG;
 
 public class BreakTest {
-static final String F="FFF";
+	static final String F = "FFF";
+
 	public static void main(final String[] args) {
-		final int index=0;
+		final int index = 0;
 		// System.out.println("A");
 		// // break;
 		// System.out.println("B");
@@ -88,7 +89,7 @@ static final String F="FFF";
 			System.out.println("C");
 			break;
 		}
-		case (int)2.9+"":
+		case (int) 2.9 + "":
 		default:
 			System.out.println("DEFAULT");
 
@@ -104,7 +105,7 @@ static final String F="FFF";
 	private static String getC() {
 		System.out.println("EVAL GETC");
 		String ret = a;
-		if (a.contentEquals("X"))
+		if (!a.contentEquals("X"))
 			a = "C";
 		return ret;
 	}

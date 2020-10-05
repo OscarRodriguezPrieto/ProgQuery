@@ -47,6 +47,8 @@ public class DefinitionCache<TKEY> {
 	public void putClassDefinition(TKEY classSymbol, NodeWrapper classDec, Set<NodeWrapper> typeDecNodeList,
 			Set<NodeWrapper> typeDecsUses) {
 		NodeWrapper oldClassNode = null;
+		// AuxDebugInfo.lastMessage = "BEFORE PUTTING DEFINITION " +
+		// classSymbol.toString();
 
 		if (auxNodeCache.containsKey(classSymbol)) {
 			oldClassNode = auxNodeCache.get(classSymbol);

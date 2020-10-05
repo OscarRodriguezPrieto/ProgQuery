@@ -2,15 +2,15 @@ package database.querys;
 
 import java.util.List;
 
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Record;
-import org.neo4j.driver.Result;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.SessionConfig;
-import org.neo4j.driver.Transaction;
-import org.neo4j.driver.TransactionWork;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.Transaction;
+import org.neo4j.driver.v1.TransactionWork;
+
 public class ServerQueryManager implements AutoCloseable {
 	public static ServerQueryManager SERVER_MANAGER;
 
@@ -32,7 +32,7 @@ public class ServerQueryManager implements AutoCloseable {
 			public List<Record> execute(Transaction tx) {
 				// tx.
 
-				Result result = tx.run(query);
+				StatementResult result = tx.run(query);
 				// result.list().get(0).asMap().entrySet()
 				// .forEach(e -> System.out.println(e.getKey() + "," +
 				// e.getValue()));

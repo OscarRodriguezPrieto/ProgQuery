@@ -106,4 +106,7 @@ public class A implements Serializable {
 		double d = f;
 	}
 
+private final void aaa() {
+	
+}
 }

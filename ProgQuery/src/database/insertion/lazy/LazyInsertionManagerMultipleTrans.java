@@ -1,19 +1,18 @@
 package database.insertion.lazy;
 
+import static org.neo4j.driver.v1.Values.parameters;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Result;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.SessionConfig;
-
-import org.neo4j.driver.*;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.Transaction;
+import org.neo4j.driver.v1.TransactionWork;
 
 import node_wrappers.NodeWrapper;
 import utils.dataTransferClasses.Pair;
@@ -21,23 +20,23 @@ import utils.dataTransferClasses.Pair;
 public class LazyInsertionManagerMultipleTrans {
 	private static final int REPETITIONS = 1;
 
-	public static void insertIntoNeo4jServerByDriver(InfoToInsert info, final String SERVER_ADDRESS,final String DB_NAME, final String USER,
+	public static void insertIntoNeo4jServerByDriver(InfoToInsert info, final String SERVER_ADDRESS, final String USER,
 			final String PASS, final int MAX_NODES_PER_TRANSACTION) {
 
 		try (final Driver driver = GraphDatabase.driver(SERVER_ADDRESS, AuthTokens.basic(USER, PASS));
-				Session session = driver.session( SessionConfig.builder().withDatabase(DB_NAME).build() ) ) {
+				Session session = driver.session()) {
 
-			final List<Pair<String, Map<String,Object>>> nodeInfo = info.getNodeQueriesInfo();
+			final List<Pair<String, Object[]>> nodeInfo = info.getNodeQueriesInfo();
 			// System.out.println("AFTER ANALYSIS " + nodeInfo.size() + " nodes
 			// ");
-//			int totalEdges = 0;
+			int totalEdges = 0;
 			for (int i = 0; i < REPETITIONS; i++) {
 				// System.out.println("ITER " + i);
 				actionByParts(info.nodeSet.size(), MAX_NODES_PER_TRANSACTION, (s, e) -> executeNodesQuery(session,
 						info.nodeSet, nodeInfo, r -> r.list().get(0).values().get(0).asLong(), s, e));
 
-				final List<Pair<String,Map<String,Object>>> relInfo = info.getRelQueriesInfo();
-				actionByParts( info.relSet.size(), MAX_NODES_PER_TRANSACTION,
+				final List<Pair<String, Object[]>> relInfo = info.getRelQueriesInfo();
+				actionByParts(totalEdges = info.relSet.size(), MAX_NODES_PER_TRANSACTION,
 						(s, e) -> executeRelsQuery(session, relInfo, s, e));
 			}
 			// System.out.println("AFTER ANALYSIS " + totalEdges + " edges");
@@ -81,14 +80,14 @@ public class LazyInsertionManagerMultipleTrans {
 	 * }); }
 	 */
 
-	private static <T> T executeQuery(String query, Session session, Function<Result, T> resultF) {
+	private static <T> T executeQuery(String query, Session session, Function<StatementResult, T> resultF) {
 		return session.writeTransaction(new TransactionWork<T>() {
 
 			@Override
 			public T execute(Transaction tx) {
 				// tx.
 
-				Result result = tx.run(query);
+				StatementResult result = tx.run(query);
 				// result.list().get(0).asMap().entrySet()
 				// .forEach(e -> System.out.println(e.getKey() + "," +
 				// e.getValue()));
@@ -120,7 +119,7 @@ public class LazyInsertionManagerMultipleTrans {
 	// }
 
 	private static Void executeNodesQuery(Session session, List<NodeWrapper> nodes,
-			List<Pair<String, Map<String,Object>>> nodeQueries, Function<Result, Long> resultF, int start, int end) {
+			List<Pair<String, Object[]>> nodeQueries, Function<StatementResult, Long> resultF, int start, int end) {
 		return session.writeTransaction(new TransactionWork<Void>() {
 
 			@Override
@@ -129,8 +128,8 @@ public class LazyInsertionManagerMultipleTrans {
 				// tx.
 				for (int i = start; i < end; i++) {
 					NodeWrapper n = nodes.get(i);
-					Pair<String, Map<String,Object>> queryAndParams = nodeQueries.get(i);
-					n.setId(resultF.apply(tx.run(queryAndParams.getFirst(), queryAndParams.getSecond())));
+					Pair<String, Object[]> queryAndParams = nodeQueries.get(i);
+					n.setId(resultF.apply(tx.run(queryAndParams.getFirst(), parameters(queryAndParams.getSecond()))));
 				}
 				// result.list().get(0).asMap().entrySet()
 				// .forEach(e -> System.out.println(e.getKey() + "," +
@@ -141,15 +140,15 @@ public class LazyInsertionManagerMultipleTrans {
 		});
 	}
 
-	private static Void executeRelsQuery(Session session, List<Pair<String, Map<String,Object>>> relsQueries, int start,
+	private static Void executeRelsQuery(Session session, List<Pair<String, Object[]>> relsQueries, int start,
 			int end) {
 		return session.writeTransaction(new TransactionWork<Void>() {
 
 			@Override
 			public Void execute(Transaction tx) {
 				for (int i = start; i < end; i++) {
-					Pair<String,Map<String,Object>> pair = relsQueries.get(i);
-					tx.run(pair.getFirst(), pair.getSecond());
+					Pair<String, Object[]> pair = relsQueries.get(i);
+					tx.run(pair.getFirst(), parameters(pair.getSecond()));
 				}
 				return null;
 			}

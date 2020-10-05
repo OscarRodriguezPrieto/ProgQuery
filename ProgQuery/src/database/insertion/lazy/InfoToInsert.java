@@ -1,9 +1,7 @@
 package database.insertion.lazy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -40,28 +38,33 @@ public class InfoToInsert {
 		relSet.remove(rel);
 	}
 
-	public List<Pair<String, Map<String,Object>>> getNodeQueriesInfo() {
+	public List<Pair<String, Object[]>> getNodeQueriesInfo() {
 
-		final List<Pair<String,Map<String,Object>>> nodeQueries = new ArrayList<>();
+		final List<Pair<String, Object[]>> nodeQueries = new ArrayList<>();
 		for (NodeWrapper n : nodeSet)
 			nodeQueries.add(createParameterizedQueryFor(n));
 		return nodeQueries;
 	}
-	public List<Pair<String, Map<String,Object>>> getRelQueriesInfo() {
+	public List<Pair<String, Object[]>> getRelQueriesInfo() {
 
-		final List<Pair<String, Map<String,Object>>> relQueries = new ArrayList<>();
+		final List<Pair<String, Object[]>> relQueries = new ArrayList<>();
 		for (RelationshipWrapper r : relSet)
 			relQueries.add(createParameterizedQueryFor(r));
 		return relQueries;
 	}
-	private static Pair<String, Map<String,Object>> createParameterizedQueryFor(RelationshipWrapper r) {
-		Pair<String, Map<String,Object>> props = getParameterizedProps(r.getAllProperties());
-		props.getSecond().put("startId", r.getStartNode().getId());
-		props.getSecond().put("endId", r.getEndNode().getId());
-		
+	private static Pair<String, Object[]> createParameterizedQueryFor(RelationshipWrapper r) {
+		Pair<String, Object[]> props = getParameterizedProps(r.getAllProperties());
+		Object[] propArray = new Object[4 + props.getSecond().length];
+		propArray[0] = "startId";
+		propArray[1] = r.getStartNode().getId();
+		propArray[2] = "endId";
+		propArray[3] = r.getEndNode().getId();
+		int i = 4;
+		for (Object o : props.getSecond())
+			propArray[i++] = o;
 
 		return Pair.create("MATCH (n),(m) WHERE ID(n)=$startId AND ID(m)=$endId CREATE (n)-[r:" + r.getTypeString()
-				+ props.getFirst() + "]->(m)", props.getSecond());
+				+ props.getFirst() + "]->(m)", propArray);
 
 	}
 
@@ -91,16 +94,17 @@ public class InfoToInsert {
 		return queryPart.substring(0, queryPart.length() - 1) + "}";
 	}
 
-	private static Pair<String, Map<String,Object>> getParameterizedProps(Set<Entry<String, Object>> props) {
+	private static Pair<String, Object[]> getParameterizedProps(Set<Entry<String, Object>> props) {
 		if (props.size() == 0)
-			return Pair.create("", new HashMap<String,Object>());
+			return Pair.create("", new Object[] {});
 		String queryPart = "{";
-		Map<String,Object> parameters = new HashMap<String,Object>();
+		Object[] parameters = new Object[props.size() * 2];
 		int i = 0;
 		for (Entry<String, Object> prop : props) {
 			queryPart += prop.getKey() + ":$p" + i + ",";
-			parameters.put("p"+i, prop.getValue());
-			}
+			parameters[i * 2] = "p" + i;
+			parameters[i++ * 2 + 1] = prop.getValue();
+		}
 		return Pair.create(queryPart.substring(0, queryPart.length() - 1) + "}", parameters);
 	}
 
@@ -114,12 +118,12 @@ public class InfoToInsert {
 
 	}
 
-	private static Pair<String, Map<String,Object>> createParameterizedQueryFor(NodeWrapper n) {
+	private static Pair<String, Object[]> createParameterizedQueryFor(NodeWrapper n) {
 		final String queryEnd = ") RETURN ID(n)";
 		String query = "CREATE (n";
 		for (Label label : n.getLabels())
 			query += ":" + label;
-		Pair<String, Map<String,Object>> pair = getParameterizedProps(n.getAllProperties());
+		Pair<String, Object[]> pair = getParameterizedProps(n.getAllProperties());
 		return Pair.create(query + pair.getFirst() + queryEnd, pair.getSecond());
 
 	}

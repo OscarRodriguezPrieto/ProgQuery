@@ -8,7 +8,7 @@ import node_wrappers.NodeWrapper;
 
 public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 	private final int MAX_NODES_PER_TRANSACTION;
-	private final String ADDRESS, USER, PASS,DB_NAME;
+	private final String ADDRESS, USER, PASS;
 
 	private static final int DEFAULT_MAX = 80_000;
 
@@ -25,11 +25,9 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 		super();
 		MAX_NODES_PER_TRANSACTION = maxNodes;
 		String[] connectionData = connectionString.split(";");
-		DB_NAME=connectionData[3];
 		ADDRESS = connectionData[2];
 		USER = connectionData[0];
 		PASS = connectionData[1];
-		
 		// System.out.println("SERVER " + maxNodes + " " + address);
 	}
 
@@ -55,7 +53,7 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 
 	@Override
 	public void endAnalysis() {
-		LazyInsertionManagerMultipleTrans.insertIntoNeo4jServerByDriver(InfoToInsert.INFO_TO_INSERT, ADDRESS,DB_NAME, USER,
+		LazyInsertionManagerMultipleTrans.insertIntoNeo4jServerByDriver(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER,
 				PASS, MAX_NODES_PER_TRANSACTION);
 
 	}

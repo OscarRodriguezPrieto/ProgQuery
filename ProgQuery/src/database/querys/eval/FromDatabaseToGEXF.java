@@ -19,8 +19,6 @@ import database.embedded.EmbeddedDBManager;
 import utils.dataTransferClasses.Pair;
 
 public class FromDatabaseToGEXF {
-	
-	/*
 	static Map<String, Pair<Integer, String>> nodeAttrs = new HashMap<String, Pair<Integer, String>>();
 	static Map<String, Pair<Integer, String>> relAttrs = new HashMap<String, Pair<Integer, String>>();
 
@@ -38,12 +36,12 @@ public class FromDatabaseToGEXF {
 	}
 
 	private static String attributesAsGEXF() {
-		*//*
+		/*
 		 * <attributes class="node"> <attribute id="0" title="url"
 		 * type="string"/> <attribute id="1" title="indegree" type="float"/>
 		 * <attribute id="2" title="frog" type="boolean">
 		 * <default>true</default> </attribute> </attributes>
-		 *//*
+		 */
 		String res = "<attributes class=\"node\">";
 		for (Entry<String, Pair<Integer, String>> entry : nodeAttrs.entrySet())
 			res += "<attribute id=\"" + entry.getValue().getFirst() + "\" title=\"" + entry.getKey() + "\" type=\""
@@ -114,7 +112,7 @@ public class FromDatabaseToGEXF {
 		nodeRep += propertiesToGEFXXML(n.getAllProperties().entrySet(), nodeAttrs);
 		nodeRep += "</node>";
 		return nodeRep;
-	}*/
+	}
 }
 /*
  * 

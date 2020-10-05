@@ -312,7 +312,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 				t.getSuperBound() == null ? JavacInfo.getSymtab().botType : t.getSuperBound(),
 				((WildcardKey) key).getSuperBound(), ast), TypeRelations.WILDCARD_SUPER_BOUND);
 		return wildcardNode;
-	} 
+	}
 
 	private NodeWrapper putInCache(Object key, NodeWrapper typeNode) {
 		DefinitionCache.CLASS_TYPE_CACHE.put(key, typeNode);

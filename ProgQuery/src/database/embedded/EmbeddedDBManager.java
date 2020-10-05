@@ -2,37 +2,34 @@ package database.embedded;
 
 import java.io.File;
 
-import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 
 
 public class EmbeddedDBManager {
-	private static final String DEFAULT_DB_PATH = "C:\\Users\\Oskar\\Desktop\\Thesis\\ProgQuery\\ProgQuery\\ProgQuery";
-	private static final String DEFAULT_DB_NAME= "neo4j";
-	 static DatabaseManagementService managementService;
-	   
+	private static final String DEFAULT_DB_PATH = "./neo4j/data/ProgQuery.db";
 
 	public static GraphDatabaseService getNewEmbeddedDBService() {
- 
-        managementService = new DatabaseManagementServiceBuilder(new File( DEFAULT_DB_PATH )).build();
-	        return managementService.database( DEFAULT_DB_NAME );
-		
-		
-		}
+		return new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(new File(DEFAULT_DB_PATH))
+				.setConfig(GraphDatabaseSettings.node_keys_indexable, "nodeType")
+				.setConfig(GraphDatabaseSettings.relationship_keys_indexable, "typeKind")
+				.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
+				.setConfig(GraphDatabaseSettings.relationship_auto_indexing, "true").newGraphDatabase();
+	}
 
 	public static GraphDatabaseService getNewEmbeddedDBService(String dbPath) {
-        managementService = new DatabaseManagementServiceBuilder(new File( dbPath )).build();
-        return managementService.database( DEFAULT_DB_NAME );
-	
-			}
+		return new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(new File(dbPath))
+				.setConfig(GraphDatabaseSettings.node_keys_indexable, "nodeType")
+				.setConfig(GraphDatabaseSettings.relationship_keys_indexable, "typeKind")
+				.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
+				.setConfig(GraphDatabaseSettings.relationship_auto_indexing, "true").newGraphDatabase();
+	}
 
 	public static void setDB(GraphDatabaseService db) {
 		graphDb = db;
 	}
 
 	private static GraphDatabaseService graphDb;
-public static void shutdownCurrent() {
-	managementService.shutdown();
-}
+
 }

@@ -38,6 +38,7 @@ import com.sun.tools.javac.code.Type;
 import cache.SimpleTreeNodeCache;
 import database.DatabaseFachade;
 import database.nodes.NodeTypes;
+import database.nodes.NodeUtils;
 import database.relations.CFGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.PartialRelationWithProperties;
@@ -103,13 +104,13 @@ public class CFGVisitor extends
 
 		for (PartialRelation<CFGRelationTypes> rel : l) {
 			//
-			// System.out.println(NodeUtils.nodeToString(rel.getStartingNode()));
-			// System.out.println(rel.getRelationType());
-			// System.out.println(NodeUtils.nodeToString(n));
+//			System.out.println(NodeUtils.nodeToString(rel.getStartingNode()));
+//			System.out.println(rel.getRelationType());
+//			System.out.println(NodeUtils.nodeToString(n));
 			rel.createRelationship(n);
 		}
 	}
-
+ 
 	// private PartialRelation<CFGRelationTypes> last;
 	// TODO Al terminar borrar exitThrowing en caso de que no se haya usado, es
 	// decir si no
@@ -131,7 +132,8 @@ public class CFGVisitor extends
 		this.lastStatementNode = lastStatementNode;
 		exceptionalMethodEnding = exceptionalEnd;
 		this.throwsTypesInStatements = throwsTypesInStatements;
-		linkThrowing(throwsTypesInStatements.get(null));
+		Map<Type, List<PartialRelation<CFGRelationTypes>>> initialThrowTypes = throwsTypesInStatements.get(null);
+		linkThrowing(initialThrowTypes == null ? new HashMap<>() : null);
 	}
 
 	private void linkThrowing(Map<Type, List<PartialRelation<CFGRelationTypes>>> typesToRelations) {
@@ -168,7 +170,7 @@ public class CFGVisitor extends
 				}
 			}
 		}
-		if (!ended)
+		if (!ended && typesToRelations != null)
 			typesToRelations.values().stream()
 					.reduce(new ArrayList<PartialRelation<CFGRelationTypes>>(), (pr1, pr2) -> {
 						pr1.addAll(pr2);
@@ -268,7 +270,7 @@ public class CFGVisitor extends
 		int i = trys.size() - 1;
 		BlockTree lastFinally = null;
 //		System.out.println("LINKING BREAKS TO FINALLIES ");
-		
+
 		for (; i >= limitIndex && lastFinally == null; i--) {
 			BlockTree finallyBlock = trys.get(i).getFirst().getFinallyBlock();
 			if (finallyBlock != null)
@@ -315,8 +317,10 @@ public class CFGVisitor extends
 	private List<PartialRelation<CFGRelationTypes>> nextStatement(StatementTree t,
 			List<PartialRelation<CFGRelationTypes>> lasts) {
 		// System.out.println("NEXT STATEMENT\n" + t);
+//		System.out.println("RETRIEVING AST NODE FOR:\n" + t +" hash "+t.hashCode());
 
 		NodeWrapper n = CFGCache.get(t);
+//		System.out.println("Retrieved Node:\n" + NodeUtils.nodeToString(n));
 		// System.out.println("CACHE " + CFGCache.hashCode());
 		// System.out.println("NODE FOUND IN CACHE\n" +
 		// NodeUtils.nodeToString(n));
@@ -503,7 +507,7 @@ public class CFGVisitor extends
 	@Override
 	public List<PartialRelation<CFGRelationTypes>> visitSynchronized(SynchronizedTree tree,
 			Pair<Name, List<PartialRelation<CFGRelationTypes>>> arg) {
-		
+
 		return scan(tree.getBlock(), getNoNamePair(nextStatement(tree, arg.getSecond())));
 	}
 
@@ -691,7 +695,7 @@ public class CFGVisitor extends
 		// newLasts.addAll(finallyRels);
 
 		Pair<NodeWrapper, NodeWrapper> finallyStartAndEnd = finallyCache.get(tryTree.getFinallyBlock());
-		
+
 		List<PartialRelation<CFGRelationTypes>> breakRelsForNextStat = new ArrayList<PartialRelation<CFGRelationTypes>>();
 		for (PartialRelation<CFGRelationTypes> rel : newLasts)
 			if (rel.getStartingNode().equals(finallyStartAndEnd.getSecond()))

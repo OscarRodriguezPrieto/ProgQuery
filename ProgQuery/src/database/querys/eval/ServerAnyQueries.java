@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.PrintStream;
 import java.util.List;
 
-import org.neo4j.driver.Record;
+import org.neo4j.driver.v1.Record;
 
 import database.querys.ServerQueryManager;
 import evaluation.Rule;

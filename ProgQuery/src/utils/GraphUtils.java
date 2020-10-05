@@ -3,9 +3,11 @@ package utils;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.tools.javac.code.Type;
+import com.sun.tools.javac.tree.JCTree.JCExpression;
 
 import ast.ASTAuxiliarStorage;
 import cache.DefinitionCache;
+import database.nodes.NodeUtils;
 import database.relations.PartialRelation;
 import database.relations.RelationTypes;
 import database.relations.RelationTypesInterface;
@@ -109,8 +111,9 @@ public class GraphUtils {
 	}*/
 
 	public static void attachType(NodeWrapper node, Type type, ASTAuxiliarStorage ast) {
-
-		attachTypeDirect(node, type, type.toString(), type.getKind().toString(),ast);
+//System.out.println(type);
+//System.out.println(NodeUtils.nodeToString(node));
+//		attachTypeDirect(node, type, type.toString(), type.getKind().toString(),ast);
 	}
 
 	public static void attachTypeDirect(NodeWrapper node, ExpressionTree exp, String actualType, String typeKind, ASTAuxiliarStorage ast) {

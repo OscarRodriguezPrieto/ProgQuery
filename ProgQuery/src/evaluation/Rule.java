@@ -2,7 +2,6 @@ package evaluation;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
 
 public class Rule {
 
@@ -13,10 +12,10 @@ public class Rule {
 		this.queries = querys;
 	}
 
-	public Result execute(Transaction tx) {
+	public Result execute(GraphDatabaseService gs) {
 		Result res = null;
 		for (String query : queries)
-			res = tx.execute(query);
+			res = gs.execute(query);
 
 		return res;
 	}

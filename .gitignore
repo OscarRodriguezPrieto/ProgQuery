@@ -28,3 +28,4 @@ ProgQuery/loadExecuteAndView.bat
 *.gexf
 binaries_bad/*
 __pycache__/*
+ProgQuery/javac.*.args
