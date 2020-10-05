@@ -18,6 +18,7 @@ ProgQuery/compilePlugin.bat
 ProgQuery/compileAndExecuteWithArgs.bat
 ProgQuery/executePlugin--.bat
 ProgQuery/loadExecuteAndView.bat
+ProgQuery/.metadata/*
 *.pyc
 *.py
 *.csv
