@@ -75,9 +75,11 @@ import com.sun.tools.javac.code.Type.ClassType;
 import com.sun.tools.javac.tree.JCTree.JCArrayTypeTree;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
+import com.sun.tools.javac.tree.JCTree.JCExpression;
 import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
 import com.sun.tools.javac.tree.JCTree.JCIdent;
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
+import com.sun.tools.javac.tree.JCTree.JCMethodInvocation;
 import com.sun.tools.javac.tree.JCTree.JCNewClass;
 import com.sun.tools.javac.tree.JCTree.JCTypeApply;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
@@ -361,22 +363,20 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	//
 	// }
 	/*
-	 * private boolean enclosesCurrentClass(Symbol classSymbol, ClassSymbol
-	 * current) { do if (current == classSymbol || (current =
-	 * current.enclClass()) == classSymbol) return true; while (current != null
-	 * && current != current.enclClass()); /* do { System.out.println("CURR:" +
-	 * current);
+	 * private boolean enclosesCurrentClass(Symbol classSymbol, ClassSymbol current)
+	 * { do if (current == classSymbol || (current = current.enclClass()) ==
+	 * classSymbol) return true; while (current != null && current !=
+	 * current.enclClass()); /* do { System.out.println("CURR:" + current);
 	 * 
 	 * System.out.println("CURR ENCL:" + current.enclClass());
-	 * System.out.println("CURR B:" + (ClassSymbol)
-	 * current.getSuperclass().tsym); if (current == classSymbol || (current =
-	 * (ClassSymbol) current.getSuperclass().tsym) == classSymbol) return true;
-	 * } while (current != null && current != current.enclClass()); return
-	 * false;
+	 * System.out.println("CURR B:" + (ClassSymbol) current.getSuperclass().tsym);
+	 * if (current == classSymbol || (current = (ClassSymbol)
+	 * current.getSuperclass().tsym) == classSymbol) return true; } while (current
+	 * != null && current != current.enclClass()); return false;
 	 * 
 	 * boolean isInstanceAssign =
-	 * IsInstanceFieldExpression.GET_ID_VISITOR.scan(assignmentTree.getVariable(
-	 * ), null); }
+	 * IsInstanceFieldExpression.GET_ID_VISITOR.scan(assignmentTree.getVariable( ),
+	 * null); }
 	 */
 
 	private NodeWrapper beforeScanAnyAssign(NodeWrapper assignmentNode,
@@ -410,15 +410,15 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		attachTypeDirect(assignmentNode, assignmentTree);
 		if (outsideAnnotation) {
 			NodeWrapper previousLastASsignInfo = beforeScanAnyAssign(assignmentNode, t);
-			scan(assignmentTree.getVariable(),
-					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS, PDGProcessing.getLefAssignmentArg(t)));
+			scan(assignmentTree.getVariable(), Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS,
+					PDGProcessing.getLefAssignmentArg(t)));
 
 			afterScanAnyAssign(previousLastASsignInfo);
 			scan(assignmentTree.getExpression(),
 					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_RHS, PDGProcessing.USED));
 		} else {
-			scan(assignmentTree.getVariable(),
-					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS, PDGProcessing.getLefAssignmentArg(t)));
+			scan(assignmentTree.getVariable(), Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_LHS,
+					PDGProcessing.getLefAssignmentArg(t)));
 			scan(assignmentTree.getExpression(),
 					Pair.createPair(assignmentNode, RelationTypes.ASSIGNMENT_RHS, PDGProcessing.USED));
 		}
@@ -1199,6 +1199,21 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			// METHOD IN VISIT " + methodTree);
 			rel = RelationTypes.DECLARES_METHOD;
 		}
+<<<<<<< HEAD
+
+		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol)) {
+			ast.deleteAccesibleMethod(methodSymbol);
+			// For methods that are invoked in this class, after the removal of the
+			// non-declared edges of the class and before the visit of the method
+			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
+
+			if (!methodNode.hasRelationship(rel, EdgeDirection.INCOMING))
+				GraphUtils.connectWithParent(methodNode, t, rel);
+		} else {
+			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
+			GraphUtils.connectWithParent(methodNode, t, rel);
+		}
+=======
 		
 		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol)) {
 			ast.deleteAccesibleMethod(methodSymbol);
@@ -1211,6 +1226,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
 			GraphUtils.connectWithParent(methodNode, t, rel);
 					}
+>>>>>>> master
 //		t.getFirst().getStartingNode().getRelationships(EdgeDirection.OUTGOING, RelationTypes.DECLARES_METHOD)
 //				.forEach(r -> System.out.println(r.getEndNode().getProperty("fullyQualifiedName")));
 //		NodeUtils.nodeToString(t.getFirst().getStartingNode());
@@ -1235,11 +1251,13 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// && !(Boolean) classState.currentClassDec.getProperty("isFinal")));
 
 		boolean prevIsInAccesibleCtxt = isInAccessibleContext;
-
+//		if(methodState!=null)
+//System.out.println("PREVIOUS CACHE SIZE "+methodState.cfgNodeCache.size());
 		isInAccessibleContext = false;
 		MethodState prevState = methodState;
 		must = true;
 		methodState = new MethodState(methodNode);
+//		System.out.println("NEW STATE for \n"+methodTree);
 		pdgUtils.visitNewMethod();
 		ast.newMethodDeclaration(methodState);
 		methodNode.setProperty("name", name);
@@ -1282,6 +1300,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			scan(throwsTree, Pair.createPair(methodNode, RelationTypes.CALLABLE_HAS_THROWS));
 		});
 
+//		System.out.println("Visiting body:\n"+methodTree.getBody());
 		scan(methodTree.getBody(), Pair.createPair(methodNode, RelationTypes.CALLABLE_HAS_BODY));
 		scan(methodTree.getDefaultValue(), Pair.createPair(methodNode, RelationTypes.HAS_DEFAULT_VALUE));
 		scan(methodTree.getReceiverParameter(), Pair.createPair(methodNode, RelationTypes.HAS_RECEIVER_PARAMETER));
@@ -1289,6 +1308,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		pdgUtils.setThisRefOfInstanceMethod(methodState, classState.currentClassDec);
 		ast.addInfo(methodTree, methodNode, methodState);
 
+//		System.out.println("Initiating cfg for:\n"+methodTree);
+//		System.out.println("... AND BODY "+methodTree.getBody());
 		if (methodTree.getBody() != null)
 			CFGVisitor.doCFGAnalysis(methodNode, methodTree, methodState.cfgNodeCache,
 					ast.getTrysToExceptionalPartialRelations(methodState.invocationsInStatements),
@@ -1298,7 +1319,13 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// System.out.println("METHOD " + methodTree.getName() + " END
 		// METHODEC");
 		must = true;
+//		if(methodState!=null)
+//System.out.println("LAST CACHE SIZE "+methodState.cfgNodeCache.size());
 		methodState = prevState;
+
+//		System.out.println("RECOVERING previous state\n");
+//		if(methodState!=null)
+//System.out.println("RECOVERED CACHE SIZE "+methodState.cfgNodeCache.size());
 		ast.endMethodDeclaration();
 		return null;
 
@@ -1309,7 +1336,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			Pair<PartialRelation<RelationTypes>, Object> pair) {
 		NodeWrapper methodInvocationNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(methodInvocationTree,
 				NodeTypes.METHOD_INVOCATION);
+		Type t=((JCExpression)methodInvocationTree).type;
+//		if(t!=null)
 		attachTypeDirect(methodInvocationNode, methodInvocationTree);
+//		else
+//			GraphUtils.attachType(methodInvocationNode, ((JCExpression)methodInvocationTree)., ast);
+		
 		GraphUtils.connectWithParent(methodInvocationNode, pair);
 
 		MethodSymbol methodSymbol = (MethodSymbol) JavacInfo.getSymbolFromTree(methodInvocationTree.getMethodSelect());
@@ -1628,9 +1660,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		NodeWrapper returnNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(returnTree,
 				NodeTypes.RETURN_STATEMENT);
 		methodState.putCfgNodeInCache(returnTree, returnNode);
+//		System.out.println(returnTree +" PUT IN CACHE \n hashcode "+returnTree.hashCode());
 		GraphUtils.connectWithParent(returnNode, t);
-
+		int hash = returnTree.hashCode();
 		scan(returnTree.getExpression(), Pair.createPair(returnNode, RelationTypes.RETURN_EXPR));
+		if (returnTree.hashCode() != hash)
+			throw new IllegalStateException();
 		must = false;
 		addInvocationInStatement(returnNode);
 		return null;
@@ -1815,12 +1850,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	public ASTVisitorResult visitVariable(VariableTree variableTree, Pair<PartialRelation<RelationTypes>, Object> t) {
 		/*
 		 * 
-		 * 1º buscar los scans en este metodo u otros que llame, init o algo así
-		 * 2º asegurarse de que el tipo no se visita 3º visitarlo (con el de
-		 * tipos) y usar el retorno de NodeWrapper tipo parametrizered type 4º
-		 * en vez de las dos llamadas es VAR_DEC - itsTYPEis-> tipo
-		 * <-USES_TYPE-current
+		 * 1º buscar los scans en este metodo u otros que llame, init o algo así 2º
+		 * asegurarse de que el tipo no se visita 3º visitarlo (con el de tipos) y usar
+		 * el retorno de NodeWrapper tipo parametrizered type 4º en vez de las dos
+		 * llamadas es VAR_DEC - itsTYPEis-> tipo <-USES_TYPE-current
 		 */
+//		System.out.println(variableTree);
 		boolean isAttr = t.getFirst().getRelationType().equals(RelationTypes.HAS_STATIC_INIT);
 		boolean isMethodParam = t.getFirst().getRelationType().equals(RelationTypes.CALLABLE_HAS_PARAMETER)
 				|| t.getFirst().getRelationType().equals(RelationTypes.LAMBDA_EXPRESSION_PARAMETERS);
@@ -1832,10 +1867,11 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		variableNode.setProperty("name", variableTree.getName().toString());
 
 		/*
-		 * TODO variableTree.getType() instead of ((JCVariableDecl)
-		 * variableTree).type
+		 * TODO variableTree.getType() instead of ((JCVariableDecl) variableTree).type
 		 */
 		Type type = ((JCVariableDecl) variableTree).type;
+		if (type == null)
+			type = ((JCVariableDecl) variableTree).sym.type;
 		// System.out.println("Attributing var " + variableTree);
 		GraphUtils.attachType(variableNode, type, ast);
 		addClassIdentifier(type);
@@ -1845,6 +1881,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		scan(variableTree.getModifiers(), Pair.createPair(variableNode, null));
 
 		Symbol s = ((JCVariableDecl) variableTree).sym;
+
+		MethodState previousState = methodState;
 		if (isAttr) {
 			// Warning, lineNumber and position should be added depending on the
 			// constructor
@@ -1852,7 +1890,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			GraphUtils.connectWithParent(variableNode, t,
 					isEnum ? RelationTypes.HAS_ENUM_ELEMENT : RelationTypes.DECLARES_FIELD);
 
-			MethodState previousState = methodState;
 			methodState = new MethodState(variableNode);
 			Pair<List<NodeWrapper>, List<NodeWrapper>> param = ((Pair<Pair<List<NodeWrapper>, List<NodeWrapper>>, List<NodeWrapper>>) t
 					.getSecond()).getFirst();
@@ -1875,7 +1912,11 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		pdgUtils.putDecInCache(s, variableNode);
 
 		scan(variableTree.getType(), Pair.createPair(variableNode, RelationTypes.HAS_VARIABLEDECL_TYPE));
-
+		if (isAttr) {
+			// Warning, lineNumber and position should be added depending on the
+			// constructor
+			methodState = previousState;
+		}
 		return null;
 	}
 

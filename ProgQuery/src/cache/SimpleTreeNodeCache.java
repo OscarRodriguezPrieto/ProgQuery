@@ -22,7 +22,11 @@ public class SimpleTreeNodeCache<K> {
 		return auxNodeCache.get(tree);
 	}
 
-	public void clear() {
+	public void clearX() {
 		auxNodeCache.clear();
+	}
+	
+	public int size() {
+		return auxNodeCache.size();
 	}
 }

@@ -9,8 +9,8 @@ import database.DatabaseFachade;
 import database.EmbeddedGGDBServiceInsertion;
 import database.InsertionStrategy;
 import database.Neo4jDriverLazyWrapperInsertion;
-import tasklisteners.GetStructuresAfterAnalyze;
-
+import tasklisteners.GetStructuresAfterAnalyze; 
+ 
 public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 
 	private static final String PLUGIN_NAME = "ProgQueryPlugin";

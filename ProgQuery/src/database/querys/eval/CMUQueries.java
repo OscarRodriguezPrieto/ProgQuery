@@ -14,7 +14,9 @@ import database.querys.cypherWrapper.Filter;
 import database.querys.cypherWrapper.Reduce;
 import database.querys.cypherWrapper.cmu.pq.OBJ50;
 import database.querys.cypherWrapper.cmu.pq.OBJ54;
+import database.querys.cypherWrapper.cmu.pq.OBJ54_SA;
 import database.querys.cypherWrapper.cmu.pq.OBJ56_SIMPLIFIED;
+import database.querys.cypherWrapper.cmu.pq.OBJ56_SIMPLIFIED_SA;
 import database.relations.CFGRelationTypes;
 import database.relations.RelationTypes;
 import database.relations.RelationTypesInterface;
@@ -293,7 +295,40 @@ public class CMUQueries {
 			+ "WITH DISTINCT attr, COUNT(exprUseStat) as usesWithPrevModif, allUsesCount\r\n"
 			+ "WHERE usesWithPrevModif=allUsesCount\r\n" + "MATCH (attr)<-[:DECLARES_FIELD]-(enclClass)\r\n"
 			+ "RETURN DISTINCT 'Warning [CMU-DCL53] You must minimize the scope of the varaibles. You can minimize the scope of the attribute '+attr.name+'(declared in line '+attr.lineNumber+') in class '+enclClass.fullyQualifiedName + ' by transforming it into a local varaible (as everytime its value is used in a method, there is a previous unconditional assignment).'";
-	// bloques
+	private static final String DCL53_MINIMIZE_SCOPE_OF_VARIABLES_V3_SA = 
+			"MATCH (typeDec)-[:DECLARES_FIELD]->(attr:ATTR_DEF) "
+					+ " WHERE NOT ((attr.accessLevel='public' OR attr.accessLevel='protected' AND NOT typeDec.isFinal) "
+					+ " AND typeDec.accessLevel='public') AND  NOT( attr.isStatic AND attr.actualType='long' AND attr.isFinal"
+					+ " AND attr.name='serialVersionUID')\r\n" + "WITH DISTINCT typeDec, attr \r\n"
+					+ "MATCH (attr)-[:USED_BY | :STATE_MODIFIED_BY]->(exprUse)\r\n"
+					+ "WITH  DISTINCT  typeDec,attr,COUNT(exprUse) as allUsesCount\r\n"
+					+ "MATCH (lhs_expr) <-[:ASSIGNMENT_LHS]-(modif)<-[attrModifRel:MODIFIED_BY]-(attr)"
+					+ "-[attrUseRel:USED_BY | :STATE_MODIFIED_BY]->(exprUse)\r\n"
+					+ "WHERE modif.position<exprUse.position AND attrUseRel.isOwnAccess = attrModifRel.isOwnAccess\r\n"
+					+ "WITH DISTINCT typeDec,attr, exprUse, modif, attrModifRel, lhs_expr, allUsesCount\r\n"
+					+ "OPTIONAL MATCH (exprUse)-[:MEMBER_SELECT_EXPR]->(memberSelectExprUse)<-[:USED_BY]-(varDec)-[:STATE_MODIFIED_BY]->(modif),"
+					+ " (lhs_expr)-[:MEMBER_SELECT_EXPR]->(memberSelectExprModif)\r\n"
+					+ "WITH DISTINCT typeDec,attr, exprUse, modif, attrModifRel, memberSelectExprModif, memberSelectExprUse, allUsesCount\r\n"
+					+ "WHERE\r\n" + " attrModifRel.isOwnAccess   OR  (NOT memberSelectExprUse\r\n"
+					+ "IS NULL AND NOT memberSelectExprUse IS NULL AND NOT memberSelectExprModif IS NULL "
+					+ "AND memberSelectExprUse:IDENTIFIER AND memberSelectExprModif:IDENTIFIER)\r\n"
+					+ "WITH DISTINCT typeDec,attr, COLLECT(exprUse) as uses, modif, allUsesCount\r\n"
+					+ "WHERE allUsesCount=SIZE(uses)\r\n" + "\r\n"
+					+ "MATCH (modif)<-[:ARRAYACCESS_EXPR | :ARRAYACCESS_INDEX | :ASSIGNMENT_LHS | :ASSIGNMENT_RHS | :BINOP_LHS | :BINOP_RHS | :BINOP_COND_RHS | :CAST_ENCLOSES | :COMPOUND_ASSIGNMENT_LHS | :COMPOUND_ASSIGNMENT_RHS | :CONDITIONAL_EXPR_CONDITION | :CONDITIONAL_EXPR_THEN | :CONDITIONAL_EXPR_ELSE | :INITIALIZATION_EXPR | :INSTANCE_OF_EXPR | :MEMBER_REFERENCE_EXPRESSION | :MEMBER_SELECT_EXPR | :METHODINVOCATION_ARGUMENTS | :METHODINVOCATION_METHOD_SELECT | :NEW_CLASS_ARGUMENTS | :NEW_ARRAY_INIT | :NEW_ARRAY_DIMENSION | :UNARY_ENCLOSES *0..]-()<-[:ASSERT_CONDITION | :DO_WHILE_CONDITION | :ENCLOSES_EXPR | :FOREACH_EXPR | :FORLOOP_CONDITION | :HAS_VARIABLEDECL_INIT | :IF_CONDITION | :SWITCH_EXPR | :SYNCHRONIZED_EXPR | :THROW_EXPR | :WHILE_CONDITION | :RETURN_EXPR ]-(modifStat), p1=(modifStat)<-[:DO_WHILE_STATEMENT| :WHILE_STATEMENT | :CASE_STATEMENTS | :CATCH_ENCLOSES_BLOCK | :CATCH_PARAM | :ENCLOSES | :FOREACH_STATEMENT | :FOREACH_VAR | :FORLOOP_INIT | :FORLOOP_STATEMENT | :FORLOOP_UPDATE |  :IF_THEN | :IF_ELSE | :LABELED_STMT_ENCLOSES | :SWITCH_ENCLOSES_CASES | :SYNCHRONIZED_ENCLOSES_BLOCK | :TRY_BLOCK | :TRY_CATCH | :TRY_FINALLY | :TRY_RESOURCES *]-(outerBlock)<-[:CALLABLE_HAS_BODY]-()\r\n"
+					+ "\r\n" + "\r\n" + "WITH DISTINCT typeDec, attr, modif,outerBlock, modifStat, uses,p1, allUsesCount\r\n"
+					+ "UNWIND uses as exprUse\r\n"
+					+ "MATCH (exprUse)<-[:ARRAYACCESS_EXPR | :ARRAYACCESS_INDEX | :ASSIGNMENT_LHS | :ASSIGNMENT_RHS | :BINOP_LHS | :BINOP_RHS | :BINOP_COND_RHS | :CAST_ENCLOSES | :COMPOUND_ASSIGNMENT_LHS | :COMPOUND_ASSIGNMENT_RHS | :CONDITIONAL_EXPR_CONDITION | :CONDITIONAL_EXPR_THEN | :CONDITIONAL_EXPR_ELSE | :INITIALIZATION_EXPR | :INSTANCE_OF_EXPR | :MEMBER_REFERENCE_EXPRESSION | :MEMBER_SELECT_EXPR | :METHODINVOCATION_ARGUMENTS | :METHODINVOCATION_METHOD_SELECT | :NEW_CLASS_ARGUMENTS | :NEW_ARRAY_INIT | :NEW_ARRAY_DIMENSION | :UNARY_ENCLOSES *0..]-()<-[:ASSERT_CONDITION | :DO_WHILE_CONDITION | :ENCLOSES_EXPR | :FOREACH_EXPR | :FORLOOP_CONDITION | :HAS_VARIABLEDECL_INIT | :IF_CONDITION | :SWITCH_EXPR | :SYNCHRONIZED_EXPR | :THROW_EXPR | :WHILE_CONDITION | :RETURN_EXPR ]-(exprUseStat), p2=(exprUseStat)<-[:DO_WHILE_STATEMENT | :WHILE_STATEMENT  | :CASE_STATEMENTS | :CATCH_ENCLOSES_BLOCK | :CATCH_PARAM | :ENCLOSES | :FOREACH_STATEMENT | :FOREACH_VAR | :FORLOOP_INIT | :FORLOOP_STATEMENT | :FORLOOP_UPDATE |  :IF_THEN | :IF_ELSE | :LABELED_STMT_ENCLOSES | :SWITCH_ENCLOSES_CASES | :SYNCHRONIZED_ENCLOSES_BLOCK | :TRY_BLOCK | :TRY_CATCH | :TRY_FINALLY | :TRY_RESOURCES *]-(outerBlock)\r\n"
+					+ "\r\n" + "WITH DISTINCT typeDec,attr,exprUseStat, p1,RELATIONSHIPS(p2) as exprUseBlockRels, allUsesCount\r\n"
+					+ "WHERE ALL(r IN RELATIONSHIPS(p1) WHERE NOT TYPE(r) IN ['SWITCH_ENCLOSES_CASES','IF_ELSE','IF_THEN', 'FORLOOP_STATEMENT', 'FORLOOP_UPDATE', 'FOREACH_STATEMENT', 'TRY_CATCH', 'WHILE_STATEMENT' ] OR r IN exprUseBlockRels)\r\n"
+					+ "WITH DISTINCT typeDec,attr, COUNT(exprUseStat) as usesWithPrevModif, allUsesCount\r\n"
+					+ "WHERE usesWithPrevModif=allUsesCount\r\n MATCH (cu)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->(typeDec) " 
+					+ "RETURN DISTINCT '[CMU-DCL53-II;'+cu.fileName+';field_definition;'+attr.actualType+'-'+attr.name+';'+attr.lineNumber+'; You must minimize the scope of the variables. You can minimize the scope of attribute '+attr.name+'(declared in line '+attr.lineNumber+') in class '+typeDec.fullyQualifiedName + ' by transforming it into a local variable (as every time its value is used in a method, there is a previous unconditional assignment).]'";
+			
+			 ;
+	//[BLOCH-6.36;C:\Users\admp1\Escritorio\StaticCodeAnalysis\Programs\ExampleClasses\src\main\java\examples\test\rule_3_10\B1.java;
+	//method_definition;examples.test.rule_3_10.B1:toString()java.lang.String;10;You must use the Override annotation in method toString (line 10) since it is actually overriding the method java.lang.Object:toString()java.lang.String]
+
+// bloques
 	/*
 	 * private static final String DCL53_MINIMIZE_SCOPE_OF_VARIABLES =
 	 * " MATCH (typeDec)-[:DECLARES_FIELD]->(attr:ATTR_DEC) " +
@@ -367,6 +402,14 @@ public class CMUQueries {
 	// + new Reduce("lines", "s+','+x", "''").expToString()
 	;
 
+	
+	private static final String NUM50CONVERT_INT_TO_FLOAT_FOR_FLOAT_OPERATIONS_SA =
+"MATCH (varDec)-[:MODIFIED_BY | :HAS_VARIABLEDECL_INIT]->(mod)-[:ASSIGNMENT_RHS | :INITIALIZATION_EXPR]->(rightSide) WHERE varDec.actualType IN ['float', 'double'] OPTIONAL MATCH (binopR{actualType:'int'})<-[:BINOP_RHS]-(division)<-[:BINOP_LHS | :BINOP_RHS | :UNARY_ENCLOSES |:CONDITIONAL_EXPR_ELSE|:CONDITIONAL_EXPR_THEN *0..]-(rightSide),(division)-[:BINOP_LHS]->({actualType:'int'}) WITH varDec, COLLECT(rightSide.actualType IN ['float','double']) as rightSidesAreFloat, FILTER(x IN COLLECT([rightSide,binopR]) WHERE NOT x[1] IS NULL AND x[0].operator='DIVIDE' ) as lines WHERE NOT ANY( x IN rightSidesAreFloat WHERE x ) AND SIZE(lines)>0 WITH varDec, REDUCE(seed='',x IN lines | CASE WHEN seed CONTAINS (x[0].lineNumber+'') THEN seed ELSE seed+x[0].lineNumber+',' END ) as expLine\r\n" + 
+"\r\n" + 
+"MATCH (varDec)<-[:CASE_STATEMENTS|CATCH_ENCLOSES_BLOCK|CATCH_PARAM|ENCLOSES|DO_WHILE_STATEMENT|WHILE_STATEMENT|FOREACH_STATEMENT|FOREACH_VAR|FORLOOP_INIT|FORLOOP_STATEMENT|FORLOOP_UPDATE|CALLABLE_HAS_PARAMETER|IF_THEN|IF_ELSE|LABELED_STMT_ENCLOSES|SWITCH_ENCLOSES_CASE|SYNCHRONIZED_ENCLOSES_BLOCK|TRY_BLOCK|TRY_CATCH|TRY_FINALLY|TRY_RESOURCES*0..]-()<-[:CALLABLE_HAS_BODY*0..1]-()<-[:DECLARES_METHOD| :DECLARES_CONSTUCTOR | :HAS_STATIC_INIT | :DECLARES_FIELD]-(typeDef)<-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]-(cu)\r\n" + 
+"\r\n" + 
+"RETURN '[CMU-NUM50;'+cu.fileName+';EXPRESSION/VAR_DEF;VARDEF '+varDec.actualType+'  '+varDec.name+';'+varDec.lineNumber+'; A truncated integer division was detected in line(s) ' +expLine +', assigned to variables of type float or double. If you want to make a float/double division and assign the result to the variable ' + varDec.name+', you must include an operand as float/double. Otherwise you can change the type of '+ varDec.name+' from float/double to int, as it is never used to store an actual float/double value.]'"			
+;
 	private static final String OBJ51_MINIMIZE_ACCESSIBILITY_OF_CLASSES_AND_MEMBERS_PART_ONE = "MATCH (typeDec)-[:DECLARES_FIELD | :DECLARES_METHOD | :DECLARES_CONSTRUCTOR]->(member{accessLevel:'public'}) "
 			+ " WHERE (typeDec:ENUM_DECLARATION OR typeDec:CLASS_DECLARATION) AND typeDec.accessLevel<>'public' "
 			+ " OPTIONAL MATCH (member)-[ovRel:OVERRIDES]->({accessLevel:'public'}) "
@@ -409,6 +452,19 @@ public class CMUQueries {
 	// (CASE WHEN SIZE(warning)>89 THEN '->' ELSE '' END) +package.name)+ '. You
 	// should undo them.'"
 	;
+	private static final String DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_SA=" MATCH (package1)-[:DEPENDS_ON_PACKAGE]->(package2),"
+			+ "p=shortestPath((package2)-[:DEPENDS_ON_PACKAGE*]->(package1))"
+
+			+ " WITH HEAD(COLLECT(package1)) as package1,REDUCE(warning='',package IN package1+NODES(p)| warning +  '->'  +package.name) as packageDepList, SIZE(NODES(p)) as total"
+			// + " ,RANGE(0,SIZE(NODES(p))-2) as firstIndexes"
+			// + " WHERE ALL(i1 IN firstIndexes WHERE NOT ANY(i2 IN firstIndexes
+			// WHERE ID(packages[i1])=ID(packages[i2]) AND i1<>i2))"
+			// + " WITH DISTINCT "
+			+ " MATCH (package1)-[:PACKAGE_HAS_COMPILATION_UNIT]->(cu) WITH DISTINCT HEAD(COLLECT(cu.fileName)) as fName,total, package1, packageDepList"
+			+ " RETURN "
+		+
+" '[CMU-DCL60;'+fName + ' and '+total+' packages more ...;PACKAGE;'+package1.name+' and '+total+' packages more ...;0;There is a cycle between packages caused by the dependencies between '+ SUBSTRING(packageDepList,2,LENGTH(packageDepList))+ '. You should undo them.'";
+	
 	private static final String DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_END_HARD = " MATCH p=(package1)-[:DEPENDS_ON_PACKAGE*]->(package2) WHERE package1<>package2"
 			+ " MATCH (package2)-[:DEPENDS_ON_PACKAGE]->(package1)"
 
@@ -486,7 +542,49 @@ public class CMUQueries {
 			+ "  RETURN DISTINCT 'Warning [CMU-ERR54] variable '+closeableDec.name+ '(defined in line'+closeableDec.lineNumber+', class '+enclClass.fullyQualifiedName+') might not be properly closed, as statement(s) (in lines '+ REDUCE(seed='',prev IN prevs | seed+prev.lineNumber+',')+') may throw an exception.'"
 
 	;
+	private static final String ERR54_USE_TRY_RESOURCES_TO_SAFELY_CLOSE_SA = " MATCH (closeableSubtype)-[:IS_SUBTYPE_EXTENDS | :IS_SUBTYPE_IMPLEMENTS*0..]->"
+			+ "(closeableInt:INTERFACE_DEF{fullyQualifiedName:'java.lang.AutoCloseable'})"
+			+ " WHERE closeableSubtype:CLASS_DEF OR closeableSubtype:INTERFACE_DEF "
+			+ " WITH DISTINCT closeableSubtype.fullyQualifiedName as className "
 
+			+ " MATCH (closeableDec:LOCAL_VAR_DEF{actualType:className})-[:MODIFIED_BY | HAS_VARIABLEDECL_INIT]->(assignOrInit)"
+			+ "MATCH  (assignOrInit)<-[" + assignToOutExprQuery + "*0..]-(expr)<-[" + exprToStatQuery
+			+ "]-(assignStat) "
+			+ " OPTIONAL MATCH (closeableDec)<-[r:TRY_RESOURCES]-()  WITH assignStat,r, closeableDec WHERE r IS NULL"
+			// + " RETURN assignStat,r, closeableDec"
+
+			+ " OPTIONAL MATCH (mInv:METHOD_INVOCATION)-[:METHODINVOCATION_METHOD_SELECT]->(mSelect:MEMBER_SELECTION{memberName:'close'})-[:MEMBER_SELECT_EXPR]->(id)<-[:USED_BY]-(closeableDec),"
+			+ " (mInv)<-[" + exprToOutExprQuery + "*0..]-(expr)<-[" + exprToStatQuery + "]-(closeStat)"
+			+ ",(assignStat)-[" + cfgSuccesor + "*]->(prev)"
+			+ "-[exceptionRel:CFG_IF_THERE_IS_UNCAUGHT_EXCEPTION | :CFG_MAY_THROW | :CFG_THROWS]->(afterEx)"
+			+ " WITH  COLLECT(DISTINCT closeStat) AS closes, prev,closeableDec, afterEx,exceptionRel "
+			+ "WHERE NOT prev IN closes " + " MATCH (prev)-[" + cfgSuccesor
+			+ "*]->(closeStat) WHERE closeStat IN closes"
+
+			+ " OPTIONAL MATCH p=(afterEx)-[" + getAnyRel(toCFGSuccesor) // ESTE
+																			// DEBERíA
+																			// SER
+																			// COND
+																			// O
+																			// NO
+																			// COND
+			+ "*0..]->(reachableAfterEx) WHERE reachableAfterEx IN closes "
+			+ " WITH prev as prevs, closeableDec,p,exceptionRel, " + " CASE WHEN p IS NULL THEN NULL ELSE "
+			+ " EXTRACT (index IN RANGE(0,SIZE(NODES(p))) | index=0 OR TYPE(RELATIONSHIPS(p)[index-1]) IN ['CFG_THROWS' ,'CFG_IF_THERE_IS_UNCAUGHT_EXCEPTION' ,'CFG_MAY_THROW' ])"
+			+ " END as previousThrow" + " WITH prevs, closeableDec,p,exceptionRel, "
+			+ "CASE WHEN p IS NULL THEN NULL ELSE EXTRACT (index IN RANGE(0,SIZE(NODES(p))) | CASE WHEN  NODES(p)[index]:CATCH_BLOCK OR previousThrow[index] AND NODES(p)[index]:LOCAL_VAR_DEF"
+			+ "   THEN 'catch' ELSE CASE WHEN previousThrow[index] THEN  CASE WHEN index=0 THEN exceptionRel.exceptionType "
+			+ " ELSE RELATIONSHIPS(p)[index-1].exceptionType END ELSE CASE WHEN NODES(p)[index]:TRY_BLOCK THEN 'newtry' ELSE  NULL END END END )END"
+			+ " as exFlow"
+			+ " WITH p,closeableDec,prevs,CASE WHEN p IS NULL THEN NULL ELSE EXTRACT( relIndex IN RANGE(0,SIZE(RELATIONSHIPS(p))) | exFlow[LAST(FILTER( exIndex IN RANGE(0,SIZE(exFlow)) WHERE exIndex<=relIndex AND NOT exFlow[exIndex] IS NULL))]) END as exFlow "
+			+ " WITH closeableDec,prevs,"
+			+ " NOT ANY(x IN COLLECT(CASE WHEN p IS NULL THEN FALSE ELSE ALL(relIndex IN RANGE(0,SIZE(RELATIONSHIPS(p))) WHERE CASE WHEN TYPE(RELATIONSHIPS(p)[relIndex])='CFG_NO_EXCEPTION' THEN exFlow[relIndex] IN ['catch' , 'newtry'] ELSE CASE WHEN TYPE(RELATIONSHIPS(p)[relIndex])='CFG_IF_THERE_IS_UNCAUGHT_EXCEPTION' THEN exFlow[relIndex]=RELATIONSHIPS(p)[relIndex].exceptionType ELSE TRUE END END  )END)WHERE x) as truePathToClose"
+			+ " WITH closeableDec,COLLECT(prevs) as prevs, COLLECT(truePathToClose) as truePathToClose"
+			+ " WHERE ANY ( x IN truePathToClose WHERE x) " + " MATCH (closeableDec)<-[" + getAnyRel(statToEnclClass)
+			+ "*]-(enclClass)<-[:HAS_TYPE_DEF|:HAS_INNER_DEF]-(cu) WHERE enclClass:TYPE_DEFINITION "
+			+ "  RETURN DISTINCT '[CMU-ERR54;'+cu.fileName+';local_var_def;LOCAL VAR '+closeableDec.actualType+'  '+closeableDec.name+';'+closeableDec.lineNumber+';Variable '+closeableDec.name+ '(defined in line'+closeableDec.lineNumber+', class '+enclClass.fullyQualifiedName+') might not be properly closed, as statement(s) (in lines '+ REDUCE(seed='',prev IN prevs | seed+prev.lineNumber+',')+') may throw an exception.'"
+
+	;
 	private static final String ALT2_MET55_RETURN_EMPTY_COLLECTIONS_INSTEAD_NULL = " MATCH (returnClass)-[:IS_SUBTYPE_EXTENDS | :IS_SUBTYPE_IMPLEMENTS*]->(collection{fullyQualifiedName:'java.util.Collection'})"
 			+ " WITH DISTINCT returnClass.fullyQualifiedName as className "
 			+ " MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->()-[:DECLARES_METHOD]->(md)-[:CALLABLE_RETURN_TYPE]->(rt) "
@@ -501,7 +599,15 @@ public class CMUQueries {
 					+ "WITH	 enclosingCU, nullRet  WHERE nullRet IS NOT NULL\r\n"
 					+ "RETURN 'Warning [CMU-MET55], you must not return null when you can return an empty collection or array.Line' +nullRet.lineNumber+' in '+enclosingCU.fileName+'.'";
 
-	// Dos formas -[*]-> RETURN o CFG_END<-[]- RETURN
+	private static final String MET55_RETURN_EMPTY_COLLECTIONS_INSTEAD_NULL_SA =
+	"MATCH (md)-[:CALLABLE_RETURN_TYPE]->(rt)-[:ITS_TYPE_IS |:PARAMETERIZEDTYPE_TYPE*0..]->()-[:IS_SUBTYPE_EXTENDS | :IS_SUBTYPE_IMPLEMENTS*0..]->(collection)\r\n" + 
+	"WHERE  collection.fullyQualifiedName='java.util.Collection<E>' OR collection:ARRAY_TYPE  WITH DISTINCT md \r\n" + 
+	"MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->()-[:DECLARES_METHOD]->(md)<-[:CFG_END_OF]-(normalEnd)\r\n" + 
+	"		<-[:CFG_NEXT_STATEMENT]-(:RETURN_STATEMENT)-[:RETURN_EXPR]->()\r\n" + 
+	"		-[:CONDITIONAL_EXPR_THEN |:CONDITIONAL_EXPR_ELSE*0..]->(nullRet{typetag:'NULL_LITERAL'})\r\n" + 
+	"WITH	 DISTINCT enclosingCU, nullRet, md  WHERE nullRet IS NOT NULL\r\n" + 
+	"RETURN '[CMU-MET55;'+enclosingCU.fileName+';return_statement;RETURN OF '+md.fullyQualifiedName+';'+nullRet.lineNumber+'; You must not return null when you can return an empty collection or array.Line' +nullRet.lineNumber+' in '+enclosingCU.fileName+'.]'"
+;	// Dos formas -[*]-> RETURN o CFG_END<-[]- RETURNlllu
 	private static final String ALT_MET55_RETURN_EMPTY_COLLECTIONS_INSTEAD_NULL = " MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->()-[:DECLARES_METHOD]->(md)-[:CALLABLE_RETURN_TYPE]->(rt) "
 			+ " WITH md, rt "
 			+ " MATCH (returnClass{fullyQualifiedName:rt.actualType})-[:IS_SUBTYPE_EXTENDS | :IS_SUBTYPE_IMPLEMENTS*]->(collection{fullyQualifiedName:'java.util.Collection'})"
@@ -515,10 +621,17 @@ public class CMUQueries {
 			// + " enclosingCU, class, f, fTypeOrSupertype, superInt,aux,p"
 			+ "'Warning [CMU-SEC56], you must not serialize direct handles to system resources like field ' + f.name + '(an instance of '+fTypeOrSupertype.fullyQualifiedName+'). Line '+ f.lineNumber + ' in '+ class.fullyQualifiedName+'.'";
 
+	private static final String SEC56_DONT_SERIALIZE_SYSTEM_RESOURCES_SA =
+	"MATCH (cu)-[:HAS_TYPE_DEF |:HAS_INNER_TYPE_DEF]->(class)-[:DECLARES_FIELD]->(f{isTransient:false})-[:ITS_TYPE_IS]->(aux)-[:IS_SUBTYPE_EXTENDS | :IS_SUBTYPE_IMPLEMENTS*0..]->(fTypeOrSupertype) \r\n" + 
+	", (class)-[:IS_SUBTYPE_EXTENDS | :IS_SUBTYPE_IMPLEMENTS*]-> (superInt:INTERFACE_DEF{fullyQualifiedName:'java.io.Serializable'})  \r\n" + 
+	" WHERE fTypeOrSupertype.fullyQualifiedName IN ['java.io.File' ,'org.omg.CosNaming.NamingContext' ,'org.omg.CORBA.DomainManager' \r\n" + 
+	" 	,'org.omg.PortableInterceptor.ObjectReferenceFactory'] \r\n" + 
+	"RETURN DISTINCT '[CMU-SEC56;'+cu.fileName+';attribute_declaration;FIELD '+f.actualType+'  '+f.name+'\";'+ f.lineNumber+'; You must not serialize direct handles to system resources like field ' + f.name + '(an instance of '+fTypeOrSupertype.fullyQualifiedName+'). Line '+ f.lineNumber + ' in '+ class.fullyQualifiedName+'.]'";
 	private static final String DECL56_ORDINAL_ENUM = "MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->()-[:DECLARES_METHOD | :DECLARES_CONSTRUCTOR]->(enclosingM)-[:CALLS]->"
 			+ "(inv)-[:HAS_DEF]->(md) " + " WHERE md.fullyQualifiedName ='java.lang.Enum:ordinal()int' "
 			+ "RETURN 'Warning [CMU-DEC56], you should not attach significance to the ordinal of an enum. Line '+inv.lineNumber + ' in '+ enclosingCU.fileName +'.' ";
-
+	private static final String DECL56_ORDINAL_ENUM_SA =
+"	MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->()-[:DECLARES_METHOD | :DECLARES_CONSTRUCTOR]->(enclosingM)-[:CALLS]->(inv)-[:HAS_DEF]->(md) WHERE md.fullyQualifiedName ='java.lang.Enum:ordinal()int' RETURN '[CMU-DEC56;'+enclosingCU.fileName +';method_invocation/EXPRESSION;java.lang.Enum:ordinal();'+inv.lineNumber+';You should not attach significance to the ordinal of an enum. Line '+inv.lineNumber + ' in '+ enclosingCU.fileName +'.'";
 	private static final String MET50_AVOID_CONFUSING_OVERLOADING = "MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->(class)"
 			+ "-[:DECLARES_METHOD | :DECLARES_CONSTRUCTOR]->(md)-[:CALLABLE_HAS_PARAMETER]->(p:PARAMETER_DEF)" + " "
 			+ "WITH enclosingCU, md, class, COLLECT(p.actualType) as params  "
@@ -538,6 +651,13 @@ public class CMUQueries {
 			+ " WITH enclosingCU, md, COUNT(superDec) as superCallsCount " + " WHERE superCallsCount=0 "
 			+ " RETURN  'Warning [CMU-MET53], you must call super.clone in every overriden clone method. Line '+ md.lineNumber + ' in ' + enclosingCU.fileName + '.'";
 
+	private static final String MET53_ENSURE_CALL_SUPER_IN_CLONE_SA ="MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->(typeDec)-[:DECLARES_METHOD | :DECLARES_CONSTRUCTOR]->(md)-[:CALLABLE_RETURN_TYPE]->(typeRet) 			\r\n" + 
+	"WHERE NOT typeRet:PRIMITIVE_TYPE  AND  md.fullyQualifiedName CONTAINS ':clone()'\r\n" + 
+	"OPTIONAL MATCH (md)-[:CALLS]->()-[:HAS_DEF]->(superDec)-[:CALLABLE_RETURN_TYPE]->(superRet)\r\n" + 
+	"WHERE  superDec.fullyQualifiedName CONTAINS ':clone()' AND NOT superDec.fullyQualifiedName CONTAINS (typeDec.fullyQualifiedName+':')  AND NOT superRet:PRIMITIVE_TYPE\r\n" + 
+	"WITH enclosingCU, md, COUNT(superDec) as superCallsCount WHERE superCallsCount=0\r\n" + 
+	"RETURN  '[CMU-MET53;'+enclosingCU.fileName+';method_definition;'+md.fullyQualifiedName+';'+md.lineNumber+'; You must call super.clone in every overriden clone method. ]'"
+;
 	// OJO, AQUI COMO SABES QUE NO ES Object o; o.clone()... donde
 	// Object:clone<-ov-method_clone SE necesita comprobación super.clone
 	private static final String ALTERN_MET53_ENSURE_CALL_SUPER_IN_CLONE = "MATCH (enclosingCU)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->()-[:DECLARES_METHOD | :DECLARES_CONSTRUCTOR]->(md) "
@@ -626,9 +746,22 @@ public class CMUQueries {
 			+ "RETURN 'Warning [CMU-OBJ50] Declaration with name '+ declaration.name+ '( in line ' + declaration.lineNumber +', class ' +enclClass.fullyQualifiedName + ') is not actually final, only the reference. Concretely, '+ declaration.name +' may be mutated in '+ REDUCE(seed=mutatorsMessage[0], x IN mutatorsMessage[1..] | seed+','+x) \r\n"
 
 	;
-	public static final Rule[] RULES = new Rule[] { new Rule(MET53_ENSURE_CALL_SUPER_IN_CLONE),
-			new Rule(MET55_RETURN_EMPTY_COLLECTIONS_INSTEAD_NULL), new Rule(SEC56_DONT_SERIALIZE_SYSTEM_RESOURCES),
-			new Rule(DECL56_ORDINAL_ENUM), new Rule(MET50_AVOID_CONFUSING_OVERLOADING),
+	
+	private static final String OBJ50_Q7ADRI_PAPER_VERSION = "MATCH (declaration:VARIABLE_DEF{isFinal:true})-[r:STATE_MODIFIED_BY|STATE_MAY_BE_MODIFIED_BY]->(mutatorExpr)\r\n"
+			+ "\r\n"
+			+ "MATCH (mutatorExpr)<-[:ARRAYACCESS_EXPR|ARRAYACCESS_INDEX|ASSIGNMENT_LHS|ASSIGNMENT_RHS|BINOP_LHS|BINOP_RHS|CAST_ENCLOSES|COMPOUND_ASSIGNMENT_LHS|COMPOUND_ASSIGNMENT_RHS|CONDITIONAL_EXPR_CONDITION|CONDITIONAL_EXPR_THEN|CONDITIONAL_EXPR_ELSE|INITIALIZATION_EXPR|INSTANCE_OF_EXPR|MEMBER_REFERENCE_EXPRESSION|MEMBER_SELECT_EXPR|METHODINVOCATION_ARGUMENTS|METHODINVOCATION_METHOD_SELECT|NEW_CLASS_ARGUMENTS|NEW_ARRAY_INIT|NEW_ARRAY_DIMENSION|UNARY_ENCLOSES*0..]-()<-[:ASSERT_CONDITION|DO_WHILE_CONDITION|ENCLOSES_EXPR|FOREACH_EXPR|FORLOOP_CONDITION|HAS_VARIABLEDECL_INIT|IF_CONDITION|RETURN_EXPR|SWITCH_EXPR|SYNCHRONIZED_EXPR|THROW_EXPR|WHILE_CONDITION]-(stat)<-[:CASE_STATEMENTS|CATCH_ENCLOSES_BLOCK|CATCH_PARAM|ENCLOSES|DO_WHILE_STATEMENT|WHILE_STATEMENT|FOREACH_STATEMENT|FOREACH_VAR|FORLOOP_INIT|FORLOOP_STATEMENT|FORLOOP_UPDATE|CALLABLE_HAS_PARAMETER|IF_THEN|IF_ELSE|LABELED_STMT_ENCLOSES|SWITCH_ENCLOSES_CASE|SYNCHRONIZED_ENCLOSES_BLOCK|TRY_BLOCK|TRY_CATCH|TRY_FINALLY|TRY_RESOURCES*]-()<-[:CALLABLE_HAS_BODY]-(method)<-[:DECLARES_FIELD|DECLARES_METHOD|DECLARES_CONSTRUCTOR|HAS_STATIC_INIT]-(exprEnclClass)\r\n"
+			+ " WHERE  NOT declaration:ATTR_DEF  OR r.isOwnAccess=FALSE OR NOT method.isInitializer \r\n"
+			+ "WITH declaration, mutatorExpr,exprEnclClass \r\n"
+			+ "MATCH (declaration)<-[:CALLABLE_HAS_BODY|CALLABLE_HAS_PARAMETER|CASE_STATEMENTS|CATCH_ENCLOSES_BLOCK|CATCH_PARAM|ENCLOSES|DO_WHILE_STATEMENT|WHILE_STATEMENT|FOREACH_STATEMENT|FOREACH_VAR|FORLOOP_INIT|FORLOOP_STATEMENT|FORLOOP_UPDATE|HAS_VARIABLEDECL_INIT|IF_THEN|IF_ELSE|LABELED_STMT_ENCLOSES|SWITCH_ENCLOSES_CASE|SYNCHRONIZED_ENCLOSES_BLOCK|TRY_BLOCK|TRY_CATCH|TRY_FINALLY|TRY_RESOURCES*0..]-()<-[:DECLARES_FIELD|DECLARES_METHOD|DECLARES_CONSTRUCTOR|HAS_STATIC_INIT]-(enclClass)<-[:HAS_TYPE_DEF | HAS_INNER_TYPE_DEF]-(cu)\r\n"
+			+ "WITH cu,declaration, enclClass,COLLECT(LAST(LABELS(mutatorExpr))+', line '+mutatorExpr.lineNumber+ ', column '+mutatorExpr.column+ ', class '+ exprEnclClass.fullyQualifiedName) as mutatorsMessage\r\n"
+			+ "RETURN '[CMU-OBJ50;'+cu.fileName+';var_declaration;'+declaration.actualType+'-'+declaration.name+';'+declaration.lineNumber+'; Declaration with name '+ declaration.name+ '( in line ' + declaration.lineNumber +', class ' +enclClass.fullyQualifiedName + ') is not actually final, only the reference. Concretely, '+ declaration.name +' may be mutated in '+ REDUCE(seed=mutatorsMessage[0], x IN mutatorsMessage[1..] | seed+','+x)+']' \r\n"
+//[BLOCH-6.36;C:\Users\admp1\Escritorio\StaticCodeAnalysis\Programs\ExampleClasses\src\main\java\examples\test\rule_3_10\B1.java;
+			//method_definition;examples.test.rule_3_10.B1:toString()java.lang.String;10;You must use the Override annotation in method toString (line 10) since it is actually overriding the method java.lang.Object:toString()java.lang.String]
+
+	;
+	public static final Rule[] RULES = new Rule[] { new Rule(MET53_ENSURE_CALL_SUPER_IN_CLONE_SA),
+			new Rule(MET55_RETURN_EMPTY_COLLECTIONS_INSTEAD_NULL_SA), new Rule(SEC56_DONT_SERIALIZE_SYSTEM_RESOURCES_SA),
+			new Rule(DECL56_ORDINAL_ENUM_SA), new Rule(MET50_AVOID_CONFUSING_OVERLOADING),
 			/*
 			 * new Rule(
 			 * DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART1_B
@@ -639,25 +772,25 @@ public class CMUQueries {
 			 * DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_REFINED_PART3_B)
 			 * ,
 			 */
-			new Rule(DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_END), new Rule(
+			new Rule(DCL60_AVOID_CYCLIC_DEPENDENCIES_BETWEEN_PACKAGES_SA), new Rule(
 
-					new OBJ54(true).queryToString()),
+					new OBJ54_SA(true).queryToString()),
 			// new Rule(new OBJ50_SIMPLIFIED().queryToString())
-			new Rule(OBJ50_Q7_PAPER_VERSION), new Rule(ERR54_USE_TRY_RESOURCES_TO_SAFELY_CLOSE),
+			new Rule(OBJ50_Q7ADRI_PAPER_VERSION), new Rule(ERR54_USE_TRY_RESOURCES_TO_SAFELY_CLOSE_SA),
 			new Rule(MET52_DO_NOT_USE_CLONE_WITH_UNTRUSTED_PARAMETERS), 
 			//MINIMIZE V2
-			new Rule(DCL53_MINIMIZE_SCOPE_OF_VARIABLES_V3),
+			new Rule(DCL53_MINIMIZE_SCOPE_OF_VARIABLES_V3_SA),
 			// new
 			// Rule(OBJ51_MINIMIZE_ACCESSIBILITY_OF_CLASSES_AND_MEMBERS_PART_ONE
 			// + " UNION ALL "
 			// + OBJ51_MINIMIZE_ACCESSIBILITY_OF_CLASSES_AND_MEMBERS_PART_TWO)
-			new Rule(new OBJ56_SIMPLIFIED().queryToString()),
-			new Rule(NUM50CONVERT_INT_TO_FLOAT_FOR_FLOAT_OPERATIONS) };
+			new Rule(new OBJ56_SIMPLIFIED_SA().queryToString()),
+			new Rule(NUM50CONVERT_INT_TO_FLOAT_FOR_FLOAT_OPERATIONS_SA) };
 	private static final String DEPS_OPENNLP = "[['opennlp.PrepAttachDataUtil','opennlp.model.AbstractModel'],['opennlp.PrepAttachDataUtil','opennlp.model.EventStream'],['opennlp.PrepAttachDataUtil','opennlp.model.Event'],['opennlp.PrepAttachDataUtil','opennlp.model.ListEventStream'],['opennlp.PrepAttachDataUtil','opennlp.perceptron.PerceptronPrepAttachTest'],['opennlp.model.AbstractModel','opennlp.model.MaxentModel'],['opennlp.model.AbstractModel','opennlp.model.Prior'],['opennlp.model.AbstractModel','opennlp.model.EvalParameters'],['opennlp.model.AbstractModel','opennlp.model.Context'],['opennlp.model.AbstractModel','opennlp.model.AbstractModel.ModelType'],['opennlp.model.AbstractModel','opennlp.model.IndexHashTable'],['opennlp.model.EventStream','opennlp.model.Event'],['opennlp.maxent.BasicContextGenerator','opennlp.maxent.ContextGenerator'],['opennlp.maxent.BasicEventStream','opennlp.maxent.BasicContextGenerator'],['opennlp.maxent.BasicEventStream','opennlp.maxent.ContextGenerator'],['opennlp.maxent.BasicEventStream','opennlp.model.AbstractEventStream'],['opennlp.maxent.BasicEventStream','opennlp.model.Event'],['opennlp.maxent.BasicEventStream','opennlp.maxent.DataStream'],['opennlp.model.AbstractEventStream','opennlp.model.EventStream'],['opennlp.maxent.DomainToModelMap','opennlp.maxent.ModelDomain'],['opennlp.maxent.DomainToModelMap','opennlp.model.MaxentModel'],['opennlp.maxent.Evalable','opennlp.model.MaxentModel'],['opennlp.maxent.Evalable','opennlp.model.EventCollector'],['opennlp.model.EventCollector','opennlp.model.Event'],['opennlp.maxent.GIS','opennlp.model.EventStream'],['opennlp.maxent.GIS','opennlp.model.DataIndexer'],['opennlp.maxent.GIS','opennlp.model.Prior'],['opennlp.maxent.GIS','opennlp.maxent.GISModel'],['opennlp.maxent.GIS','opennlp.maxent.GISTrainer'],['opennlp.maxent.GIS','opennlp.model.UniformPrior'],['opennlp.maxent.GISModel','opennlp.model.AbstractModel'],['opennlp.maxent.GISModel','opennlp.model.Prior'],['opennlp.maxent.GISModel','opennlp.model.EvalParameters'],['opennlp.maxent.GISModel','opennlp.model.Context'],['opennlp.maxent.GISModel','opennlp.maxent.io.SuffixSensitiveGISModelReader'],['opennlp.maxent.GISModel','opennlp.model.AbstractModel.ModelType'],['opennlp.maxent.GISModel','opennlp.model.UniformPrior'],['opennlp.model.EvalParameters','opennlp.model.Context'],['opennlp.maxent.GISTrainer.ModelExpactationComputeTask','opennlp.maxent.GISModel'],['opennlp.maxent.GISTrainer.ModelExpactationComputeTask','opennlp.maxent.GISTrainer'],['opennlp.maxent.GISTrainer','opennlp.model.EventStream'],['opennlp.maxent.GISTrainer','opennlp.model.DataIndexer'],['opennlp.maxent.GISTrainer','opennlp.model.Prior'],['opennlp.maxent.GISTrainer','opennlp.maxent.GISModel'],['opennlp.maxent.GISTrainer','opennlp.model.EvalParameters'],['opennlp.maxent.GISTrainer','opennlp.maxent.GISTrainer.ModelExpactationComputeTask'],['opennlp.maxent.GISTrainer','opennlp.model.MutableContext'],['opennlp.maxent.GISTrainer','opennlp.model.OnePassDataIndexer'],['opennlp.maxent.GISTrainer','opennlp.model.UniformPrior'],['opennlp.maxent.MaxentPrepAttachTest','opennlp.PrepAttachDataUtil'],['opennlp.maxent.MaxentPrepAttachTest','opennlp.model.AbstractModel'],['opennlp.maxent.MaxentPrepAttachTest','opennlp.maxent.GISTrainer'],['opennlp.maxent.MaxentPrepAttachTest','opennlp.model.TrainUtil'],['opennlp.maxent.MaxentPrepAttachTest','opennlp.model.TwoPassDataIndexer'],['opennlp.maxent.MaxentPrepAttachTest','opennlp.model.UniformPrior'],['opennlp.maxent.ModelApplier','opennlp.model.EventStream'],['opennlp.maxent.ModelApplier','opennlp.maxent.BasicContextGenerator'],['opennlp.maxent.ModelApplier','opennlp.maxent.ContextGenerator'],['opennlp.maxent.ModelApplier','opennlp.maxent.BasicEventStream'],['opennlp.maxent.ModelApplier','opennlp.model.Event'],['opennlp.maxent.ModelApplier','opennlp.model.MaxentModel'],['opennlp.maxent.ModelApplier','opennlp.maxent.DoubleStringPair'],['opennlp.maxent.ModelApplier','opennlp.maxent.PlainTextByLineDataStream'],['opennlp.maxent.ModelApplier','opennlp.model.GenericModelReader'],['opennlp.maxent.ModelApplier','opennlp.model.RealValueFileEventStream'],['opennlp.maxent.ModelReplacementManager','opennlp.model.MaxentModel'],['opennlp.maxent.ModelReplacementManager','opennlp.maxent.ModelSetter'],['opennlp.maxent.ModelSetter','opennlp.model.MaxentModel'],['opennlp.maxent.ModelTrainer','opennlp.model.AbstractModel'],['opennlp.maxent.ModelTrainer','opennlp.model.EventStream'],['opennlp.maxent.ModelTrainer','opennlp.maxent.BasicEventStream'],['opennlp.maxent.ModelTrainer','opennlp.maxent.GIS'],['opennlp.maxent.ModelTrainer','opennlp.maxent.PlainTextByLineDataStream'],['opennlp.maxent.ModelTrainer','opennlp.maxent.RealBasicEventStream'],['opennlp.maxent.ModelTrainer','opennlp.model.AbstractModelWriter'],['opennlp.maxent.ModelTrainer','opennlp.maxent.io.SuffixSensitiveGISModelWriter'],['opennlp.maxent.ModelTrainer','opennlp.model.OnePassDataIndexer'],['opennlp.maxent.ModelTrainer','opennlp.model.OnePassRealValueDataIndexer'],['opennlp.maxent.ModelTrainer','opennlp.perceptron.PerceptronTrainer'],['opennlp.maxent.ModelTrainer','opennlp.perceptron.SuffixSensitivePerceptronModelWriter'],['opennlp.maxent.PlainTextByLineDataStream','opennlp.maxent.DataStream'],['opennlp.maxent.RealBasicEventStream','opennlp.model.EventStream'],['opennlp.maxent.RealBasicEventStream','opennlp.maxent.BasicContextGenerator'],['opennlp.maxent.RealBasicEventStream','opennlp.maxent.ContextGenerator'],['opennlp.maxent.RealBasicEventStream','opennlp.model.AbstractEventStream'],['opennlp.maxent.RealBasicEventStream','opennlp.model.Event'],['opennlp.maxent.RealBasicEventStream','opennlp.maxent.DataStream'],['opennlp.maxent.RealBasicEventStream','opennlp.maxent.PlainTextByLineDataStream'],['opennlp.maxent.RealBasicEventStream','opennlp.model.RealValueFileEventStream'],['opennlp.maxent.RealValueModelTest','opennlp.maxent.GIS'],['opennlp.maxent.RealValueModelTest','opennlp.maxent.GISModel'],['opennlp.maxent.RealValueModelTest','opennlp.model.FileEventStream'],['opennlp.maxent.RealValueModelTest','opennlp.model.OnePassRealValueDataIndexer'],['opennlp.maxent.RealValueModelTest','opennlp.model.RealValueFileEventStream'],['opennlp.maxent.ScaleDoesntMatterTest','opennlp.model.EventStream'],['opennlp.maxent.ScaleDoesntMatterTest','opennlp.model.MaxentModel'],['opennlp.maxent.ScaleDoesntMatterTest','opennlp.maxent.GIS'],['opennlp.maxent.ScaleDoesntMatterTest','opennlp.maxent.PlainTextByLineDataStream'],['opennlp.maxent.ScaleDoesntMatterTest','opennlp.maxent.RealBasicEventStream'],['opennlp.maxent.ScaleDoesntMatterTest','opennlp.model.OnePassRealValueDataIndexer'],['opennlp.maxent.ScaleDoesntMatterTest','opennlp.model.RealValueFileEventStream'],['opennlp.maxent.TrainEval','opennlp.model.EventStream'],['opennlp.maxent.TrainEval','opennlp.model.Event'],['opennlp.maxent.TrainEval','opennlp.model.MaxentModel'],['opennlp.maxent.TrainEval','opennlp.maxent.Evalable'],['opennlp.maxent.TrainEval','opennlp.maxent.GIS'],['opennlp.maxent.io.BinaryGISModelReader','opennlp.maxent.io.GISModelReader'],['opennlp.maxent.io.BinaryGISModelReader','opennlp.model.BinaryFileDataReader'],['opennlp.maxent.io.GISModelReader','opennlp.model.AbstractModel'],['opennlp.maxent.io.GISModelReader','opennlp.maxent.GISModel'],['opennlp.maxent.io.GISModelReader','opennlp.model.Context'],['opennlp.maxent.io.GISModelReader','opennlp.model.AbstractModelReader'],['opennlp.maxent.io.GISModelReader','opennlp.model.DataReader'],['opennlp.maxent.io.BinaryGISModelWriter','opennlp.model.MaxentModel'],['opennlp.maxent.io.BinaryGISModelWriter','opennlp.maxent.io.GISModelWriter'],['opennlp.maxent.io.GISModelWriter','opennlp.model.MaxentModel'],['opennlp.maxent.io.GISModelWriter','opennlp.model.Context'],['opennlp.maxent.io.GISModelWriter','opennlp.model.AbstractModelWriter'],['opennlp.maxent.io.GISModelWriter','opennlp.model.ComparablePredicate'],['opennlp.maxent.io.GISModelWriter','opennlp.model.IndexHashTable'],['opennlp.model.AbstractModelReader','opennlp.model.AbstractModel'],['opennlp.model.AbstractModelReader','opennlp.model.Context'],['opennlp.model.AbstractModelReader','opennlp.model.DataReader'],['opennlp.model.AbstractModelReader','opennlp.model.BinaryFileDataReader'],['opennlp.model.AbstractModelReader','opennlp.model.PlainTextFileDataReader'],['opennlp.maxent.io.ObjectGISModelReader','opennlp.maxent.io.GISModelReader'],['opennlp.maxent.io.ObjectGISModelReader','opennlp.model.ObjectDataReader'],['opennlp.maxent.io.ObjectGISModelWriter','opennlp.model.AbstractModel'],['opennlp.maxent.io.ObjectGISModelWriter','opennlp.maxent.io.GISModelWriter'],['opennlp.maxent.io.OldFormatGISModelReader','opennlp.model.Context'],['opennlp.maxent.io.OldFormatGISModelReader','opennlp.model.AbstractModelReader'],['opennlp.maxent.io.OldFormatGISModelReader','opennlp.maxent.io.PlainTextGISModelReader'],['opennlp.maxent.io.OldFormatGISModelReader','opennlp.maxent.io.SuffixSensitiveGISModelWriter'],['opennlp.maxent.io.PlainTextGISModelReader','opennlp.maxent.io.GISModelReader'],['opennlp.maxent.io.PlainTextGISModelReader','opennlp.model.PlainTextFileDataReader'],['opennlp.maxent.io.PlainTextGISModelWriter','opennlp.model.AbstractModel'],['opennlp.maxent.io.PlainTextGISModelWriter','opennlp.maxent.io.GISModelWriter'],['opennlp.maxent.io.PooledGISModelReader','opennlp.maxent.io.SuffixSensitiveGISModelReader'],['opennlp.maxent.io.SuffixSensitiveGISModelReader','opennlp.model.AbstractModel'],['opennlp.maxent.io.SuffixSensitiveGISModelReader','opennlp.maxent.io.GISModelReader'],['opennlp.maxent.io.SuffixSensitiveGISModelReader','opennlp.maxent.io.SuffixSensitiveGISModelWriter'],['opennlp.maxent.io.RealValueFileEventStreamTest','opennlp.model.OnePassRealValueDataIndexer'],['opennlp.maxent.io.RealValueFileEventStreamTest','opennlp.model.RealValueFileEventStream'],['opennlp.maxent.io.SuffixSensitiveGISModelWriter','opennlp.model.AbstractModel'],['opennlp.maxent.io.SuffixSensitiveGISModelWriter','opennlp.maxent.io.BinaryGISModelWriter'],['opennlp.maxent.io.SuffixSensitiveGISModelWriter','opennlp.maxent.io.GISModelWriter'],['opennlp.maxent.io.SuffixSensitiveGISModelWriter','opennlp.maxent.io.PlainTextGISModelWriter'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.model.EventStream'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.model.MaxentModel'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.maxent.GIS'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.maxent.PlainTextByLineDataStream'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.maxent.RealBasicEventStream'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.model.OnePassRealValueDataIndexer'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.model.RealValueFileEventStream'],['opennlp.maxent.io.TwoPassRealValueDataIndexerTest','opennlp.model.TwoPassRealValueDataIndexer'],['opennlp.model.AbstractDataIndexer','opennlp.model.DataIndexer'],['opennlp.model.AbstractDataIndexer','opennlp.model.ComparableEvent'],['opennlp.model.AbstractModel.ModelType','opennlp.model.AbstractModel'],['opennlp.model.BinaryFileDataReader','opennlp.model.DataReader'],['opennlp.model.DynamicEvalParameters','opennlp.model.Context'],['opennlp.model.EventCollectorAsStream','opennlp.model.AbstractEventStream'],['opennlp.model.EventCollectorAsStream','opennlp.model.Event'],['opennlp.model.EventCollectorAsStream','opennlp.model.EventCollector'],['opennlp.model.FileEventStream','opennlp.model.AbstractModel'],['opennlp.model.FileEventStream','opennlp.model.EventStream'],['opennlp.model.FileEventStream','opennlp.model.AbstractEventStream'],['opennlp.model.FileEventStream','opennlp.model.Event'],['opennlp.model.FileEventStream','opennlp.maxent.GIS'],['opennlp.model.FileEventStream','opennlp.maxent.io.SuffixSensitiveGISModelWriter'],['opennlp.model.GenericModelReader','opennlp.model.AbstractModel'],['opennlp.model.GenericModelReader','opennlp.maxent.io.GISModelReader'],['opennlp.model.GenericModelReader','opennlp.model.AbstractModelReader'],['opennlp.model.GenericModelReader','opennlp.model.DataReader'],['opennlp.model.GenericModelReader','opennlp.model.GenericModelWriter'],['opennlp.model.GenericModelReader','opennlp.perceptron.PerceptronModelReader'],['opennlp.model.GenericModelWriter','opennlp.model.AbstractModel'],['opennlp.model.GenericModelWriter','opennlp.maxent.io.BinaryGISModelWriter'],['opennlp.model.GenericModelWriter','opennlp.model.AbstractModelWriter'],['opennlp.model.GenericModelWriter','opennlp.maxent.io.PlainTextGISModelWriter'],['opennlp.model.GenericModelWriter','opennlp.model.AbstractModel.ModelType'],['opennlp.model.GenericModelWriter','opennlp.perceptron.BinaryPerceptronModelWriter'],['opennlp.model.GenericModelWriter','opennlp.perceptron.PlainTextPerceptronModelWriter'],['opennlp.model.HashSumEventStream','opennlp.model.EventStream'],['opennlp.model.HashSumEventStream','opennlp.model.Event'],['opennlp.model.IndexHashTableTest','opennlp.model.IndexHashTable'],['opennlp.model.ListEventStream','opennlp.model.EventStream'],['opennlp.model.ListEventStream','opennlp.model.Event'],['opennlp.model.MutableContext','opennlp.model.Context'],['opennlp.model.ObjectDataReader','opennlp.model.DataReader'],['opennlp.model.OnePassDataIndexer','opennlp.model.EventStream'],['opennlp.model.OnePassDataIndexer','opennlp.model.Event'],['opennlp.model.OnePassDataIndexer','opennlp.model.AbstractDataIndexer'],['opennlp.model.OnePassDataIndexer','opennlp.model.ComparableEvent'],['opennlp.model.OnePassRealValueDataIndexer','opennlp.model.EventStream'],['opennlp.model.OnePassRealValueDataIndexer','opennlp.model.Event'],['opennlp.model.OnePassRealValueDataIndexer','opennlp.model.AbstractDataIndexer'],['opennlp.model.OnePassRealValueDataIndexer','opennlp.model.ComparableEvent'],['opennlp.model.OnePassRealValueDataIndexer','opennlp.model.OnePassDataIndexer'],['opennlp.model.PlainTextFileDataReader','opennlp.model.DataReader'],['opennlp.model.RealValueFileEventStream','opennlp.model.AbstractModel'],['opennlp.model.RealValueFileEventStream','opennlp.model.EventStream'],['opennlp.model.RealValueFileEventStream','opennlp.model.Event'],['opennlp.model.RealValueFileEventStream','opennlp.maxent.GIS'],['opennlp.model.RealValueFileEventStream','opennlp.maxent.io.SuffixSensitiveGISModelWriter'],['opennlp.model.RealValueFileEventStream','opennlp.model.FileEventStream'],['opennlp.model.RealValueFileEventStream','opennlp.model.OnePassRealValueDataIndexer'],['opennlp.model.RealValueFileEventStream2','opennlp.model.AbstractModel'],['opennlp.model.RealValueFileEventStream2','opennlp.model.EventStream'],['opennlp.model.RealValueFileEventStream2','opennlp.model.AbstractEventStream'],['opennlp.model.RealValueFileEventStream2','opennlp.model.Event'],['opennlp.model.RealValueFileEventStream2','opennlp.maxent.GIS'],['opennlp.model.RealValueFileEventStream2','opennlp.maxent.io.SuffixSensitiveGISModelWriter'],['opennlp.model.RealValueFileEventStream2','opennlp.model.FileEventStream'],['opennlp.model.Sequence','opennlp.model.Event'],['opennlp.model.SequenceStream','opennlp.model.AbstractModel'],['opennlp.model.SequenceStream','opennlp.model.Event'],['opennlp.model.SequenceStream','opennlp.model.Sequence'],['opennlp.model.SequenceStreamEventStream','opennlp.model.EventStream'],['opennlp.model.SequenceStreamEventStream','opennlp.model.Event'],['opennlp.model.SequenceStreamEventStream','opennlp.model.Sequence'],['opennlp.model.SequenceStreamEventStream','opennlp.model.SequenceStream'],['opennlp.model.TrainUtil','opennlp.model.AbstractModel'],['opennlp.model.TrainUtil','opennlp.model.EventStream'],['opennlp.model.TrainUtil','opennlp.maxent.GIS'],['opennlp.model.TrainUtil','opennlp.model.DataIndexer'],['opennlp.model.TrainUtil','opennlp.model.HashSumEventStream'],['opennlp.model.TrainUtil','opennlp.model.OnePassDataIndexer'],['opennlp.model.TrainUtil','opennlp.model.SequenceStream'],['opennlp.model.TrainUtil','opennlp.model.TwoPassDataIndexer'],['opennlp.model.TrainUtil','opennlp.perceptron.PerceptronTrainer'],['opennlp.model.TrainUtil','opennlp.perceptron.SimplePerceptronSequenceTrainer'],['opennlp.model.TwoPassDataIndexer','opennlp.model.EventStream'],['opennlp.model.TwoPassDataIndexer','opennlp.model.Event'],['opennlp.model.TwoPassDataIndexer','opennlp.model.AbstractDataIndexer'],['opennlp.model.TwoPassDataIndexer','opennlp.model.ComparableEvent'],['opennlp.model.TwoPassDataIndexer','opennlp.model.FileEventStream'],['opennlp.model.TwoPassRealValueDataIndexer','opennlp.model.EventStream'],['opennlp.model.TwoPassRealValueDataIndexer','opennlp.model.Event'],['opennlp.model.TwoPassRealValueDataIndexer','opennlp.model.AbstractDataIndexer'],['opennlp.model.TwoPassRealValueDataIndexer','opennlp.model.ComparableEvent'],['opennlp.model.TwoPassRealValueDataIndexer','opennlp.model.RealValueFileEventStream2'],['opennlp.model.TwoPassRealValueDataIndexer','opennlp.model.TwoPassDataIndexer'],['opennlp.model.UniformPrior','opennlp.model.Prior'],['opennlp.perceptron.BinaryPerceptronModelReader','opennlp.model.BinaryFileDataReader'],['opennlp.perceptron.BinaryPerceptronModelReader','opennlp.perceptron.PerceptronModelReader'],['opennlp.perceptron.PerceptronModelReader','opennlp.model.AbstractModel'],['opennlp.perceptron.PerceptronModelReader','opennlp.model.Context'],['opennlp.perceptron.PerceptronModelReader','opennlp.model.AbstractModelReader'],['opennlp.perceptron.PerceptronModelReader','opennlp.model.DataReader'],['opennlp.perceptron.PerceptronModelReader','opennlp.perceptron.PerceptronModel'],['opennlp.perceptron.BinaryPerceptronModelWriter','opennlp.model.MaxentModel'],['opennlp.perceptron.BinaryPerceptronModelWriter','opennlp.perceptron.PerceptronModelWriter'],['opennlp.perceptron.PerceptronModelWriter','opennlp.model.MaxentModel'],['opennlp.perceptron.PerceptronModelWriter','opennlp.model.Context'],['opennlp.perceptron.PerceptronModelWriter','opennlp.model.AbstractModelWriter'],['opennlp.perceptron.PerceptronModelWriter','opennlp.model.ComparablePredicate'],['opennlp.perceptron.PerceptronModelWriter','opennlp.model.IndexHashTable'],['opennlp.perceptron.PerceptronModel','opennlp.model.AbstractModel'],['opennlp.perceptron.PerceptronModel','opennlp.model.EvalParameters'],['opennlp.perceptron.PerceptronModel','opennlp.model.Context'],['opennlp.perceptron.PerceptronModel','opennlp.model.AbstractModel.ModelType'],['opennlp.perceptron.PerceptronModel','opennlp.model.IndexHashTable'],['opennlp.perceptron.PerceptronModel','opennlp.perceptron.PerceptronModelReader'],['opennlp.perceptron.PerceptronPrepAttachTest','opennlp.PrepAttachDataUtil'],['opennlp.perceptron.PerceptronPrepAttachTest','opennlp.model.AbstractModel'],['opennlp.perceptron.PerceptronPrepAttachTest','opennlp.model.TrainUtil'],['opennlp.perceptron.PerceptronPrepAttachTest','opennlp.model.TwoPassDataIndexer'],['opennlp.perceptron.PerceptronPrepAttachTest','opennlp.perceptron.PerceptronTrainer'],['opennlp.perceptron.PerceptronTrainer','opennlp.model.AbstractModel'],['opennlp.perceptron.PerceptronTrainer','opennlp.model.DataIndexer'],['opennlp.perceptron.PerceptronTrainer','opennlp.model.EvalParameters'],['opennlp.perceptron.PerceptronTrainer','opennlp.model.MutableContext'],['opennlp.perceptron.PerceptronTrainer','opennlp.perceptron.PerceptronModel'],['opennlp.perceptron.PlainTextPerceptronModelReader','opennlp.model.PlainTextFileDataReader'],['opennlp.perceptron.PlainTextPerceptronModelReader','opennlp.perceptron.PerceptronModelReader'],['opennlp.perceptron.PlainTextPerceptronModelWriter','opennlp.model.MaxentModel'],['opennlp.perceptron.PlainTextPerceptronModelWriter','opennlp.perceptron.PerceptronModelWriter'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.AbstractModel'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.Event'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.DataIndexer'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.IndexHashTable'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.MutableContext'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.OnePassDataIndexer'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.Sequence'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.SequenceStream'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.model.SequenceStreamEventStream'],['opennlp.perceptron.SimplePerceptronSequenceTrainer','opennlp.perceptron.PerceptronModel'],['opennlp.perceptron.SuffixSensitivePerceptronModelWriter','opennlp.model.AbstractModel'],['opennlp.perceptron.SuffixSensitivePerceptronModelWriter','opennlp.model.AbstractModelWriter'],['opennlp.perceptron.SuffixSensitivePerceptronModelWriter','opennlp.perceptron.BinaryPerceptronModelWriter'],['opennlp.perceptron.SuffixSensitivePerceptronModelWriter','opennlp.perceptron.PerceptronModelWriter'],['opennlp.perceptron.SuffixSensitivePerceptronModelWriter','opennlp.perceptron.PlainTextPerceptronModelWriter']]\r\n";
 
 	public static void main(String[] args) throws IOException {
 		final boolean MEASURING_MEMORY = false;
-		int queryIndex = args.length == 0 ? 7: Integer.parseInt(args[0]);
+		int queryIndex = args.length == 0 ?2: Integer.parseInt(args[0]);
 		try {
 			GraphDatabaseService gs = EmbeddedDBManager.getNewEmbeddedDBService();
 

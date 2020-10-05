@@ -41,7 +41,7 @@ public class FunctionUtils {
 		while (currentIndex < res.size()) {
 
 			node = res.get(currentIndex++);
-			System.out.println(node.getId());
+//			System.out.println(node.getId());
 			Iterable<Relationship> rels = node.getRelationships(Direction.OUTGOING, relTypes);
 			for (Relationship r : rels)
 				if (!res.contains(r.getEndNode()))

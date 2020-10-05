@@ -23,7 +23,7 @@ public class LazyInsertionManagerOneBigQuery {
 		// Varias opciones transacción a transacción con writeTrans, o con una
 		// sola transaccion beginTrans y success
 		storeNodes(driver.session(), info);
-		System.out.println("SUCCES COM");
+//		System.out.println("SUCCES COM");
 	}
 
 	private static void storeNodes(Session session, InfoToInsert info) {

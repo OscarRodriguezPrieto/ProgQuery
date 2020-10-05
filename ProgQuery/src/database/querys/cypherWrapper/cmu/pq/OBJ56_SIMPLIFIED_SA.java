@@ -4,6 +4,7 @@ import database.nodes.NodeTypes;
 import database.querys.cypherWrapper.AbstractQuery;
 import database.querys.cypherWrapper.Cardinalidad;
 import database.querys.cypherWrapper.Clause;
+import database.querys.cypherWrapper.ClauseImpl;
 import database.querys.cypherWrapper.CompleteNode;
 import database.querys.cypherWrapper.EdgeDirection;
 import database.querys.cypherWrapper.EdgeImpl;
@@ -22,13 +23,13 @@ import database.relations.RelationTypes;
 import database.relations.TypeRelations;
 import utils.dataTransferClasses.Pair;
 
-public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
+public class OBJ56_SIMPLIFIED_SA extends AbstractQuery {
 
-	public OBJ56_SIMPLIFIED_() {
+	public OBJ56_SIMPLIFIED_SA() {
 		super(true);
 	}
 	public static void main(String[] args) {
-		System.out.println(new OBJ56_SIMPLIFIED_().queryToString());
+		System.out.println(new OBJ56_SIMPLIFIED_SA().queryToString());
 	}
 	@Override
 	protected void initiate() {
@@ -37,7 +38,7 @@ public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
 				new MatchClause(getStatementServices()
 						.getMethodFromStatement(
 								new MatchImpl(
-										"(enclosingType)-[:DECLARES_FIELD]->(field:ATTR_DEC)-[:USED_BY]->(retExpr)<-[:RETURN_EXPR]-()"),
+										"(enclosingType)-[:DECLARES_FIELD]->(field:ATTR_DEF)-[:USED_BY]->(retExpr)<-[:RETURN_EXPR]-()"),
 								new CompleteNode("method", NodeTypes.METHOD_DEF, Pair.create("accessLevel", "public")))
 						.append(Pair.create(new EdgeImpl(EdgeDirection.OUTGOING, RelationTypes.DECLARES_METHOD),
 								new NodeVar("classExposingF{accessLevel:'public', isAbstract:false}")))),
@@ -63,7 +64,7 @@ public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
 				new SimpleWithClause(
 						"field,isFieldType,enclosingType, accessibleMembers,accessibleMember,fieldTypeOrSubtype, COLLECT(DISTINCT method.fullyQualifiedName+'( line '+method.lineNumber+')') as publicGetters, EXTRACT(index IN RANGE(0,SIZE( accessibleMembers)-1,1) | [CASE WHEN index=0 THEN field ELSE accessibleMembers[index-1] END, accessibleMembers[index]]) as accessibleMembersAndPrevs"),
 				new SimpleWithClause(
-						"field,isFieldType,enclosingType, accessibleMembers,accessibleMember,fieldTypeOrSubtype, publicGetters,  accessibleMembersAndPrevs,LAST(accessibleMembersAndPrevs)[0] as accessibleMemberPrev"),
+						"field,isFieldType,enclosingType, accessibleMember,fieldTypeOrSubtype, publicGetters,  accessibleMembersAndPrevs,LAST(accessibleMembersAndPrevs)[0] as accessibleMemberPrev"),
 
 				new UnwindClause("accessibleMembersAndPrevs", "accMemberAndPrev"),
 				new MatchClause(true,
@@ -76,10 +77,10 @@ public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
 				new WhereClause(
 						"ID(accesibleField)=ID(accMemberAndPrev[1]) AND ID(accessibleType)=ID(accMemberAndPrev[0])"),
 				new SimpleWithClause(
-						" field,isFieldType,enclosingType, method,publicGetters,accMemberAndPrev as accMemberOrType, accessibleMembers, accessibleMember,accessibleMemberPrev,fieldTypeOrSubtype,  COLLECT(method)  as gettersForCurrentMember"),
+						" field,isFieldType,enclosingType, method,publicGetters,accMemberAndPrev as accMemberOrType,  accessibleMember,accessibleMemberPrev,fieldTypeOrSubtype,  COLLECT(method)  as gettersForCurrentMember"),
 
 				new SimpleWithClause(
-						"field,isFieldType,enclosingType,fieldTypeOrSubtype,publicGetters,accessibleMember,accessibleMemberPrev, accessibleMembers, COLLECT( CASE WHEN accMemberOrType[1]:ATTR_DEC THEN NOT accMemberOrType[1].isStatic AND (accMemberOrType[1].accessLevel='public' OR SIZE(gettersForCurrentMember)>0) ELSE CASE WHEN accMemberOrType[1]:ARRAY_TYPE THEN TRUE ELSE EXISTS(accMemberOrType[1].accessLevel) AND accMemberOrType[1].accessLevel='public' END END) as isAccesible "),
+						"DISTINCT field,isFieldType,enclosingType,fieldTypeOrSubtype,publicGetters,accessibleMember,accessibleMemberPrev,  ALL( isAccHere IN  COLLECT( CASE WHEN accMemberOrType[1]:ATTR_DEF THEN NOT accMemberOrType[1].isStatic AND (accMemberOrType[1].accessLevel='public' OR SIZE(gettersForCurrentMember)>0) ELSE CASE WHEN accMemberOrType[1]:ARRAY_TYPE THEN TRUE ELSE EXISTS(accMemberOrType[1].accessLevel) AND accMemberOrType[1].accessLevel='public' END END) WHERE isAccHere) as isExternallyAcc "),
 
 				// new ReturnClause(
 				// "field,enclosingType,fieldTypeOrSubtype,publicGetters,accessibleMembers,accessibleMember,
@@ -92,8 +93,8 @@ public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
 				// accMemberOrTypesInfo"),
 				// new WhereClause("ALL( isAccHere IN isAccesible WHERE
 				// isAccHere)"),
-				new SimpleWithClause(
-						"DISTINCT field,isFieldType,fieldTypeOrSubtype, enclosingType, publicGetters,  accessibleMember,accessibleMemberPrev, ALL( isAccHere IN isAccesible WHERE isAccHere) as isExternallyAcc"),
+//				new SimpleWithClause(
+//						"DISTINCT field,isFieldType,fieldTypeOrSubtype, enclosingType, publicGetters,  accessibleMember,accessibleMemberPrev, ALL( isAccHere IN isAccesible WHERE isAccHere) as isExternallyAcc"),
 
 				// new SimpleWithClause(
 				// "DISTINCT field,isFieldType,fieldTypeOrSubtype,
@@ -110,18 +111,33 @@ public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
 				// new SimpleWithClause( "field, enclosingType, publicGetters,
 				// accessibleMember, COLLECT(mutator) as mutators"),
 				new SimpleWithClause(
-						"field,isFieldType,fieldTypeOrSubtype,enclosingType, publicGetters,COLLECT(DISTINCT 'MUTATOR METHOD '+mutator.fullyQualifiedName+'( line '+mutator.lineNumber +')') as allMut, EXTRACT(accField IN FILTER(accMember IN COLLECT(DISTINCT accessibleMember) WHERE accMember:ATTR_DEC AND NOT accMember.isStatic AND NOT accMember.isFinal AND accMember.accessLevel='public') | 'PUBLIC NON-FINAL FIELD '+accField.name+'( line'+accField.lineNumber+')') as externallyMutableFields,FILTER(x IN COLLECT( DISTINCT [accessibleMember:ARRAY_TYPE AND  isExternallyAcc,'ACCESIBLE ARRAY FIELD ' + accessibleMemberPrev.name+' (line ' +accessibleMemberPrev.lineNumber+')']) WHERE x[0]) as arrayFieldsExposed"),
+						"field,isFieldType,fieldTypeOrSubtype,enclosingType, publicGetters,COLLECT(DISTINCT 'MUTATOR METHOD '+mutator.fullyQualifiedName+'( line '+mutator.lineNumber +')') as allMut, EXTRACT(accField IN FILTER(accMember IN COLLECT(DISTINCT accessibleMember) WHERE accMember:ATTR_DEF AND NOT accMember.isStatic AND NOT accMember.isFinal AND accMember.accessLevel='public') | 'PUBLIC NON-FINAL FIELD '+accField.name+'( line'+accField.lineNumber+')') as externallyMutableFields,FILTER(x IN COLLECT( DISTINCT [accessibleMember:ARRAY_TYPE AND  isExternallyAcc,'ACCESIBLE ARRAY FIELD ' + accessibleMemberPrev.name+' (line ' +accessibleMemberPrev.lineNumber+')']) WHERE x[0]) as arrayFieldsExposed"),
 
 				new SimpleWithClause(
 						"field,isFieldType,enclosingType,publicGetters,fieldTypeOrSubtype.fullyQualifiedName as fieldTypeOrSubtype,allMut,externallyMutableFields, arrayFieldsExposed, SIZE(allMut)>0 OR SIZE(externallyMutableFields)>0 OR SIZE(arrayFieldsExposed)>0 as isExtMutable"),
 				new WhereClause("CASE WHEN isFieldType THEN isExtMutable ELSE NOT isExtMutable END "),
 
 				new SimpleWithClause(
-						"field,enclosingType,publicGetters,EXTRACT(subtypeNameInfo IN FILTER(subtypeNameInfo IN COLLECT([isFieldType,fieldTypeOrSubtype]) WHERE NOT subtypeNameInfo[0])| subtypeNameInfo[1]) as immutableSubtypes,FILTER(subTypePair IN COLLECT([isFieldType, allMut+externallyMutableFields+arrayFieldsExposed]) WHERE subTypePair[0])[0][1] as mutabilityInfo"),
+						"field,enclosingType,publicGetters,EXTRACT(subtypeNameInfo IN FILTER(subtypeNameInfo IN COLLECT([isFieldType,fieldTypeOrSubtype]) WHERE NOT subtypeNameInfo[0])| subtypeNameInfo[1]) as immutableSubtypes,FILTER(subTypePair IN COLLECT([isFieldType, allMut+externallyMutableFields+EXTRACT( pair IN arrayFieldsExposed | pair[1])]) WHERE subTypePair[0])[0][1] as mutabilityInfo"),
 				new WhereClause("NOT mutabilityInfo IS NULL"),
-
+				new ClauseImpl("MATCH (cu)-[:HAS_TYPE_DEF | :HAS_INNER_TYPE_DEF]->(enclosingType)")
+,
 				new ReturnClause(
-						"'Warning[OBJ-56] Field ' +field.name+' declared in line ' +field.lineNumber+' in class '+enclosingType.fullyQualifiedName+' is not public, but it is exposed in public methods such as '+ publicGetters+'. The problem is that there is at least one member ( like '+mutabilityInfo+')that can be accessed by a client to change the state of the field '+field.name + CASE WHEN SIZE(immutableSubtypes)=0 THEN '. You should implement an appropiate inmutable subtype as a wrapper for your attribute, as you have not created any yet.'ELSE '. Remember to use an appropiate inmutable subtype	 (such as '+immutableSubtypes+') as a wrapper for your attribute.'END")
+						"'[CMU-OBJ56;'+cu.fileName+';field_definition;'+field.actualType+'-'+field.name+';'+field.lineNumber+'; Field ' +field.name+' declared in line ' +field.lineNumber+' in class '+enclosingType.fullyQualifiedName+' is not public, but it is exposed in public methods such as '+ "
+						+ "REDUCE(acum='{'+publicGetters[0], string IN TAIL(publicGetters) |  acum+','+string)+'}. The problem is that there is at least one member ( like '+  "
+//						+ "REDUCE(acum='{', string IN EXTRACT(e IN mutabilityInfo | CASE WHEN NOT (e[0] IS NULL) THEN e[1] ELSE e END ) 
+						
+						+ "REDUCE( acum='{'+mutabilityInfo[0], string IN TAIL(mutabilityInfo) | acum +','+string)+"
+//						+ "EXTRACT(index IN "
+//						+ "RANGE(0,SIZE(mutabilityInfo)-1) "
+//						+ "| [index+1<SIZE(mutabilityInfo) , mutabilityInfo[index+1] CONTAINS 'ACCESIBLE ARRAY'] ) "
+//						+ "index]) |  acum+','+string)"
+						+ "'}) that can be accessed by a client to change the state of the field '+field.name + CASE WHEN SIZE(immutableSubtypes)=0 THEN '. You should implement an appropiate inmutable subtype as a wrapper for your attribute, as you have not created any yet.'ELSE '. Remember to use an appropiate inmutable subtype	 (such as '+REDUCE( acum=immutableSubtypes[0], string IN TAIL(immutableSubtypes) | acum +','+string)+') as a wrapper for your attribute.'END +']'") 
+			
+				//[BLOCH-6.36;C:\Users\admp1\Escritorio\StaticCodeAnalysis\Programs\ExampleClasses\src\main\java\examples\test\rule_3_10\B1.java;
+				//method_definition;examples.test.rule_3_10.B1:toString()java.lang.String;10;You must use the Override annotation in method toString (line 10) since it is actually overriding the method java.lang.Object:toString()java.lang.String]
+		
+				
 				// CASE WHEN ANY(x IN COLLECT(accessibleMember:ARRAY_TYPE AND
 				// isExternallyAcc) WHERE x) THEN 'ARRAY FIELD EXPOSED' ELSE ''
 				// END
@@ -171,7 +187,7 @@ public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
 				// PDGRelationTypes.STATE_MAY_BE_MODIFIED,
 				// PDGRelationTypes.STATE_MODIFIED_BY)),
 				// getExpressionServices().getMethodFromExp(new NodeVar("mod"),
-				// new CompleteNode("setMethod", NodeTypes.METHOD_DEF,
+				// new CompleteNode("setMethod", NodeTypes.METHOD_DEC,
 				// Pair.create("accessLevel", "public"), Pair.create("isStatic",
 				// false))),
 				//
@@ -201,7 +217,7 @@ public class OBJ56_SIMPLIFIED_ extends AbstractQuery {
 				// RelationTypes.DECLARES_FIELD),
 				// Pair.createP("", PDGRelationTypes.USED_BY),
 				// Pair.createInv("", RelationTypes.RETURN_EXPR)),
-				// new CompleteNode("getMethod", NodeTypes.METHOD_DEF,
+				// new CompleteNode("getMethod", NodeTypes.METHOD_DEC,
 				// Pair.create("accessLevel", "public"), Pair.create("isStatic",
 				// false)))),
 				// new MatchClause(true,
