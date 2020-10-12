@@ -1199,7 +1199,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			// METHOD IN VISIT " + methodTree);
 			rel = RelationTypes.DECLARES_METHOD;
 		}
-<<<<<<< HEAD
 
 		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol)) {
 			ast.deleteAccesibleMethod(methodSymbol);
@@ -1213,7 +1212,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
 			GraphUtils.connectWithParent(methodNode, t, rel);
 		}
-=======
 		
 		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol)) {
 			ast.deleteAccesibleMethod(methodSymbol);
@@ -1226,7 +1224,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
 			GraphUtils.connectWithParent(methodNode, t, rel);
 					}
->>>>>>> master
 //		t.getFirst().getStartingNode().getRelationships(EdgeDirection.OUTGOING, RelationTypes.DECLARES_METHOD)
 //				.forEach(r -> System.out.println(r.getEndNode().getProperty("fullyQualifiedName")));
 //		NodeUtils.nodeToString(t.getFirst().getStartingNode());
