@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.neo4j.graphdb.Label;
 
+import database.nodes.NodeTypes;
+import database.nodes.NodeUtils;
 import node_wrappers.Neo4jLazyServerDriverNode;
 import node_wrappers.Neo4jLazyServerDriverRelationship;
 import node_wrappers.NodeWrapper;
@@ -15,7 +17,7 @@ import utils.dataTransferClasses.Pair;
 
 public class InfoToInsert {
 
-	final List<NodeWrapper> nodeSet = new ArrayList<>();
+	public final List<NodeWrapper> nodeSet = new ArrayList<>();
 
 	final List<RelationshipWrapper> relSet = new ArrayList<>();
 
@@ -27,6 +29,8 @@ public class InfoToInsert {
 
 	public void deleteNode(Neo4jLazyServerDriverNode node) {
 		nodeSet.remove(node);
+		if (node.hasLabel(NodeTypes.PROGRAM))
+			System.out.println("DELETING\n " + NodeUtils.nodeToString(node));
 	}
 
 	public void addNewRel(Neo4jLazyServerDriverRelationship newRel) {
@@ -45,6 +49,7 @@ public class InfoToInsert {
 			nodeQueries.add(createParameterizedQueryFor(n));
 		return nodeQueries;
 	}
+
 	public List<Pair<String, Object[]>> getRelQueriesInfo() {
 
 		final List<Pair<String, Object[]>> relQueries = new ArrayList<>();
@@ -52,6 +57,7 @@ public class InfoToInsert {
 			relQueries.add(createParameterizedQueryFor(r));
 		return relQueries;
 	}
+
 	private static Pair<String, Object[]> createParameterizedQueryFor(RelationshipWrapper r) {
 		Pair<String, Object[]> props = getParameterizedProps(r.getAllProperties());
 		Object[] propArray = new Object[4 + props.getSecond().length];

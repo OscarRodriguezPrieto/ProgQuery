@@ -14,6 +14,10 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.TransactionWork;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NodeType;
+
+import database.nodes.NodeTypes;
+import database.nodes.NodeUtils;
 import node_wrappers.NodeWrapper;
 import utils.dataTransferClasses.Pair;
 
@@ -22,7 +26,8 @@ public class LazyInsertionManagerMultipleTrans {
 
 	public static void insertIntoNeo4jServerByDriver(InfoToInsert info, final String SERVER_ADDRESS, final String USER,
 			final String PASS, final int MAX_NODES_PER_TRANSACTION) {
-
+		
+		
 		try (final Driver driver = GraphDatabase.driver(SERVER_ADDRESS, AuthTokens.basic(USER, PASS));
 				Session session = driver.session()) {
 

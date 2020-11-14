@@ -15,7 +15,7 @@ import node_wrappers.NodeWrapper;
 import utils.dataTransferClasses.Pair;
 
 public class PackageInfo {
-	private static NodeWrapper currentProgram;
+	public static NodeWrapper currentProgram;
 
 	public static void createCurrentProgram(String id) {
 		currentProgram = DatabaseFachade.CURRENT_DB_FACHADE.createNodeWithoutExplicitTree(NodeTypes.PROGRAM);

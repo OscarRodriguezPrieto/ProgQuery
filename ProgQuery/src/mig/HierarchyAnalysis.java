@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import database.nodes.NodeUtils;
 import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.CGRelationTypes;
 import database.relations.RelationTypes;
@@ -105,7 +106,6 @@ public class HierarchyAnalysis {
 //							.equals(declaredMethod))
 						subTypeInfo.getValue().get(typedName).createRelationshipTo(declaredMethod,
 								TypeRelations.OVERRIDES);
-//					System.out.println("OVERRIDING " + subTypeInfo.getValue().get(typedName) + " " + declaredMethod);
 					inheritedInfo.subtypesToLastOverrider.get(subTypeInfo.getKey()).remove(typedName);
 				}
 			}

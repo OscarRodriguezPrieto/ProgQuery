@@ -17,7 +17,9 @@ import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import ast.ASTAuxiliarStorage;
 import cache.DefinitionCache;
 import database.DatabaseFachade;
+import database.insertion.lazy.InfoToInsert;
 import database.nodes.NodeTypes;
+import database.nodes.NodeUtils;
 import database.relations.CDGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.RelationTypes;
@@ -50,9 +52,8 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		this.task = task;
 		// this.graphDb = graphDb;
 		DatabaseFachade.CURRENT_INSERTION_STRATEGY.startAnalysis();
-		PackageInfo.createCurrentProgram(programID);
-
-	}
+	PackageInfo.createCurrentProgram(programID);
+		}
 
 	@Override
 	public void finished(TaskEvent arg0) {
@@ -160,7 +161,6 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 
 		argument = Pair.createPair(compilationUnitNode, null);
 		cu = u;
-//		System.out.println("BEFORE SCAN TYPEDEC");
 		scan(typeDeclaration, true);
 //		System.out.println("AFTER SCAN TYPEDEC");
 
@@ -189,15 +189,14 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		if (arg0.getKind() == Kind.GENERATE && started)
 			// System.out.println(classCounter.size());
 			if (classCounter.size() == 0) {
-//			System.out.println("BEFORE 2nd phase ");
-			pdgUtils.createNotDeclaredAttrRels(ast);
-			createStoredPackageDeps();
-			dynamicMethodCallAnalysis();
-			interproceduralPDGAnalysis();
-			initializationAnalysis();
+		pdgUtils.createNotDeclaredAttrRels(ast);
+				createStoredPackageDeps();
+				dynamicMethodCallAnalysis();
+				interproceduralPDGAnalysis();
+				initializationAnalysis();
 
-			shutdownDatabase();
-			started = false;
+				shutdownDatabase();
+				started = false;
 			}
 
 		// if (DEBUG)
