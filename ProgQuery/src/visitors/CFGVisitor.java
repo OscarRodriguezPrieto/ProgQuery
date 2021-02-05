@@ -14,6 +14,7 @@ import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.BreakTree;
 import com.sun.source.tree.CaseTree;
 import com.sun.source.tree.CatchTree;
+import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.ContinueTree;
 import com.sun.source.tree.DoWhileLoopTree;
 import com.sun.source.tree.EmptyStatementTree;
@@ -34,6 +35,7 @@ import com.sun.source.tree.VariableTree;
 import com.sun.source.tree.WhileLoopTree;
 import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.code.Type;
+import com.sun.tools.javac.tree.JCTree.JCStatement;
 
 import cache.SimpleTreeNodeCache;
 import database.DatabaseFachade;
@@ -110,7 +112,7 @@ public class CFGVisitor extends
 			rel.createRelationship(n);
 		}
 	}
- 
+
 	// private PartialRelation<CFGRelationTypes> last;
 	// TODO Al terminar borrar exitThrowing en caso de que no se haya usado, es
 	// decir si no
@@ -265,6 +267,9 @@ public class CFGVisitor extends
 	private void linkBreaksToFinallies(NodeWrapper node, Name label, boolean isBreak) {
 		CFGRelationTypes rel = isBreak ? CFGRelationTypes.CFG_AFTER_FINALLY_PREVIOUS_BREAK
 				: CFGRelationTypes.CFG_AFTER_FINALLY_PREVIOUS_CONTINUE;
+//		System.out.println("LABEL "+label);
+//		System.out.println("LIMIT INDEX:"+loopTryIndexes.get(label));
+//		System.out.println("AGAINST "+loopTryIndexes.keySet());
 		boolean hasLabel = label != null;
 		int limitIndex = hasLabel ? loopTryIndexes.get(label) : currentLoopTryIndex;
 		int i = trys.size() - 1;
@@ -317,7 +322,8 @@ public class CFGVisitor extends
 	private List<PartialRelation<CFGRelationTypes>> nextStatement(StatementTree t,
 			List<PartialRelation<CFGRelationTypes>> lasts) {
 		// System.out.println("NEXT STATEMENT\n" + t);
-//		System.out.println("RETRIEVING AST NODE FOR:\n" + t +" hash "+t.hashCode());
+//		System.out.println("RETRIEVING AST NODE FOR:\n" + t + " hash " + t.hashCode() + "(line "
+//				+ JavacInfo.getPosition(t)[1] + ")");
 
 		NodeWrapper n = CFGCache.get(t);
 //		System.out.println("Retrieved Node:\n" + NodeUtils.nodeToString(n));
@@ -359,18 +365,19 @@ public class CFGVisitor extends
 			loopLastsMap.put(lasts.getFirst(), newLasts);
 			loopTryIndexes.put(lasts.getFirst(), trys.size());
 		}
+		Pair<Name, List<PartialRelation<CFGRelationTypes>>> lastsForBlock = getNoNamePair(lasts.getSecond());
 		for (StatementTree st : blockTree.getStatements()) {
 			// System.out.println("SCAN DE :\n" + st + "\n" + lasts.getFirst() +
 			// "\n" + lasts.getSecond());
-			List<PartialRelation<CFGRelationTypes>> scan = scan(st, lasts);
+			List<PartialRelation<CFGRelationTypes>> scan = scan(st, lastsForBlock);
 
-			lasts = getNoNamePair(scan);
+			lastsForBlock = getNoNamePair(scan);
 		}
 		if (lasts.getFirst() != null) {
 			loopLastsMap.remove(lasts.getFirst());
 			loopTryIndexes.remove(lasts.getFirst());
 		}
-		lasts.getSecond().addAll(newLasts);
+		lastsForBlock.getSecond().addAll(newLasts);
 		return lasts.getSecond();
 	}
 
@@ -399,6 +406,12 @@ public class CFGVisitor extends
 		linkLasts(lasts.getSecond(), catchNode);
 		return scan(catchTree.getBlock(), getNoNamePair(
 				scan(catchTree.getParameter(), getNoNamePair(catchNode, CFGRelationTypes.CFG_CAUGHT_EXCEPTION))));
+	}
+
+	@Override
+	public List<PartialRelation<CFGRelationTypes>> visitClass(ClassTree classTree,
+			Pair<Name, List<PartialRelation<CFGRelationTypes>>> lasts) {
+		return lasts.getSecond();
 	}
 
 	@Override
@@ -549,24 +562,29 @@ public class CFGVisitor extends
 		currentLoopTryIndex = trys.size();
 		List<PartialRelation<CFGRelationTypes>> previousLasts = currentLoopLasts, newLasts;
 		currentLoopLasts = newLasts = getPairList(doWhileNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
+		Name currentLabel = null;
 		if (lasts.getFirst() != null) {
+			System.out.println("PUTTING " + lasts.getFirst());
 			loopTryIndexes.put(lasts.getFirst(), currentLoopTryIndex);
+			System.out.println(loopTryIndexes.keySet());
 			nodesToContinue.put(lasts.getFirst(), doWhileNode);
 			loopLastsMap.put(lasts.getFirst(), newLasts);
+			currentLabel = lasts.getFirst();
 		}
 
 		lastLoopStatement = doWhileNode;
 		lasts.getSecond().add(
 				new SimplePartialRelation<CFGRelationTypes>(doWhileNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_TRUE));
+		lasts = getNoNamePair(lasts.getSecond());
 		linkLasts(scan(doWhileLoopTree.getStatement(), lasts), doWhileNode);
 
 		lastLoopStatement = previousLoop;
 		currentLoopLasts = previousLasts;
 		currentLoopTryIndex = previousTryIndex;
-		if (lasts.getFirst() != null) {
-			loopTryIndexes.remove(lasts.getFirst());
-			nodesToContinue.remove(lasts.getFirst());
-			loopLastsMap.remove(lasts.getFirst());
+		if (currentLabel != null) {
+			loopTryIndexes.remove(currentLabel);
+			nodesToContinue.remove(currentLabel);
+			loopLastsMap.remove(currentLabel);
 		}
 		return newLasts;
 	}

@@ -11,6 +11,7 @@ import com.sun.source.tree.Tree.Kind;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.code.Type.ClassType;
+import com.sun.tools.javac.tree.JCTree;
 
 import database.nodes.NodeCategory;
 import database.nodes.NodeTypes;
@@ -44,23 +45,35 @@ public class DatabaseFachade {
 		addMultiLabelHypernyms(node, type);
 		return node;
 	}
-	
+
 	private static void addMultiLabelHypernyms(NodeWrapper node, NodeTypes type) {
 		for (NodeCategory nodeCategory : type.hypernyms)
 			node.addLabel(nodeCategory);
 	}
 
+	private static final int IMPLICIT_POSITION = -1;
+
 	public NodeWrapper createSkeletonNode(Tree tree, NodeTypes nodeType) {
 		NodeWrapper node = createNodeWithoutExplicitTree(nodeType);
-		node.setProperties(getPosition(tree));
+
+		node.setProperties(
+				((JCTree)tree).pos==-1
+						? new Object[] { "lineNumber", IMPLICIT_POSITION, "column", IMPLICIT_POSITION, "position",
+								IMPLICIT_POSITION }
+						: getPosition(tree));
 		return node;
 	}
-	public NodeWrapper createSkeletonNodeExplicitCats(Tree tree, NodeTypes nodeType, NodeCategory... cats) {
+
+
+	public NodeWrapper createSkeletonNodeExplicitCats(Tree tree, NodeTypes nodeType,
+			NodeCategory... cats) {
 		NodeWrapper node = createSkeletonNode(tree, nodeType);
 		for (NodeCategory cat : cats)
 			node.addLabel(cat);
 		return node;
 	}
+
+
 	private static Object[] getPosition(Tree tree) {
 		return JavacInfo.getPosition(tree);
 	}
@@ -102,21 +115,22 @@ public class DatabaseFachade {
 								WrapperUtils.stringToNeo4jQueryString(symbol.getQualifiedName().toString()),
 								"isDeclared", isDeclared, "isAbstract", modifiers.contains(Modifier.ABSTRACT),
 								"isStatic", modifiers.contains(Modifier.STATIC), "isFinal",
-								modifiers.contains(Modifier.FINAL), "accessLevel", modifiers.contains(Modifier.PUBLIC)
-										? "public" : modifiers.contains(Modifier.PRIVATE) ? "private" : "package" };
+								modifiers.contains(Modifier.FINAL), "accessLevel",
+								modifiers.contains(Modifier.PUBLIC) ? "public"
+										: modifiers.contains(Modifier.PRIVATE) ? "private" : "package" };
 
 	}
 
 	public NodeWrapper createTypeDecNode(ClassTree classTree, String simpleName, String fullyQualifiedType) {
-		NodeWrapper typeDef= createNode(
+		NodeWrapper typeDef = createNode(
 				classTree.getKind() == Kind.CLASS ? NodeTypes.CLASS_DEF
 						: classTree.getKind() == Kind.INTERFACE ? NodeTypes.INTERFACE_DEF : NodeTypes.ENUM_DEF,
 				getTypeDecProperties(simpleName, fullyQualifiedType, true));
 		typeDef.setProperties(getPosition(classTree));
-	return typeDef;	
+		return typeDef;
 	}
 
-	public NodeWrapper createNonDeclaredTypeDecNodeExplicitCats(TypeMirror t, NodeTypes type, 
+	public NodeWrapper createNonDeclaredTypeDecNodeExplicitCats(TypeMirror t, NodeTypes type,
 			NodeCategory... categories) {
 
 		NodeWrapper res = createNonDeclaredTypeDecNode(t, type);

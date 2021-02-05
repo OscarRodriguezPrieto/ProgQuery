@@ -7,7 +7,19 @@ public class TryCatchFinallyComplexTest extends PluginBasedTestWithCommands {
 	
 	public TryCatchFinallyComplexTest() {
 		super("cfgTest2.bat", MainQuery.CFG_NODES_FOR_TESTING, 78);
-	}/* TEST DESIGNED TO USE EMBEEDDED, MUST BE RE-IMPLEMENTED
+	}
+	void m() {
+		switch("HJ".length()) {
+		default:
+		
+		case 2:
+			
+		case 6:
+			
+//		default:
+		}
+	}
+	/* TEST DESIGNED TO USE EMBEEDDED, MUST BE RE-IMPLEMENTED
 
 	@Test
 	public void test() {
