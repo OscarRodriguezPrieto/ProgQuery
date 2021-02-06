@@ -185,12 +185,8 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 
 		argument = Pair.createPair(compilationUnitNode, null);
 		cu = u;
-<<<<<<< HEAD
-		scan(typeDeclaration, true);
-=======
 //		System.out.println("BEFORE SCAN TYPEDEC");
 		scan((ClassTree) typeDeclaration, true);
->>>>>>> develop
 //		System.out.println("AFTER SCAN TYPEDEC");
 
 	}
@@ -218,12 +214,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 		if (arg0.getKind() == Kind.GENERATE && started)
 			// System.out.println(classCounter.size());
 			if (classCounter.size() == 0) {
-<<<<<<< HEAD
 		pdgUtils.createNotDeclaredAttrRels(ast);
-=======
-//			System.out.println("BEFORE 2nd phase ");
-				pdgUtils.createNotDeclaredAttrRels(ast);
->>>>>>> develop
 				createStoredPackageDeps();
 				dynamicMethodCallAnalysis();
 				interproceduralPDGAnalysis();
