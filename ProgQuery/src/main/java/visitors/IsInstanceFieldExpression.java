@@ -5,6 +5,7 @@ import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreeScanner;
+import com.sun.tools.javac.code.Kinds;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.VarSymbol;
 import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
@@ -23,13 +24,13 @@ public class IsInstanceFieldExpression extends TreeScanner<Boolean, Void> {
 	@Override
 	public Boolean visitIdentifier(IdentifierTree identTree, Void v) {
 		Symbol s = ((JCIdent) identTree).sym;
-		return !(s.kind == 4 && ((VarSymbol) s).isLocal());
+		return !(s.kind == Kinds.Kind.VAR && ((VarSymbol) s).isLocal());
 	}
 
 	@Override
 	public Boolean visitMemberSelect(MemberSelectTree memberSel, Void v) {
 		Symbol s = ((JCFieldAccess) memberSel).sym;
-		return s.kind == 4 && s.isStatic() ? false : scan(memberSel.getExpression(), v);
+		return s.kind == Kinds.Kind.VAR && s.isStatic() ? false : scan(memberSel.getExpression(), v);
 
 	}
 
