@@ -9,8 +9,8 @@ import database.DatabaseFachade;
 import database.EmbeddedGGDBServiceInsertion;
 import database.InsertionStrategy;
 import database.Neo4jDriverLazyWrapperInsertion;
-import tasklisteners.GetStructuresAfterAnalyze; 
- 
+import tasklisteners.GetStructuresAfterAnalyze;
+
 public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 
 	private static final String PLUGIN_NAME = "ProgQueryPlugin";
@@ -22,7 +22,20 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 		// First argument if any contents the db path
 
 		// DatabaseFachade.setDB(graphDb);
-		String id = args.length == 0 ? "NO_SPECIFIED_ID_" + ZonedDateTime.now() : args[0];
+		final String ANONYMOUS_PROGRAM = "ANONYMOUS_PROGRAM_", ANONYMOUS_USER = "ANONYMOUS_USER";
+		String programID, userID;
+		if (args.length == 0) {
+			programID = ANONYMOUS_PROGRAM + ZonedDateTime.now();
+			userID = ANONYMOUS_USER;
+		} else if (args[0].contains(";")) {
+			String[] IDInfo = args[0].split(";");
+			programID = IDInfo[0];
+			userID = IDInfo[1];
+		} else {
+			// ONLY PROGRAM ID
+			programID = args[0];
+			userID = ANONYMOUS_USER;
+		}
 		DatabaseFachade
 				.init(args.length == 1 ? new EmbeddedGGDBServiceInsertion()
 						: args[1].contains("S")
@@ -32,7 +45,7 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 														args[2])
 								: args.length > 2 ? new EmbeddedGGDBServiceInsertion(args[2])
 										: new EmbeddedGGDBServiceInsertion());
-		task.addTaskListener(new GetStructuresAfterAnalyze(task, id));
+		task.addTaskListener(new GetStructuresAfterAnalyze(task, programID, userID));
 	}
 
 	private InsertionStrategy invalidArgs() {
@@ -48,5 +61,6 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 	public String getName() {
 		return PLUGIN_NAME;
 	}
-
+//--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+	// o --add-exports com.sun.tools.javac.util=ALL-UNNAMED
 }

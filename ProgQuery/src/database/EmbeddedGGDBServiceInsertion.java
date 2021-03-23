@@ -7,10 +7,11 @@ import org.neo4j.graphdb.Transaction;
 import database.embedded.EmbeddedDBManager;
 import database.nodes.NodeTypes;
 import node_wrappers.Neo4jEmbeddedWrapperNode;
- 
+import node_wrappers.NodeWrapper;
+
 public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 	private GraphDatabaseService gDBService;
-	private Transaction t;
+	private Transaction currentTransaction;
 
 	public EmbeddedGGDBServiceInsertion() {
 //		System.out.println("EMBEDDED NO PATH");
@@ -21,52 +22,57 @@ public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 //		System.out.println("EMBEDDED " + dbPath);
 		gDBService = EmbeddedDBManager.getNewEmbeddedDBService(dbPath);
 	}
+
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode() {
-		return new Neo4jEmbeddedWrapperNode(gDBService.createNode());
+
+		return new Neo4jEmbeddedWrapperNode(currentTransaction.createNode());
 	}
 
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode(NodeTypes label) {
-		Node n = gDBService.createNode();
-		n.addLabel(label);
-		return new Neo4jEmbeddedWrapperNode(n);
+		Neo4jEmbeddedWrapperNode wrapper = createNode();
+		wrapper.getNode().addLabel(label);
+		return wrapper;
 
 	}
 
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode(NodeTypes label, Object[] props) {
-		Node n = gDBService.createNode();
-		n.addLabel(label);
-		for (int i = 0; i < props.length; i = i + 2)
-			n.setProperty(props[i].toString(), props[i + 1]);
-
-		return new Neo4jEmbeddedWrapperNode(n);
+		Neo4jEmbeddedWrapperNode wrapper = createNode(label);
+		addProps(wrapper, props);
+		return wrapper;
 	}
 
 
 	@Override
 	public Neo4jEmbeddedWrapperNode createNode(Object[] props) {
-		Node n = gDBService.createNode();
-		for (int i = 0; i < props.length; i = i + 2)
-			n.setProperty(props[i].toString(), props[i + 1]);
-
-		return new Neo4jEmbeddedWrapperNode(n);
+		Neo4jEmbeddedWrapperNode wrapper = createNode();
+		addProps(wrapper, props);
+		return wrapper;
 	}
 
+	private void addProps(Neo4jEmbeddedWrapperNode wrapper, Object[] props) {
+
+		Node n = wrapper.getNode();
+		for (int i = 0; i < props.length; i = i + 2)
+			n.setProperty(props[i].toString(), props[i + 1]);
+	}
 	@Override
 	public void startAnalysis() {
 		// System.out.println("S");
-		t = gDBService.beginTx();
+		currentTransaction = gDBService.beginTx();
 	}
 
 	@Override
 	public void endAnalysis() {
 		// System.out.println("END");
-//		System.out.println("BEFORE SHUTDOWN");
-		t.success();
-		t.close();
-		gDBService.shutdown();
+		System.out.println("JUST BEFORE SHUTDOWN");
+//		System.out.println("TOTAL OF NODES TO INSERT " + Neo4jEmbeddedWrapperNode.counter);
+//		System.out.println(t.00);
+		currentTransaction.commit();
+		currentTransaction.close();
+		EmbeddedDBManager.manager.shutdown();
 	}
 
 }

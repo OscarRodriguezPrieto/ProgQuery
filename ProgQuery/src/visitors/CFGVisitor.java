@@ -564,9 +564,7 @@ public class CFGVisitor extends
 		currentLoopLasts = newLasts = getPairList(doWhileNode, CFGRelationTypes.CFG_NEXT_STATEMENT_IF_FALSE);
 		Name currentLabel = null;
 		if (lasts.getFirst() != null) {
-			System.out.println("PUTTING " + lasts.getFirst());
 			loopTryIndexes.put(lasts.getFirst(), currentLoopTryIndex);
-			System.out.println(loopTryIndexes.keySet());
 			nodesToContinue.put(lasts.getFirst(), doWhileNode);
 			loopLastsMap.put(lasts.getFirst(), newLasts);
 			currentLabel = lasts.getFirst();

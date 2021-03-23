@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 
 import database.insertion.lazy.InfoToInsert;
 import database.nodes.NodeTypes;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.RelationTypesInterface;
 
 public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElement implements NodeWrapper {
@@ -23,7 +23,10 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 	Set<Label> labels = new HashSet<>();
 	Long id;
 
+//	private static long counter=0;
 	public Neo4jLazyServerDriverNode() {
+//		id=counter++;
+		id=null;
 		InfoToInsert.INFO_TO_INSERT.addNewNode(this);
 	}
 
@@ -75,10 +78,11 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 		return allRels;
 	}
 
-	private List<RelationshipWrapper> getRelsFrom(EdgeDirection direction, RelationTypesInterface... relTypes) {
+	private List<RelationshipWrapper> getRelsFrom(Direction direction, RelationTypesInterface... relTypes) {
 		List<RelationshipWrapper> rels = new ArrayList<>();
-		Map<RelationTypesInterface, List<RelationshipWrapper>> currentMap = direction == EdgeDirection.INCOMING
-				? incomingRels : outgoingRels;
+		Map<RelationTypesInterface, List<RelationshipWrapper>> currentMap = direction == Direction.INCOMING
+				? incomingRels
+				: outgoingRels;
 		for (RelationTypesInterface relType : relTypes) {
 			List<RelationshipWrapper> relsFound = currentMap.get(relType);
 			if (relsFound != null)
@@ -88,7 +92,7 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 	}
 
 	@Override
-	public RelationshipWrapper getSingleRelationship(EdgeDirection direction, RelationTypesInterface relTypes) {
+	public RelationshipWrapper getSingleRelationship(Direction direction, RelationTypesInterface relTypes) {
 		List<RelationshipWrapper> rels = getRelsFrom(direction, relTypes);
 		if (rels.size() > 1)
 			throw new IllegalArgumentException("More than one relationship");
@@ -98,15 +102,16 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 	}
 
 	@Override
-	public List<RelationshipWrapper> getRelationships(EdgeDirection direction, RelationTypesInterface... relTypes) {
+	public List<RelationshipWrapper> getRelationships(Direction direction, RelationTypesInterface... relTypes) {
 
 		return getRelsFrom(direction, relTypes);
 	}
 
 	@Override
-	public boolean hasRelationship(RelationTypesInterface relType, EdgeDirection direction) {
-		Map<RelationTypesInterface, List<RelationshipWrapper>> currentMap = direction == EdgeDirection.INCOMING
-				? incomingRels : outgoingRels;
+	public boolean hasRelationship(RelationTypesInterface relType, Direction direction) {
+		Map<RelationTypesInterface, List<RelationshipWrapper>> currentMap = direction == Direction.INCOMING
+				? incomingRels
+				: outgoingRels;
 
 		return currentMap.get(relType) != null;
 	}
@@ -142,57 +147,55 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 	}
 
 	@Override
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
 	@Override
-	public List<RelationshipWrapper> getRelationships(EdgeDirection direction) {
+	public List<RelationshipWrapper> getRelationships(Direction direction) {
 		List<RelationshipWrapper> rels = new ArrayList<>();
-		Map<RelationTypesInterface, List<RelationshipWrapper>> currentMap = direction == EdgeDirection.INCOMING
-				? incomingRels : outgoingRels;
+		Map<RelationTypesInterface, List<RelationshipWrapper>> currentMap = direction == Direction.INCOMING
+				? incomingRels
+				: outgoingRels;
 		for (List<RelationshipWrapper> relsOfType : currentMap.values())
 			rels.addAll(relsOfType);
 
 		return rels;
 	}
 
-	@Override
 	public void removeIncomingRel(RelationshipWrapper rel) {
 		allRels.remove(rel);
 		incomingRels.get(rel.getType()).remove(rel);
 	}
 
-	@Override
 	public void removeOutgoingRel(RelationshipWrapper rel) {
 		allRels.remove(rel);
 		outgoingRels.get(rel.getType()).remove(rel);
 
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result + (int) (id ^ (id >>> 32));
+//		return result;
+//	}
+//
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (obj == null)
+//			return false;
+//		if (getClass() != obj.getClass())
+//			return false;
+//		Neo4jLazyServerDriverNode other = (Neo4jLazyServerDriverNode) obj;
+//		if (id != other.id)
+//			return false;
+//		return true;
+//	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Neo4jLazyServerDriverNode other = (Neo4jLazyServerDriverNode) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
+
 
 }

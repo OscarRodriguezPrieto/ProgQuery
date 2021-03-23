@@ -59,8 +59,5 @@ public class MethodInfo {
 		decToInstanceInvRels.add(rel);
 	}
 
-	public List<RelationshipWrapper> getDecToInstanceInvRelsxx() {
-		return decToInstanceInvRels;
-	}
 
 }

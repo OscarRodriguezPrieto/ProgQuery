@@ -12,22 +12,27 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
 import database.nodes.NodeUtils;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.RelationTypesInterface;
 
 public class Neo4jEmbeddedWrapperNode implements NodeWrapper {
 	private Node node;
+//	public static int counter = 0;
 
 	public Neo4jEmbeddedWrapperNode(Node node) {
 		this.node = node;
+//		counter++;
 //		System.out.println("CREATING NODE " + node.getId());
 		// if(node.getId()==2393)
 		// throw new IllegalStateException();
 	}
 
+	public Node getNode() {
+		return node;
+	}
+
 	@Override
 	public void setProp(String name, Object value) {
-		
+
 		node.setProperty(name, value);
 
 	}
@@ -78,27 +83,24 @@ public class Neo4jEmbeddedWrapperNode implements NodeWrapper {
 	}
 
 	@Override
-	public RelationshipWrapper getSingleRelationship(EdgeDirection direction, RelationTypesInterface relTypes) {
+	public RelationshipWrapper getSingleRelationship(Direction direction, RelationTypesInterface relType) {
 		// TODO Auto-generated method stub
-		Relationship rel = node.getSingleRelationship(relTypes, fromPQToNeoDiretion(direction));
+		Relationship rel = node.getSingleRelationship(relType, direction);
 		return rel == null ? null : new Neo4jEmbeddedWrapperRel(rel);
 	}
 
-	private Direction fromPQToNeoDiretion(EdgeDirection direction) {
-		return direction == EdgeDirection.INCOMING ? Direction.INCOMING : Direction.OUTGOING;
-	}
 
 	@Override
-	public List<RelationshipWrapper> getRelationships(EdgeDirection direction,
+	public List<RelationshipWrapper> getRelationships(Direction direction,
 			RelationTypesInterface... possibleRelTypes) {
 		// System.out.println(NodeUtils.nodeToString(node));
-		return fromIterToList(node.getRelationships(fromPQToNeoDiretion(direction), possibleRelTypes));
+		return fromIterToList(node.getRelationships(direction, possibleRelTypes));
 	}
 
 	@Override
-	public boolean hasRelationship(RelationTypesInterface relType, EdgeDirection direction) {
+	public boolean hasRelationship(RelationTypesInterface relType, Direction direction) {
 		// TODO Auto-generated method stub
-		return node.hasRelationship(relType, fromPQToNeoDiretion(direction));
+		return node.hasRelationship(direction, relType);
 	}
 
 	@Override
@@ -128,30 +130,32 @@ public class Neo4jEmbeddedWrapperNode implements NodeWrapper {
 
 	@Override
 	public void delete() {
+//		counter--;
 		// node.getRelationships().forEach(r -> r.delete());
 		node.delete();
 	}
 
 	@Override
-	public void setId(Long id) {
+	public void setId(long id) {
 		throw new IllegalStateException("The id cannot be set for embedded JIT nodes.");
 	}
 
 	@Override
-	public List<RelationshipWrapper> getRelationships(EdgeDirection direction) {
+	public List<RelationshipWrapper> getRelationships(Direction direction) {
+		
 		// TODO Auto-generated method stub
-		return fromIterToList(node.getRelationships(fromPQToNeoDiretion(direction)));
+		return fromIterToList(node.getRelationships(direction));
 	}
 
-	@Override
-	public void removeIncomingRel(RelationshipWrapper neo4jLazyServerDriverRelationship) {
-
-	}
-
-	@Override
-	public void removeOutgoingRel(RelationshipWrapper neo4jLazyServerDriverRelationship) {
-
-	}
+//	@Override
+//	public void removeIncomingRel(RelationshipWrapper neo4jLazyServerDriverRelationship) {
+//
+//	}
+//
+//	@Override
+//	public void removeOutgoingRel(RelationshipWrapper neo4jLazyServerDriverRelationship) {
+//
+//	}
 
 	@Override
 	public int hashCode() {

@@ -30,6 +30,9 @@ private Set<NodeWrapper> paramsPreviouslyModifiedInCases;
 	}
 
 
+	public void setInstance(boolean isInstance) {
+		this.isInstance = isInstance;
+	}
 	@Override
 	public Set<NodeWrapper> paramsPreviouslyModifiedForSwitch() {
 		return paramsPreviouslyModifiedInCases;

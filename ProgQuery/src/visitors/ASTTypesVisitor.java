@@ -11,6 +11,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 
+import org.neo4j.graphdb.Direction;
+
 import com.sun.source.tree.AnnotatedTypeTree;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ArrayAccessTree;
@@ -93,7 +95,6 @@ import database.DatabaseFachade;
 import database.nodes.NodeCategory;
 import database.nodes.NodeTypes;
 import database.nodes.NodeUtils;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.CDGRelationTypes;
 import database.relations.CFGRelationTypes;
 import database.relations.CGRelationTypes;
@@ -639,7 +640,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	}
 
 	private static void callsFromVarDecToConstructor(NodeWrapper attr, NodeWrapper constructor) {
-		for (RelationshipWrapper r : attr.getRelationships(EdgeDirection.OUTGOING, CGRelationTypes.CALLS)) {
+		for (RelationshipWrapper r : attr.getRelationships(Direction.OUTGOING, CGRelationTypes.CALLS)) {
 			RelationshipWrapper callRelation = constructor.createRelationshipTo(r.getEndNode(), CGRelationTypes.CALLS);
 			callRelation.setProperty("mustBeExecuted", r.getProperty("mustBeExecuted"));
 			r.delete();
@@ -664,6 +665,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			scan(compilationUnitTree.getPackageAnnotations(), pair);
 			// scan(packageDec, p);
 			scan(compilationUnitTree.getImports(), pair);
+//			System.out.println(compilationUnitTree);
 		} // scan(compilationUnitTree.getTypeDecls(), pair);
 		if (compilationUnitTree.getTypeDecls().size() == 0)
 			return null;
@@ -852,9 +854,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		return null;
 	}
 
+	static int foo;
+
 	@Override
 	public ASTVisitorResult visitIdentifier(IdentifierTree identifierTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
+
 		// System.out.println(identifierTree);
 		NodeWrapper identifierNode;
 		ElementKind idKind = ((JCIdent) identifierTree).sym.getKind();
@@ -1040,7 +1045,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(memberSelectTree,
 		// NodeTypes.MEMBER_SELECTION);
 		NodeWrapper memberSelectNode;
-		ElementKind idKind = ((JCFieldAccess) memberSelectTree).sym.getKind();
+		Symbol memberSymbol = ((JCFieldAccess) memberSelectTree).sym;
+		ElementKind idKind = memberSymbol.getKind();
 		if (idKind == ElementKind.PACKAGE)
 			memberSelectNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(memberSelectTree,
 					NodeTypes.MEMBER_SELECTION);
@@ -1069,13 +1075,17 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// JavacInfo.getSymbolFromTree(memberSelectTree.getExpression());
 
 		if (idKind == ElementKind.CLASS || idKind == ElementKind.INTERFACE || idKind == ElementKind.ENUM)
-			addClassIdentifier(((JCFieldAccess) memberSelectTree).sym);
+			addClassIdentifier(memberSymbol);
 
 		ASTVisitorResult memberSelResult = scan(memberSelectTree.getExpression(), Pair.createPair(memberSelectNode,
 				RelationTypes.MEMBER_SELECT_EXPR, PDGProcessing.modifiedToStateModified(t)));
-		if (outsideAnnotation)
+		if (outsideAnnotation) {
+			boolean isInstance = memberSelResult != null && !memberSymbol.isStatic() && memberSelResult.isInstance();
 			pdgUtils.relationOnFieldAccess(memberSelectTree, memberSelectNode, t, methodState,
-					classState.currentClassDec, memberSelResult == null ? false : memberSelResult.isInstance());
+					classState.currentClassDec, isInstance);
+			memberSelResult = new VisitorResultImpl(isInstance);
+
+		}
 		return memberSelResult;
 	}
 
@@ -1176,8 +1186,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	public ASTVisitorResult visitMethod(MethodTree methodTree, Pair<PartialRelation<RelationTypes>, Object> t) {
 
 		if (DEBUG) {
-		System.out.println("\tVisiting method declaration " + methodTree.getName());
-		System.out.println(methodTree);
+			System.out.println("\tVisiting method declaration " + methodTree.getName());
+			System.out.println(methodTree);
 		}
 		MethodSymbol methodSymbol = ((JCMethodDecl) methodTree).sym;
 
@@ -1210,7 +1220,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			// non-declared edges of the class and before the visit of the method
 			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
 
-			if (!methodNode.hasRelationship(rel, EdgeDirection.INCOMING))
+			if (!methodNode.hasRelationship(rel, Direction.INCOMING))
 				GraphUtils.connectWithParent(methodNode, t, rel);
 		} else {
 			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
@@ -1223,7 +1233,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			// non-declared edges of the class and before the visit of the method
 			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
 
-			if (!methodNode.hasRelationship(rel, EdgeDirection.INCOMING))
+			if (!methodNode.hasRelationship(rel, Direction.INCOMING))
 				GraphUtils.connectWithParent(methodNode, t, rel);
 		} else {
 			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
@@ -1334,9 +1344,9 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	@Override
 	public ASTVisitorResult visitMethodInvocation(MethodInvocationTree methodInvocationTree,
 			Pair<PartialRelation<RelationTypes>, Object> pair) {
+//		System.out.println(methodInvocationTree);
 		NodeWrapper methodInvocationNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(methodInvocationTree,
 				NodeTypes.METHOD_INVOCATION);
-		Type t = ((JCExpression) methodInvocationTree).type;
 //		if(t!=null)
 		attachTypeDirect(methodInvocationNode, methodInvocationTree);
 //		else
@@ -1344,7 +1354,10 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 		GraphUtils.connectWithParent(methodInvocationNode, pair);
 
-		MethodSymbol methodSymbol = (MethodSymbol) JavacInfo.getSymbolFromTree(methodInvocationTree.getMethodSelect());
+		MethodSymbol methodSymbol =
+//				((JCMethodInvocation)methodInvocationTree).
+//				
+				(MethodSymbol) JavacInfo.getSymbolFromTree(methodInvocationTree.getMethodSelect());
 		String methodName = null, completeName = null, fullyQualifiedName = null;
 		if (methodInvocationTree.getMethodSelect() instanceof IdentifierTree)
 			addClassIdentifier(methodSymbol.owner);

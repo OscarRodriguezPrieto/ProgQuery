@@ -6,10 +6,11 @@ import java.util.Set;
 
 import javax.lang.model.type.TypeMirror;
 
+import org.neo4j.graphdb.Direction;
+
 import com.sun.tools.javac.code.Symbol;
 
 import ast.ASTAuxiliarStorage;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.CDGRelationTypes;
 import database.relations.RelationTypes;
 import database.relations.TypeRelations;
@@ -52,7 +53,7 @@ public class DefinitionCache<TKEY> {
 
 		if (auxNodeCache.containsKey(classSymbol)) {
 			oldClassNode = auxNodeCache.get(classSymbol);
-			for (RelationshipWrapper r : oldClassNode.getRelationships(EdgeDirection.OUTGOING,
+			for (RelationshipWrapper r : oldClassNode.getRelationships(Direction.OUTGOING,
 					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR, RelationTypes.DECLARES_FIELD,
 					TypeRelations.IS_SUBTYPE_EXTENDS, TypeRelations.IS_SUBTYPE_IMPLEMENTS))
 				r.delete();
@@ -70,7 +71,7 @@ public class DefinitionCache<TKEY> {
 			// System.out.println("TYPE DEC LIST AFTER"+typeDecNodeList.size());
 			// typeDecNodeList.forEach(n -> System.out.print(n.getId() + ", "));
 			// System.out.println();
-			oldClassNode.getRelationships(EdgeDirection.OUTGOING, CDGRelationTypes.USES_TYPE_DEF)
+			oldClassNode.getRelationships(Direction.OUTGOING, CDGRelationTypes.USES_TYPE_DEF)
 					.forEach(usesTypeDecRel ->
 
 			// LOS PAQUETES NO SON DECLARADOS O NO...SIEMPRE SE CREAN...
@@ -97,11 +98,11 @@ public class DefinitionCache<TKEY> {
 
 			// Habria que pasar las relaciones al nuevo type
 			// Igual es más eficiente iterar todas y un if??? con direction
-			for (RelationshipWrapper r : previousNode.getRelationships(EdgeDirection.INCOMING)) {
+			for (RelationshipWrapper r : previousNode.getRelationships(Direction.INCOMING)) {
 				r.getStartNode().createRelationshipTo(v, r.getType());
 				r.delete();
 			}
-			for (RelationshipWrapper r : previousNode.getRelationships(EdgeDirection.OUTGOING)) {
+			for (RelationshipWrapper r : previousNode.getRelationships(Direction.OUTGOING)) {
 				v.createRelationshipTo(r.getEndNode(), r.getType());
 				r.delete();
 			}

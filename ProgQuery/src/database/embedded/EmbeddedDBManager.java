@@ -1,29 +1,40 @@
 package database.embedded;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 
+import database.DatabaseFachade;
+import database.EmbeddedGGDBServiceInsertion;
+
+import org.neo4j.configuration.GraphDatabaseSettings;
+import org.neo4j.dbms.api.DatabaseManagementService;
+import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 
 public class EmbeddedDBManager {
-	private static final String DEFAULT_DB_PATH = "./neo4j/data/ProgQuery.db";
-
+	public static void main(String[] args) {
+		   DatabaseFachade
+			.init( new EmbeddedGGDBServiceInsertion());
+		   DatabaseFachade.CURRENT_INSERTION_STRATEGY.endAnalysis();
+	   }
+	private static final String DEFAULT_DB_PATH = "neo4j/data/ProgQuery.db";
+	public static DatabaseManagementService manager;
 	public static GraphDatabaseService getNewEmbeddedDBService() {
-		return new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(new File(DEFAULT_DB_PATH))
-				.setConfig(GraphDatabaseSettings.node_keys_indexable, "nodeType")
-				.setConfig(GraphDatabaseSettings.relationship_keys_indexable, "typeKind")
-				.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
-				.setConfig(GraphDatabaseSettings.relationship_auto_indexing, "true").newGraphDatabase();
+		return getNewEmbeddedDBService(DEFAULT_DB_PATH);
 	}
 
 	public static GraphDatabaseService getNewEmbeddedDBService(String dbPath) {
-		return new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(new File(dbPath))
-				.setConfig(GraphDatabaseSettings.node_keys_indexable, "nodeType")
-				.setConfig(GraphDatabaseSettings.relationship_keys_indexable, "typeKind")
-				.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
-				.setConfig(GraphDatabaseSettings.relationship_auto_indexing, "true").newGraphDatabase();
+		String[] dirsInPath = dbPath.split("/");
+		String dbName = dirsInPath[dirsInPath.length - 1];
+		manager = new DatabaseManagementServiceBuilder(
+				Paths.get(dbPath.substring(0, dbPath.length() - dbName.length()))).build();
+		GraphDatabaseService graphDb = manager.database(dbName);
+		registerShutdownHook(manager);
+		return graphDb;
+//				.setConfig(GraphDatabaseSettings.node_keys_indexable, "nodeType")
+//				.setConfig(GraphDatabaseSettings.relationship_keys_indexable, "typeKind")
+//				.setConfig(GraphDatabaseSettings.node_auto_indexing, "true")
+//				.setConfig(GraphDatabaseSettings.relationship_auto_indexing, "true").newGraphDatabase();
 	}
 
 	public static void setDB(GraphDatabaseService db) {
@@ -32,4 +43,15 @@ public class EmbeddedDBManager {
 
 	private static GraphDatabaseService graphDb;
 
+	private static void registerShutdownHook(final DatabaseManagementService managementService) {
+		// Registers a shutdown hook for the Neo4j instance so that it
+		// shuts down nicely when the VM exits (even if you "Ctrl-C" the
+		// running application).
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				managementService.shutdown();
+			}
+		});
+	}
 }

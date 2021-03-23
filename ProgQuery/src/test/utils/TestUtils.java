@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 
 import database.nodes.NodeTypes;
 import database.nodes.NodeUtils;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.RelationTypes;
 import database.relations.RelationTypesInterface;
 import node_wrappers.NodeWrapper;

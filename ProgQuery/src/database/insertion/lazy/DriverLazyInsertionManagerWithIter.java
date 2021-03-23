@@ -1,49 +1,74 @@
 package database.insertion.lazy;
 
-import static org.neo4j.driver.v1.Values.parameters;
-
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.neo4j.driver.v1.AuthTokens;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.Transaction;
-import org.neo4j.driver.v1.TransactionWork;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.SessionConfig;
+import org.neo4j.driver.Transaction;
+import org.neo4j.driver.TransactionWork;
 
 import node_wrappers.NodeWrapper;
 import utils.dataTransferClasses.Pair;
+import static org.neo4j.driver.Values.parameters;
 
-public class LazyInsertionManagerMultipleTrans {
-	private static final int REPETITIONS = 1;
+public class DriverLazyInsertionManagerWithIter {
+	private static final int REPETITIONS =1 ;
 
-	public static void insertIntoNeo4jServerByDriver(InfoToInsert info, final String SERVER_ADDRESS, final String USER,
-			final String PASS, final int MAX_NODES_PER_TRANSACTION) {
-
-		try (final Driver driver = GraphDatabase.driver(SERVER_ADDRESS, AuthTokens.basic(USER, PASS));
+	public static void defaultDBInsertion(InfoToInsert info, String server_address, final String USER,
+			final String PASS, final int MAX_OPERATIONS_PER_TRANSACTION) {
+//		System.out.println("SERVER ADDRESS:\n\"" + server_address + "\"");
+		final String PROTOCOL = "neo4j://";
+		try (final Driver driver = GraphDatabase.driver(PROTOCOL + server_address, AuthTokens.basic(USER, PASS));
 				Session session = driver.session()) {
 
 			final List<Pair<String, Object[]>> nodeInfo = info.getNodeQueriesInfo();
 			// System.out.println("AFTER ANALYSIS " + nodeInfo.size() + " nodes
 			// ");
-			int totalEdges = 0;
+//			int totalEdges = 0;
 			for (int i = 0; i < REPETITIONS; i++) {
-				// System.out.println("ITER " + i);
-				actionByParts(info.nodeSet.size(), MAX_NODES_PER_TRANSACTION, (s, e) -> executeNodesQuery(session,
-						info.nodeSet, nodeInfo, r -> r.list().get(0).values().get(0).asLong(), s, e));
+				 System.out.println("ITER " + i);
+				actionByParts(info.nodeSet.size(), MAX_OPERATIONS_PER_TRANSACTION, (start, end) -> executeNodesQuery(session,
+						info.nodeSet, nodeInfo, r -> r.list().get(0).values().get(0).asLong(), start, end));
 
 				final List<Pair<String, Object[]>> relInfo = info.getRelQueriesInfo();
-				actionByParts(totalEdges = info.relSet.size(), MAX_NODES_PER_TRANSACTION,
-						(s, e) -> executeRelsQuery(session, relInfo, s, e));
+				actionByParts(info.relSet.size(), MAX_OPERATIONS_PER_TRANSACTION,
+						(start, end) -> executeRelsQuery(session, relInfo, start, end));
 			}
 			// System.out.println("AFTER ANALYSIS " + totalEdges + " edges");
-			
+
 		}
 	}
+	public static void insertToSpecificDB(InfoToInsert info, String server_address, final String USER,
+			final String PASS, final int MAX_OPERATIONS_PER_TRANSACTION, String DB_NAME) {
+//		System.out.println("SERVER ADDRESS:\n\"" + server_address + "\"");
+		final String PROTOCOL = "neo4j://";
+		SessionConfig configForDB=SessionConfig.forDatabase(DB_NAME);
+		try (final Driver driver = GraphDatabase.driver(PROTOCOL + server_address, AuthTokens.basic(USER, PASS));
+				Session session = driver.session(configForDB)) {
 
+			final List<Pair<String, Object[]>> nodeInfo = info.getNodeQueriesInfo();
+			// System.out.println("AFTER ANALYSIS " + nodeInfo.size() + " nodes
+			// ");
+//			int totalEdges = 0;
+			for (int i = 0; i < REPETITIONS; i++) {
+				 System.out.println("ITER " + i);
+				actionByParts(info.nodeSet.size(), MAX_OPERATIONS_PER_TRANSACTION, (start, end) -> executeNodesQuery(session,
+						info.nodeSet, nodeInfo, r -> r.list().get(0).values().get(0).asLong(), start, end));
+
+				final List<Pair<String, Object[]>> relInfo = info.getRelQueriesInfo();
+				actionByParts(info.relSet.size(), MAX_OPERATIONS_PER_TRANSACTION,
+						(start, end) -> executeRelsQuery(session, relInfo, start, end));
+			}
+			// System.out.println("AFTER ANALYSIS " + totalEdges + " edges");
+
+		}
+	}
 	// private interface ActionByParts<T> {
 	// void accept(T t, int start, int end);
 	// }
@@ -67,8 +92,8 @@ public class LazyInsertionManagerMultipleTrans {
 
 	/*
 	 * private static <T> T executeQuery(String query, Session session,
-	 * Function<StatementResult, T> resultF) { return
-	 * session.writeTransaction(new TransactionWork<T>() {
+	 * Function<StatementResult, T> resultF) { return session.writeTransaction(new
+	 * TransactionWork<T>() {
 	 * 
 	 * @Override public T execute(Transaction tx) { // tx.
 	 * 
@@ -80,22 +105,22 @@ public class LazyInsertionManagerMultipleTrans {
 	 * }); }
 	 */
 
-	private static <T> T executeQuery(String query, Session session, Function<StatementResult, T> resultF) {
-		return session.writeTransaction(new TransactionWork<T>() {
-
-			@Override
-			public T execute(Transaction tx) {
-				// tx.
-
-				StatementResult result = tx.run(query);
-				// result.list().get(0).asMap().entrySet()
-				// .forEach(e -> System.out.println(e.getKey() + "," +
-				// e.getValue()));
-				return resultF.apply(result);
-			}
-
-		});
-	}
+//	private static <T> T executeQuery(String query, Session session, Function<StatementResult, T> resultF) {
+//		return session.writeTransaction(new TransactionWork<T>() {
+//
+//			@Override
+//			public T execute(Transaction tx) {
+//				// tx.
+//
+//				StatementResult result = tx.run(query);
+//				// result.list().get(0).asMap().entrySet()
+//				// .forEach(e -> System.out.println(e.getKey() + "," +
+//				// e.getValue()));
+//				return resultF.apply(result);
+//			}
+//
+//		});
+//	}
 	//
 	// private static <T> List<T> executeNodesQuery(Session session,
 	// List<NodeWrapper> nodes,
@@ -119,7 +144,7 @@ public class LazyInsertionManagerMultipleTrans {
 	// }
 
 	private static Void executeNodesQuery(Session session, List<NodeWrapper> nodes,
-			List<Pair<String, Object[]>> nodeQueries, Function<StatementResult, Long> resultF, int start, int end) {
+			List<Pair<String, Object[]>> nodeQueries, Function<Result, Long> resultF, int start, int end) {
 		return session.writeTransaction(new TransactionWork<Void>() {
 
 			@Override

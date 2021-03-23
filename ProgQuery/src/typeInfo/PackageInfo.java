@@ -17,17 +17,11 @@ import utils.dataTransferClasses.Pair;
 public class PackageInfo {
 	private static NodeWrapper currentProgram;
 
-	public static void createCurrentProgram(String id) {
+	public static void createCurrentProgram(String programID, String userID) {
 		currentProgram = DatabaseFachade.CURRENT_DB_FACHADE.createNodeWithoutExplicitTree(NodeTypes.PROGRAM);
-		currentProgram.setProperty("ID", id);
-		// SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at'
-		// HH:mm:ss z");
-		// java.time.LocalDateTime currentDate=LocalDateTime.now();
-		// DateValue currentDate = new DateValue(LocalDate.now());
-		// Date currentDate = Date.from(Instant.now());
-		// ZonedDateTime currentDate = ZonedDateTime.now();
+		currentProgram.setProperty("ID", programID);
+		currentProgram.setProperty("USER_ID", userID);
 		currentProgram.setProperty("timestamp", ZonedDateTime.now().toString());
-		// System.out.println(formatter.format(date));
 
 	}
 
@@ -100,23 +94,13 @@ public class PackageInfo {
 	public void createStoredPackageDeps() {
 		for (Pair<Symbol, Symbol> packageDep : dependenciesSet) {
 			NodeWrapper dependencyPack = packageCache.get(packageDep.getSecond());
-			// System.out.println("CREATING REL:\n" + packageDep.getFirst());
-			// System.out.println(packageDep.getSecond());
-			// System.out.println((Boolean)
-			// dependencyPack.getProperty("isDeclared") ?
-			// CDGRelationTypes.DEPENDS_ON_PACKAGE
-			// : CDGRelationTypes.DEPENDS_ON_NON_DECLARED_PACKAGE);
-			// packageCache.get(packageDep.getFirst()).createRelationshipTo(dependencyPack,
-			// (Boolean) dependencyPack.getProperty("isDeclared") ?
-			// CDGRelationTypes.DEPENDS_ON_PACKAGE
-			// : CDGRelationTypes.DEPENDS_ON_NON_DECLARED_PACKAGE);
 			if ((Boolean) dependencyPack.getProperty("isDeclared"))
 				packageCache.get(packageDep.getFirst()).createRelationshipTo(dependencyPack,
 						CDGRelationTypes.DEPENDS_ON_PACKAGE);
 			else
 				packageCache.get(packageDep.getFirst()).createRelationshipTo(dependencyPack,
 						CDGRelationTypes.DEPENDS_ON_NON_DECLARED_PACKAGE);
-				
+
 		}
 	}
 }

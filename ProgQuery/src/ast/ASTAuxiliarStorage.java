@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import org.neo4j.graphdb.Direction;
+
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.MemberSelectTree;
@@ -21,7 +23,6 @@ import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import com.sun.tools.javac.code.Type;
 
 import database.nodes.NodeTypes;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.CFGRelationTypes;
 import database.relations.CGRelationTypes;
 import database.relations.PDGRelationTypes;
@@ -145,17 +146,15 @@ public class ASTAuxiliarStorage {
 					for (Type excType : methodSymbol.getThrownTypes()) {
 						if (!typesToRelations.containsKey(excType))
 							typesToRelations.put(excType, new ArrayList<PartialRelation<CFGRelationTypes>>());
-						
-						String methodName=methodSymbol.owner.getQualifiedName() +":"+methodSymbol.toString();
-						if(methodSymbol.isConstructor())
-							methodName=	methodName.replaceAll(":(\\w)+\\(", ":<init>(");
-						
+
+						String methodName = methodSymbol.owner.getQualifiedName() + ":" + methodSymbol.toString();
+						if (methodSymbol.isConstructor())
+							methodName = methodName.replaceAll(":(\\w)+\\(", ":<init>(");
+
 						typesToRelations.get(excType)
 								.add(new PartialRelationWithProperties<CFGRelationTypes>(
 										invocationsInStatement.getFirst(), CFGRelationTypes.CFG_MAY_THROW,
-										Pair.create("methodName",
-												WrapperUtils.stringToNeo4jQueryString(
-														methodName)),
+										Pair.create("methodName", WrapperUtils.stringToNeo4jQueryString(methodName)),
 										Pair.create("exceptionType",
 												WrapperUtils.stringToNeo4jQueryString(excType.toString()))));
 					}
@@ -180,7 +179,7 @@ public class ASTAuxiliarStorage {
 
 		methodInfo.values().forEach(mInfo -> {
 			getDecs.setInfoForMethod(mInfo);
-			Iterable<RelationshipWrapper> callRels = mInfo.methodNode.getRelationships(EdgeDirection.OUTGOING,
+			Iterable<RelationshipWrapper> callRels = mInfo.methodNode.getRelationships(Direction.OUTGOING,
 					CGRelationTypes.CALLS);
 			methodDecToCalls.put(mInfo.methodNode, callRels);
 			for (RelationshipWrapper callRel : callRels) {
@@ -195,7 +194,13 @@ public class ASTAuxiliarStorage {
 		// Interprocedural analysis
 		InterproceduralPDG pdgAnalysis = new InterproceduralPDG(methodDecToCalls, getDecs.getInvocationsMayModifyVars(),
 				methodInfo);
-		methodInfo.values().forEach(mInfo -> pdgAnalysis.doInterproceduralPDGAnalysis(mInfo));
+		methodInfo.values().forEach(mInfo ->
+//		{
+//			System.out.println("INTERPRCEDURAL FoR ");
+		pdgAnalysis.doInterproceduralPDGAnalysis(mInfo)
+//			;}
+
+		);
 
 	}
 
@@ -204,7 +209,7 @@ public class ASTAuxiliarStorage {
 		Set<NodeWrapper> calleeList = callGraph.get(caller);
 		if (calleeList == null)
 			callGraph.put(caller, calleeList = new HashSet<NodeWrapper>());
-		for (RelationshipWrapper r : callRel.getEndNode().getRelationships(EdgeDirection.OUTGOING,
+		for (RelationshipWrapper r : callRel.getEndNode().getRelationships(Direction.OUTGOING,
 				CGRelationTypes.REFERS_TO, CGRelationTypes.MAY_REFER_TO))
 			calleeList.add(r.getEndNode());
 	}
@@ -223,7 +228,7 @@ public class ASTAuxiliarStorage {
 
 		for (NodeWrapper accMethod : accesibleMethods.values())
 			addAllOverriders(newAccessibleMethods,
-					accMethod.getRelationships(EdgeDirection.INCOMING, TypeRelations.OVERRIDES));
+					accMethod.getRelationships(Direction.INCOMING, TypeRelations.OVERRIDES));
 
 		for (NodeWrapper accMethod : new HashSet<>(newAccessibleMethods))
 			addAllCallees(newAccessibleMethods, callGraph.get(accMethod));
@@ -268,7 +273,7 @@ public class ASTAuxiliarStorage {
 			if (!newNodes.contains(ovRel.getStartNode())) {
 				newNodes.add(ovRel.getStartNode());
 				addAllCallees(newNodes,
-						ovRel.getStartNode().getRelationships(EdgeDirection.INCOMING, TypeRelations.OVERRIDES).stream()
+						ovRel.getStartNode().getRelationships(Direction.INCOMING, TypeRelations.OVERRIDES).stream()
 								.map(r -> r.getStartNode()).collect(Collectors.toSet()));
 			}
 

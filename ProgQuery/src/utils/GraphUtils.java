@@ -116,7 +116,7 @@ public class GraphUtils {
 	public static void attachType(NodeWrapper node, Type type, ASTAuxiliarStorage ast) {
 //System.out.println(type);
 //System.out.println(NodeUtils.nodeToString(node));
-//		attachTypeDirect(node, type, type.toString(), type.getKind().toString(),ast);
+		attachTypeDirect(node, type, type.toString(), type.getKind().toString(),ast);
 	}
 
 	public static void attachTypeDirect(NodeWrapper node, ExpressionTree exp, String actualType, String typeKind, ASTAuxiliarStorage ast) {

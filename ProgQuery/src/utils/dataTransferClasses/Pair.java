@@ -1,14 +1,7 @@
 package utils.dataTransferClasses;
 
-import database.querys.cypherWrapper.Cardinalidad;
-import database.querys.cypherWrapper.Edge;
-import database.querys.cypherWrapper.EdgeDirection;
-import database.querys.cypherWrapper.EdgeImpl;
-import database.querys.cypherWrapper.MatchElement;
-import database.querys.cypherWrapper.NodeVar;
 import database.relations.PartialRelation;
 import database.relations.RelationTypes;
-import database.relations.RelationTypesInterface;
 import database.relations.SimplePartialRelation;
 import node_wrappers.NodeWrapper;
 
@@ -48,23 +41,7 @@ public class Pair<X, Y> {
 		return Pair.create(rel, null);
 	}
 
-	public static Pair<Edge, database.querys.cypherWrapper.MatchElement> createP(String nodeName,
-			RelationTypesInterface... rel) {
-		return Pair.create(new EdgeImpl(rel), new NodeVar(nodeName));
-	}
 
-	public static Pair<Edge, database.querys.cypherWrapper.MatchElement> createP(String nodeName, Cardinalidad c,
-			RelationTypesInterface... rel) {
-		return Pair.create(new EdgeImpl(c, rel), new NodeVar(nodeName));
-	}
-	public static Pair<Edge, database.querys.cypherWrapper.MatchElement> createP(MatchElement node,
-			RelationTypesInterface... rel) {
-		return Pair.create(new EdgeImpl(rel), node);
-	}
-	public static Pair<Edge, database.querys.cypherWrapper.MatchElement> createInv(String nodeName,
-			RelationTypesInterface... rel) {
-		return Pair.create(new EdgeImpl(EdgeDirection.OUTGOING, rel), new NodeVar(nodeName));
-	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -94,6 +71,11 @@ public class Pair<X, Y> {
 		} else if (!y.equals(other.y))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Pair [x=" + x + ", y=" + y + "]";
 	}
 
 }

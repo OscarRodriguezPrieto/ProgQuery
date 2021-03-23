@@ -6,11 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
+import java.util.Set; 
 import java.util.function.Consumer;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
+
+import org.neo4j.graphdb.Direction;
 
 import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.IdentifierTree;
@@ -27,7 +29,6 @@ import ast.ASTAuxiliarStorage;
 import cache.DefinitionCache;
 import database.DatabaseFachade;
 import database.nodes.NodeTypes;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.PDGRelationTypes;
 import database.relations.PartialRelation;
 import database.relations.RelationTypes;
@@ -158,39 +159,38 @@ public class PDGProcessing {
 	}
 
 	/*
-	 * private void addAssignmentToThisMethod(NodeWrapper paramDec,
-	 * PDGRelationTypes relType, NodeWrapper assign, MethodState methodState,
-	 * boolean isInstanceAssign) { System.out.println(
+	 * private void addAssignmentToThisMethod(NodeWrapper paramDec, PDGRelationTypes
+	 * relType, NodeWrapper assign, MethodState methodState, boolean
+	 * isInstanceAssign) { System.out.println(
 	 * "\nANALYSING ASSIGN FOR METHOD AND THIS REL " +
 	 * methodState.lastMethodDecVisited.getProperty("name") +
 	 * methodState.lastMethodDecVisited.getProperty("actualType") + " " +
 	 * methodState.lastMethodDecVisited.getProperty("lineNumber"));
 	 * System.out.println("CURRENT THIS REL " +
-	 * methodState.thisRelationsOnThisMethod); System.out.println("ASSIGNMENT "
-	 * + assign.getId() + " " + assign.getProperty("lineNumber"));
-	 * System.out.println("RELTYPE:\t" + relType);
-	 * System.out.println("IS_THIS:\t" + paramDec.hasLabel(NodeTypes.THIS_REF));
-	 * System.out.println("PARAM DEC:\n" + NodeUtils.nodeToString(paramDec));
+	 * methodState.thisRelationsOnThisMethod); System.out.println("ASSIGNMENT " +
+	 * assign.getId() + " " + assign.getProperty("lineNumber"));
+	 * System.out.println("RELTYPE:\t" + relType); System.out.println("IS_THIS:\t" +
+	 * paramDec.hasLabel(NodeTypes.THIS_REF)); System.out.println("PARAM DEC:\n" +
+	 * NodeUtils.nodeToString(paramDec));
 	 * 
 	 * if (relType == PDGRelationTypes.USED_BY) return;
 	 * 
-	 * // With a strategy pattern I can skip this comprobation after register a
-	 * // state change on this if (paramDec.hasLabel(NodeTypes.THIS_REF) &&
-	 * methodState.thisRelationsOnThisMethod !=
-	 * PDGRelationTypes.STATE_MODIFIED_BY) {
-	 * System.out.println("CHANGING CURRENT " + ((boolean)
-	 * assign.getProperty("mustBeExecuted") ? PDGRelationTypes.STATE_MODIFIED_BY
-	 * : PDGRelationTypes.STATE_MAY_BE_MODIFIED));
+	 * // With a strategy pattern I can skip this comprobation after register a //
+	 * state change on this if (paramDec.hasLabel(NodeTypes.THIS_REF) &&
+	 * methodState.thisRelationsOnThisMethod != PDGRelationTypes.STATE_MODIFIED_BY)
+	 * { System.out.println("CHANGING CURRENT " + ((boolean)
+	 * assign.getProperty("mustBeExecuted") ? PDGRelationTypes.STATE_MODIFIED_BY :
+	 * PDGRelationTypes.STATE_MAY_BE_MODIFIED));
 	 * methodState.thisRelationsOnThisMethod = (boolean)
-	 * assign.getProperty("mustBeExecuted") ? PDGRelationTypes.STATE_MODIFIED_BY
-	 * : PDGRelationTypes.STATE_MAY_BE_MODIFIED; return; }
+	 * assign.getProperty("mustBeExecuted") ? PDGRelationTypes.STATE_MODIFIED_BY :
+	 * PDGRelationTypes.STATE_MAY_BE_MODIFIED; return; }
 	 * 
 	 * if (!paramDec.hasLabel(NodeTypes.PARAMETER_DEC)) return; if
 	 * (!methodState.paramsToOrderedAssignments.containsKey(paramDec))
-	 * methodState.paramsToOrderedAssignments.put(paramDec, new
-	 * ArrayList<Pair<Node, PDGRelationTypes>>());
-	 * methodState.paramsToOrderedAssignments.get(paramDec).add(Pair.create(
-	 * assign, relType)); }
+	 * methodState.paramsToOrderedAssignments.put(paramDec, new ArrayList<Pair<Node,
+	 * PDGRelationTypes>>());
+	 * methodState.paramsToOrderedAssignments.get(paramDec).add(Pair.create( assign,
+	 * relType)); }
 	 */
 
 	private void addRels(Symbol s, NodeWrapper node, Object ASTVisitorParam, NodeWrapper currentClassDec,
@@ -239,26 +239,26 @@ public class PDGProcessing {
 			// {
 			// System.out.println("DEC:\n" + NodeUtils.nodeToString(decNode));
 			for (PDGRelationTypes pdgRel : (PDGRelationTypes[]) ASTVisitorParam)
-			// {
-			// System.out.println(s + " " + pdgRel);
-			addUnknownRel(list, decNode, node, pdgRel, methodState, isIdent, currentClassDec, isAttr, isThis, isInstance, isStatic);
+				// {
+				// System.out.println(s + " " + pdgRel);
+				addUnknownRel(list, decNode, node, pdgRel, methodState, isIdent, currentClassDec, isAttr, isThis,
+						isInstance, isStatic);
 
 		// }
 		// }
 		/*
 		 * else
 		 * 
-		 * for (PDGRelationTypes pdgRel : (PDGRelationTypes[]) ASTVisitorParam)
-		 * { addRel(list, decNode, node, pdgRel, methodState); if (pdgRel !=
-		 * PDGRelationTypes.USED_BY) { // SI LA RELACIÓN NO ES USED BY---> HAY
-		 * QUE AÑADIR PRIMERO // LA RELACIóN STATE_MOD_BY (SOLO LAS the this
-		 * implicito, // para no duplicar) y la de // metodo, sacar de donde
-		 * coño esta super acoplada.... // preguntando lo mismo..., // donde se
-		 * está añadiendo la otra?? la de A a; // a.a=2; en el ast visitor if
-		 * (lastAssignmentInfo.isInstanceField &&
-		 * !node.hasLabel(NodeTypes.THIS_REF)) addRelWithoutIdentification(list,
-		 * implicitThisNode, lastAssignmentInfo,
-		 * PDGRelationTypes.STATE_MODIFIED_BY, methodState); } }
+		 * for (PDGRelationTypes pdgRel : (PDGRelationTypes[]) ASTVisitorParam) {
+		 * addRel(list, decNode, node, pdgRel, methodState); if (pdgRel !=
+		 * PDGRelationTypes.USED_BY) { // SI LA RELACIÓN NO ES USED BY---> HAY QUE
+		 * AÑADIR PRIMERO // LA RELACIóN STATE_MOD_BY (SOLO LAS the this implicito, //
+		 * para no duplicar) y la de // metodo, sacar de donde coño esta super
+		 * acoplada.... // preguntando lo mismo..., // donde se está añadiendo la otra??
+		 * la de A a; // a.a=2; en el ast visitor if (lastAssignmentInfo.isInstanceField
+		 * && !node.hasLabel(NodeTypes.THIS_REF)) addRelWithoutIdentification(list,
+		 * implicitThisNode, lastAssignmentInfo, PDGRelationTypes.STATE_MODIFIED_BY,
+		 * methodState); } }
 		 */
 	}
 
@@ -316,7 +316,7 @@ public class PDGProcessing {
 				(newRel) -> methodState.paramsToPDGRelations.put(paramDec, newRel));
 	}
 
-	private boolean analysisOnLeftAssigns(NodeWrapper concrete, NodeWrapper dec, PDGRelationTypes rel, boolean isIdent,
+	private boolean mutationAnalysis(NodeWrapper concrete, NodeWrapper dec, PDGRelationTypes rel, boolean isIdent,
 			MethodState methodState, NodeWrapper currentClassDec, boolean isOwnAccess, boolean isAttr, boolean isThis,
 			boolean isStatic) {
 
@@ -334,13 +334,14 @@ public class PDGProcessing {
 				return true;
 			}
 
-			else if (dec.hasLabel(NodeTypes.PARAMETER_DEF)) {
+			else if (dec.hasLabel(NodeTypes.PARAMETER_DEF) && !dec
+					.hasRelationship(RelationTypes.LAMBDA_EXPRESSION_PARAMETERS, Direction.INCOMING) ) {
 				if (rel == PDGRelationTypes.STATE_MODIFIED_BY) {
 					// System.out.println("ANALIZING STATE MOD BY of PARAM
 					// \n" + NodeUtils.nodeToString(dec));
 					// System.out.println(parametersPreviouslyModified.contains(dec));
 					// System.out.println(parametersMaybePrevioslyModified.contains(dec));
-					if (!parametersPreviouslyModified.contains(dec)) {
+					if (!parametersPreviouslyModified.contains(dec)) { 
 						if (parametersMaybePrevioslyModified.contains(dec))
 							addNewPDGRelationFromParamToMethod(concrete, dec, methodState, false);
 						else
@@ -360,18 +361,18 @@ public class PDGProcessing {
 
 		if (dec == null)
 
-			toDoListForSymbol.add(decNode -> executeAnalysisOnLeftAndCreateRels(concrete, decNode, rel, isIdent,
+			toDoListForSymbol.add(decNode -> createRelsAndMutationAnalysis(concrete, decNode, rel, isIdent,
 					currentMethodState, toDoListForSymbol, currentClassDec, isAttr, isThis, isInstanceRel, isStatic));
 		else
-			executeAnalysisOnLeftAndCreateRels(concrete, dec, rel, isIdent, currentMethodState, toDoListForSymbol,
+			createRelsAndMutationAnalysis(concrete, dec, rel, isIdent, currentMethodState, toDoListForSymbol,
 					currentClassDec, isAttr, isThis, isInstanceRel, isStatic);
 	}
 
-	private void executeAnalysisOnLeftAndCreateRels(NodeWrapper concrete, NodeWrapper dec, PDGRelationTypes rel,
+	private void createRelsAndMutationAnalysis(NodeWrapper concrete, NodeWrapper dec, PDGRelationTypes rel,
 			boolean isIdent, MethodState currentMethodState, List<Consumer<NodeWrapper>> toDoListForSymbol,
 			NodeWrapper currentClassDec, boolean isAttr, boolean isThis, boolean isOwnAccess, boolean isStatic) {
-		analysisOnLeftAssigns(concrete, dec, rel, isIdent, currentMethodState, currentClassDec, isOwnAccess, isAttr,
-				isThis, isStatic);
+		mutationAnalysis(concrete, dec, rel, isIdent, currentMethodState, currentClassDec, isOwnAccess, isAttr, isThis,
+				isStatic);
 		createRel(dec, concrete, rel, isAttr || isThis, isOwnAccess, isStatic);
 		currentMethodState.identificationForLeftAssignExprs.put(concrete, dec);
 	}
@@ -425,9 +426,10 @@ public class PDGProcessing {
 				|| identSymbol.getKind() == ElementKind.ANNOTATION_TYPE)
 			return true;
 		NodeWrapper decNode = definitionTable.get(identSymbol);
-		boolean isThis = identSymbol.name.contentEquals("this") || identSymbol.name.contentEquals("super"),
-				isInstance = decNode == null || decNode.hasLabel(NodeTypes.ATTR_DEF)
-						|| decNode.hasLabel(NodeTypes.THIS_REF);
+		boolean isThis = identSymbol.name.contentEquals("this") || identSymbol.name.contentEquals("super"), isInstance =
+
+				(decNode == null || decNode.hasLabel(NodeTypes.ATTR_DEF) || decNode.hasLabel(NodeTypes.THIS_REF))
+						&& !identSymbol.isStatic();
 
 		// System.out.println(identifierTree);
 		// System.out.println(identifierNode.getProperty("lineNumber"));
@@ -445,7 +447,7 @@ public class PDGProcessing {
 
 	private static RelationshipWrapper getThisRel(NodeWrapper classDecNode) {
 		// System.out.println(classDecNode);
-		return classDecNode.getSingleRelationship(EdgeDirection.OUTGOING, PDGRelationTypes.HAS_THIS_REFERENCE);
+		return classDecNode.getSingleRelationship(Direction.OUTGOING, PDGRelationTypes.HAS_THIS_REFERENCE);
 	}
 
 	private static RelationshipWrapper getOrCreateThisNode(NodeWrapper classDecNode) {
@@ -490,6 +492,7 @@ public class PDGProcessing {
 	public void relationOnFieldAccess(MemberSelectTree memberSelectTree, NodeWrapper memberSelectNode,
 			Pair<PartialRelation<RelationTypes>, Object> t, MethodState methodState, NodeWrapper currentClassDec,
 			boolean isInstance) {
+//		System.out.println("FIELD ACCESS :\n" + memberSelectTree + "IS_INSTANCE:" + isInstance);
 		// This takes into account the case of Class.this inside of a inner
 		// class
 		// If you add C.this.attr, definition for C identifier is never found

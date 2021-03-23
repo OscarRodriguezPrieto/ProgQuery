@@ -1,5 +1,7 @@
 package database;
 
+import org.neo4j.graphdb.Transaction;
+
 import database.nodes.NodeTypes;
 import node_wrappers.NodeWrapper;
 

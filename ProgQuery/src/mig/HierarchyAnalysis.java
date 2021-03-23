@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import database.querys.cypherWrapper.EdgeDirection;
+import org.neo4j.graphdb.Direction;
+
 import database.relations.CGRelationTypes;
 import database.relations.RelationTypes;
 import database.relations.TypeRelations;
@@ -41,7 +42,7 @@ public class HierarchyAnalysis {
 //			System.out.println("REL  " + typeDec.getProperty("fullyQualifiedName") + " WITH "
 //					+ subTypeRel.getStartNode().getProperty("fullyQualifiedName"));
 
-		for (RelationshipWrapper subTypeRel : typeDec.getRelationships(EdgeDirection.INCOMING,
+		for (RelationshipWrapper subTypeRel : typeDec.getRelationships(Direction.INCOMING,
 				TypeRelations.IS_SUBTYPE_EXTENDS, TypeRelations.IS_SUBTYPE_IMPLEMENTS)) {
 			NodeWrapper subType = subTypeRel.getStartNode();
 			// System.out.println("subtype " +
@@ -73,9 +74,9 @@ public class HierarchyAnalysis {
 		}
 		// AQuí tenemos el mapa subtypesToLastOverrider lleno con la info de los
 		// subtypes
-		Iterable<RelationshipWrapper> declaredFields = typeDec.getRelationships(EdgeDirection.OUTGOING,
+		Iterable<RelationshipWrapper> declaredFields = typeDec.getRelationships(Direction.OUTGOING,
 				RelationTypes.DECLARES_FIELD),
-				declaredMethods = typeDec.getRelationships(EdgeDirection.OUTGOING, RelationTypes.DECLARES_METHOD);
+				declaredMethods = typeDec.getRelationships(Direction.OUTGOING, RelationTypes.DECLARES_METHOD);
 		for (Entry<NodeWrapper, Map<String, NodeWrapper>> subTypeInfo : inheritedInfo.subtypesToLastOverrider
 				.entrySet()) {
 //			System.out.println("FIELDS OF "+typeDec + " TO "+ subTypeInfo.getKey());
@@ -142,7 +143,7 @@ public class HierarchyAnalysis {
 			Set<NodeWrapper> overriderMethods = inheritedInfo.transitiveOverridersMethods.get(typedName);
 			boolean isAbstract = (boolean) declaredMethod.getProperty("isAbstract");
 
-			Iterable<RelationshipWrapper> invocationRels = declaredMethod.getRelationships(EdgeDirection.INCOMING,
+			Iterable<RelationshipWrapper> invocationRels = declaredMethod.getRelationships(Direction.INCOMING,
 					CGRelationTypes.REFERS_TO);
 			if (overriderMethods == null)
 				inheritedInfo.transitiveOverridersMethods.put(typedName, overriderMethods = new HashSet<>());

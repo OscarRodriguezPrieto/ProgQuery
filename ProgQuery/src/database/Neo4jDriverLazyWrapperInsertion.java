@@ -1,14 +1,14 @@
 package database;
 
 import database.insertion.lazy.InfoToInsert;
-import database.insertion.lazy.LazyInsertionManagerMultipleTrans;
+import database.insertion.lazy.DriverLazyInsertionManagerWithIter;
 import database.nodes.NodeTypes;
 import node_wrappers.Neo4jLazyServerDriverNode;
 import node_wrappers.NodeWrapper;
 
 public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
-	private final int MAX_NODES_PER_TRANSACTION;
-	private final String ADDRESS, USER, PASS;
+	private final int MAX_OPERATIONS_PER_TRANSACTION;
+	private final String ADDRESS, USER, PASS, DB_NAME;
 
 	private static final int DEFAULT_MAX = 80_000;
 
@@ -22,12 +22,14 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 	}
 
 	public Neo4jDriverLazyWrapperInsertion(int maxNodes, String connectionString) {
+
 		super();
-		MAX_NODES_PER_TRANSACTION = maxNodes;
+		MAX_OPERATIONS_PER_TRANSACTION = maxNodes;
 		String[] connectionData = connectionString.split(";");
 		ADDRESS = connectionData[2];
 		USER = connectionData[0];
 		PASS = connectionData[1];
+		DB_NAME = connectionData.length == 4 ? connectionData[3] : null;
 		// System.out.println("SERVER " + maxNodes + " " + address);
 	}
 
@@ -53,8 +55,13 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 
 	@Override
 	public void endAnalysis() {
-		LazyInsertionManagerMultipleTrans.insertIntoNeo4jServerByDriver(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER,
-				PASS, MAX_NODES_PER_TRANSACTION);
+		if (DB_NAME == null)
+			DriverLazyInsertionManagerWithIter.defaultDBInsertion(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER, PASS,
+					MAX_OPERATIONS_PER_TRANSACTION);
+		else
+
+			DriverLazyInsertionManagerWithIter.insertToSpecificDB(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER, PASS,
+					MAX_OPERATIONS_PER_TRANSACTION, DB_NAME);
 
 	}
 

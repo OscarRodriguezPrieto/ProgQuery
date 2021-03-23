@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.neo4j.graphdb.Direction;
+
 import database.nodes.NodeTypes;
-import database.querys.cypherWrapper.EdgeDirection;
 import database.relations.PDGRelationTypes;
 import database.relations.RelationTypes;
 import node_wrappers.NodeWrapper;
@@ -53,7 +54,8 @@ public class GetDeclarationFromExpression {
 												: n.hasLabel(NodeTypes.TYPE_CAST)
 														? scanAPart(n, RelationTypes.CAST_ENCLOSES)
 														: n.hasLabel(NodeTypes.CONDITIONAL_EXPRESSION)
-																? scanConditionalExpression(n) : unknownScan(n);
+																? scanConditionalExpression(n)
+																: unknownScan(n);
 
 	}
 
@@ -72,7 +74,7 @@ public class GetDeclarationFromExpression {
 		// NodeUtils.nodeToString(identOrMemberSel));
 		NodeWrapper decNode = identificationForLeftAssignIdents.get(identOrMemberSel);
 		if (decNode == null)
-			if (identOrMemberSel.hasRelationship(PDGRelationTypes.USED_BY, EdgeDirection.INCOMING))
+			if (identOrMemberSel.hasRelationship(PDGRelationTypes.USED_BY, Direction.INCOMING))
 				// System.out.println("NOT PREV IDENT");
 				// System.out.println(
 				// identOrMemberSel.hasRelationship(PDGRelationTypes.USED_BY,
@@ -84,12 +86,12 @@ public class GetDeclarationFromExpression {
 				// identOrMemberSel.getSingleRelationship(PDGRelationTypes.USED_BY,
 				// Direction.INCOMING)
 				// .getStartNode()));
-				return identOrMemberSel.getSingleRelationship(EdgeDirection.INCOMING, PDGRelationTypes.USED_BY)
+				return identOrMemberSel.getSingleRelationship(Direction.INCOMING, PDGRelationTypes.USED_BY)
 						.getStartNode();
 			else {
 				// System.out.println("INV CANDIDATE");
 				RelationshipWrapper methodInvocationRelIfExists = identOrMemberSel
-						.getSingleRelationship(EdgeDirection.INCOMING, RelationTypes.METHODINVOCATION_METHOD_SELECT);
+						.getSingleRelationship(Direction.INCOMING, RelationTypes.METHODINVOCATION_METHOD_SELECT);
 				if (methodInvocationRelIfExists == null || identOrMemberSel.hasLabel(NodeTypes.MEMBER_SELECTION)) {
 					// System.out.println("NULL FUCK OTHER:");
 					// System.out.println(identOrMemberSel
@@ -119,10 +121,12 @@ public class GetDeclarationFromExpression {
 		NodeWrapper dec = getDecFromExp(memberSel);
 		if (dec != null)
 			defsToTheLeft.getFirst()
-					.add(new PDGMutatedDecInfoInMethod(defsToTheLeft.getSecond(), defsToTheLeft.getFirst().size() > 0
-							? defsToTheLeft.getFirst().get(0).isOuterMostImplicitThisOrP : IsInstance.NO
-			// SI No hay, entonces es que se encontró una clase (static
-			// member access), luego no es de instancia
+					.add(new PDGMutatedDecInfoInMethod(defsToTheLeft.getSecond(),
+							defsToTheLeft.getFirst().size() > 0
+									? defsToTheLeft.getFirst().get(0).isOuterMostImplicitThisOrP
+									: IsInstance.NO
+							// SI No hay, entonces es que se encontró una clase (static
+							// member access), luego no es de instancia
 							, dec));
 
 		// MISMO ISMAY, IS_INSTANCE QUE SU HIJO, PERO HAY QUE AÑADIRLE LA
@@ -146,8 +150,7 @@ public class GetDeclarationFromExpression {
 		if (dec != null) {
 			List<PDGMutatedDecInfoInMethod> identInfo = new ArrayList<>();
 			// System.out.println("FOUND DEC\n" + NodeUtils.nodeToString(dec));
-			
-			
+
 			identInfo.add(new PDGMutatedDecInfoInMethod(false,
 					// dec.hasLabel(NodeTypes.ATTR_DEC) ||
 					// dec.hasLabel(NodeTypes.PARAMETER_DEC)
@@ -160,11 +163,12 @@ public class GetDeclarationFromExpression {
 					// identifier.getProperty("name").toString().contentEquals("super")))
 					// ? IsOuterMostLeftImplicitThisOrParam.YES
 					// : IsOuterMostLeftImplicitThisOrParam.NO,
-					dec.hasLabel(NodeTypes.ATTR_DEF) ||
+					dec.hasLabel(NodeTypes.ATTR_DEF) && !(Boolean) dec.getProperty("isStatic") ||
 					// instance method
 							dec.hasLabel(NodeTypes.THIS_REF)
 
-									? IsInstance.YES : IsInstance.NO,
+									? IsInstance.YES
+									: IsInstance.NO,
 					dec));
 			// System.out.println("RETURNING " +
 			// identInfo.get(0).isOuterMostImplicitThisOrP);
@@ -184,10 +188,9 @@ public class GetDeclarationFromExpression {
 	public Pair<List<PDGMutatedDecInfoInMethod>, Boolean> scanConditionalExpression(NodeWrapper conditionalExpr) {
 		List<PDGMutatedDecInfoInMethod> ret = new ArrayList<>();
 		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> retThen = scan(conditionalExpr
-				.getSingleRelationship(EdgeDirection.OUTGOING, RelationTypes.CONDITIONAL_EXPR_THEN).getEndNode()),
+				.getSingleRelationship(Direction.OUTGOING, RelationTypes.CONDITIONAL_EXPR_THEN).getEndNode()),
 				retElse = scan(conditionalExpr
-						.getSingleRelationship(EdgeDirection.OUTGOING, RelationTypes.CONDITIONAL_EXPR_ELSE)
-						.getEndNode());
+						.getSingleRelationship(Direction.OUTGOING, RelationTypes.CONDITIONAL_EXPR_ELSE).getEndNode());
 		ret.addAll(convertMustToMay(retElse));
 		ret.addAll(convertMustToMay(retThen));
 
@@ -200,7 +203,7 @@ public class GetDeclarationFromExpression {
 		// System.out.println("NODE:\n" +
 		// NodeUtils.nodeToString(memberSelection));
 		// System.out.println(r);
-		return scan(memberSelection.getSingleRelationship(EdgeDirection.OUTGOING, r).getEndNode());
+		return scan(memberSelection.getSingleRelationship(Direction.OUTGOING, r).getEndNode());
 	}
 
 	private List<PDGMutatedDecInfoInMethod> convertMustToMay(Pair<List<PDGMutatedDecInfoInMethod>, Boolean> previous) {
@@ -216,13 +219,13 @@ public class GetDeclarationFromExpression {
 	/*
 	 * private Pair<List<PDGMutatedDecInfoInMethod>, IsInstanceExpression>
 	 * getDecsForAReturn(Relationship possibleRet, Map<Integer,
-	 * Pair<Pair<List<Node>, IsInstanceExpression>, Boolean>>
-	 * varDecsInArguments, boolean singleReturn) {
-	 * Pair<List<PDGMutatedDecInfoInMethod>, IsInstanceExpression> ret; if
+	 * Pair<Pair<List<Node>, IsInstanceExpression>, Boolean>> varDecsInArguments,
+	 * boolean singleReturn) { Pair<List<PDGMutatedDecInfoInMethod>,
+	 * IsInstanceExpression> ret; if
 	 * (possibleRet.getEndNode().getProperty("nodeType").toString().
 	 * contentEquals("THIS_REF")) { ret = varDecsInArguments.get(0); return
-	 * singleReturn ? ret : convertMustToMay(ret); } else { // Parameter or part
-	 * of parameter ret = varDecsInArguments.get((int)
+	 * singleReturn ? ret : convertMustToMay(ret); } else { // Parameter or part of
+	 * parameter ret = varDecsInArguments.get((int)
 	 * possibleRet.getProperty("paramIndex")); return singleReturn ? ret :
 	 * convertMustToMay(ret); } }
 	 */
@@ -231,11 +234,10 @@ public class GetDeclarationFromExpression {
 
 		Map<Integer, List<PDGMutatedDecInfoInMethod>> varDecsInArguments = new HashMap<>();
 		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> thisArgRet = scan(methodInvocation
-				.getSingleRelationship(EdgeDirection.OUTGOING, RelationTypes.METHODINVOCATION_METHOD_SELECT)
-				.getEndNode());
+				.getSingleRelationship(Direction.OUTGOING, RelationTypes.METHODINVOCATION_METHOD_SELECT).getEndNode());
 		varDecsInArguments.put(0, thisArgRet.getFirst());
 
-		for (RelationshipWrapper argumentRel : methodInvocation.getRelationships(EdgeDirection.OUTGOING,
+		for (RelationshipWrapper argumentRel : methodInvocation.getRelationships(Direction.OUTGOING,
 				RelationTypes.METHODINVOCATION_ARGUMENTS))
 			// System.out.println("Argument " + (int)
 			// argumentRel.getProperty("argumentIndex") + ":\n"
@@ -248,12 +250,10 @@ public class GetDeclarationFromExpression {
 		 * NodeWrapper methodDeclaration =
 		 * methodInvocation.getSingleRelationship(CGRelationTypes.HAS_DEC,
 		 * Direction.OUTGOING) .getEndNode(); List<Pair<NodeWrapper, Boolean>>
-		 * decsOfTheInvocation = new ArrayList<Pair<NodeWrapper, Boolean>>();
-		 * for (Relationship rel :
-		 * methodDeclaration.getRelationships(Direction.OUTGOING,
-		 * PDGRelationTypes.RETURNS, PDGRelationTypes.RETURNS_A_PART_OF)) {
-		 * return getDecsForAReturn(rel, varDecsInArguments, true); } for
-		 * (Relationship rel :
+		 * decsOfTheInvocation = new ArrayList<Pair<NodeWrapper, Boolean>>(); for
+		 * (Relationship rel : methodDeclaration.getRelationships(Direction.OUTGOING,
+		 * PDGRelationTypes.RETURNS, PDGRelationTypes.RETURNS_A_PART_OF)) { return
+		 * getDecsForAReturn(rel, varDecsInArguments, true); } for (Relationship rel :
 		 * methodDeclaration.getRelationships(Direction.OUTGOING,
 		 * PDGRelationTypes.MAY_RETURN, PDGRelationTypes.MAY_RETURN_A_PART_OF))
 		 * decsOfTheInvocation.addAll(getDecsForAReturn(rel, varDecsInArguments,

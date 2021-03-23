@@ -41,8 +41,8 @@ public class Neo4jLazyServerDriverRelationship extends AbstractNeo4jLazyServerDr
 	public void delete() {
 		// System.out.println(i++);
 		InfoToInsert.INFO_TO_INSERT.deleteRel(this);
-		start.removeOutgoingRel(this);
-		end.removeIncomingRel(this);
+		((Neo4jLazyServerDriverNode) start).removeOutgoingRel(this);
+		((Neo4jLazyServerDriverNode) end).removeIncomingRel(this);
 	}
 
 	@Override

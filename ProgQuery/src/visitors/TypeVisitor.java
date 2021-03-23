@@ -167,7 +167,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 						// System.out.println("CACHED RUNTIME");
 						// e.printStackTrace();
 						// throw new IllegalStateException(ex);
-						io.Errors.addError("Failed to analyze " + e.getKind() + " of " + t.toString()
+						System.err.println("Failed to analyze " + e.getKind() + " of " + t.toString()
 								+ ", due to missing symbols:\n" + ex.toString() + "\n");
 					}
 

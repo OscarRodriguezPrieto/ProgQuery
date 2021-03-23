@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.tools.JavaFileObject;
 
+import org.neo4j.graphdb.Transaction;
+
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.Tree;
@@ -14,7 +16,6 @@ import com.sun.source.util.TaskEvent.Kind;
 import com.sun.source.util.TaskListener;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 
 import ast.ASTAuxiliarStorage;
@@ -50,34 +51,38 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 	private ASTAuxiliarStorage ast = new ASTAuxiliarStorage();
 	// private final GraphDatabaseService graphDb;
 
-	public GetStructuresAfterAnalyze(JavacTask task, String programID) {
+	public GetStructuresAfterAnalyze(JavacTask task, String programID, String userID) {
 		this.task = task;
 		// this.graphDb = graphDb;
 		DatabaseFachade.CURRENT_INSERTION_STRATEGY.startAnalysis();
-		PackageInfo.createCurrentProgram(programID);
+		PackageInfo.createCurrentProgram(programID, userID);
 
 	}
 
 	@Override
 	public void finished(TaskEvent arg0) {
+
 		if (DEBUG)
-			System.out.println("FINISHING " + arg0.getKind());
+			System.out.println("FINISHING  FOR " + arg0.getSourceFile() + "( "
+					+ (arg0.getSourceFile() == null ? "" : arg0.getSourceFile().getName()) + " ) " + arg0.getKind());
 		CompilationUnitTree cuTree = arg0.getCompilationUnit();
 
-//		System.out.println("FINISHING  FOR " + arg0.getSourceFile() + "( "
-//				+ (arg0.getSourceFile() == null ? "" : arg0.getSourceFile().getName()) + " ) " + arg0.getKind());
 		if (arg0.getKind() == Kind.PARSE)
-			// if (DEBUG)
-//			System.out.println("FIle " + cuTree.getSourceFile().getName() + ", " + cuTree.hashCode() + " , "
-//					+ cuTree.getSourceFile().hashCode());
-//			System.out.println(
-//					"TOTAL DECS FOR " + cuTree.getSourceFile().getName() + " : " + cuTree.getTypeDecls().size());
 			classCounter.put(cuTree.getSourceFile(), cuTree.getTypeDecls().size());
-//			System.out.println("PUTTING FOR " + cuTree.getSourceFile().getName() + "\t"
-//					+ classCounter.get(cuTree.getSourceFile()));
 		else if (arg0.getKind() == Kind.ANALYZE) {
 
+//			System.out.println("FINISHING SCANNING CU " + cuTree.getSourceFile().getName() + " WITH "
+//					+ cuTree.getTypeDecls().size() + " TYPEDECS");
+//			System.out.println(arg0.getClass());
+//			System.out.println(arg0.getTypeElement());
+//			System.out.println(arg0.getTypeElement().toString());	
+//			String[] tydcSplit = arg0.getTypeElement().toString().split("\\.");
+//			System.out.println(tydcSplit+" "+tydcSplit.length);
+//			if (tydcSplit.length > 0)
+//				System.out.println("splIT:"+tydcSplit[tydcSplit.length - 1]);
+
 			started = true;
+			int currentTypeCounter = classCounter.get(cuTree.getSourceFile());
 			if (cuTree.getTypeDecls().size() == 0)
 //				System.out.println("SCANNING CU " + cuTree.getSourceFile().getName() + " WITH 0 TYPEDECS");
 				firstScanIfNoTypeDecls(cuTree);
@@ -87,56 +92,59 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 //						+ cuTree.getTypeDecls().size() + " TYPEDECS");
 
 				boolean firstClass = classCounter.get(cuTree.getSourceFile()) == cuTree.getTypeDecls().size();
+				int nextTypeDecIndex = 0;
+				if (cuTree.getTypeDecls().size() > 1) {
 
-				int nextTypeDecIndex = cuTree.getTypeDecls().size() - classCounter.get(cuTree.getSourceFile());
-//				System.out.println("IS_FIRST_TYPE_DEC\t" + firstClass + "\nNEXT_TYPE_DEC_INDEX\t" + nextTypeDecIndex);
-
-//				System.out.println("DECREMENTING COUNTER FROM " + classCounter.get(cuTree.getSourceFile()));
-				classCounter.put(cuTree.getSourceFile(), classCounter.get(cuTree.getSourceFile()) - 1);
-
-//				System.out.println("DECREMENTING COUNTER TO " + classCounter.get(cuTree.getSourceFile()));
-				// System.out.println("DELETING FOR " +
-				// cuTree.getSourceFile().getName() + ":\t"
-				// + classCounter.get(cuTree.getSourceFile()));
-				if (firstClass)
-					// Node packageNode = DatabaseFachade.createSkeletonNode(
-					// NodeTypes.PACKAGE_DEC);
-					//// packageNode.setProperty("name",
-					// ((JCCompilationUnit)cuTree).);
-					// System.out.println(((JCCompilationUnit)
-					// cuTree).getPackageName());
-//				if (DEBUG)
-//					System.out.println(
-//							"TYPE_DECS_IN_CU:\t" + cuTree.getSourceFile() + "\t" + cuTree.getTypeDecls().size());
-
-					firstScan(cuTree, cuTree.getTypeDecls().get(nextTypeDecIndex));
-				else {
-//					System.out.println("TYPE DEC TO ANALIZE:\n" + cuTree.getTypeDecls().get(nextTypeDecIndex));
-					Tree typeDecToScan = cuTree.getTypeDecls().get(nextTypeDecIndex);
-					if (typeDecToScan instanceof JCTree.JCSkip)
-						GraphUtils.connectWithParent(
-								DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(typeDecToScan,
-										NodeTypes.EMPTY_STATEMENT),
-								argument.getFirst().getStartingNode(), RelationTypes.ENCLOSES);
-					else
-						scan((ClassTree) cuTree.getTypeDecls().get(nextTypeDecIndex), false);
+					String[] tydcSplit = arg0.getTypeElement().toString().split("\\.");
+//					System.out.println(tydcSplit+" "+tydcSplit.length);
+					String simpleTypeName = tydcSplit.length > 0 ? tydcSplit[tydcSplit.length - 1]
+							: arg0.getTypeElement().toString();
+//					System.out.println("JAVAC CURRENT SPLITTED TYPE NAME:" + simpleTypeName);
+					boolean found = false;
+					for (int i = 0; i < cuTree.getTypeDecls().size(); i++) {
+						if (cuTree.getTypeDecls().get(i) instanceof JCTree.JCSkip) {
+							if (firstClass) {
+								GraphUtils.connectWithParent(
+										DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(
+												cuTree.getTypeDecls().get(i), NodeTypes.EMPTY_STATEMENT),
+										argument.getFirst().getStartingNode(), RelationTypes.ENCLOSES);
+								currentTypeCounter--;
+							}
+							continue;
+						}
+//						System.out.println(((ClassTree) cuTree.getTypeDecls().get(i)).getSimpleName());
+						if (((ClassTree) cuTree.getTypeDecls().get(i)).getSimpleName().contentEquals(simpleTypeName)) {
+							nextTypeDecIndex = i;
+							found = true;
+							if (!firstClass)
+								break;
+						}
+					}
+					if (!found)
+						throw new IllegalStateException(
+								"NO TYPE DEC FOUND IN CU MATCHING JAVAC CURRENT " + simpleTypeName);
 				}
+				classCounter.put(cuTree.getSourceFile(), --currentTypeCounter);
+
+				if (firstClass)
+					firstScan(cuTree, cuTree.getTypeDecls().get(nextTypeDecIndex));
+				else
+					scan((ClassTree) cuTree.getTypeDecls().get(nextTypeDecIndex), false);
+
 			}
-			if (classCounter.get(cuTree.getSourceFile()) <= 0)
-				// END OF THE ANALYSIS OF ALL TYPEDECS IN THE COMPILATION UNIT
+
+			if (currentTypeCounter <= 0)
 				classCounter.remove(cuTree.getSourceFile());
-//				System.out.println("END OF THE ANALYSIS OF ALL TYPEDECS IN THE COMPILATION UNIT");
-			// System.out.println("AFTER ANALYZE");
-			// System.out.println(ast.mm + "\n" + ast.b + "\n" + ast.s1);
-			// transaction.success();
-			// transaction.close();
 
 		}
-
-//		System.out.println("FINISHED FOR " + arg0.getSourceFile() + "( "
-//				+ (arg0.getSourceFile() == null ? "" : arg0.getSourceFile().getName()) + " ) " + arg0.getKind());
+//		if (classCounter.size() <= 25) {
+//			System.out.println("CLASS_COUNTER:");
+//			for (Entry<JavaFileObject, Integer> entry : classCounter.entrySet())
+//				System.out.println(entry.getKey().getName() + "," + entry.getValue());
+//		}
 		if (DEBUG)
-			System.out.println("FINISHED " + arg0.getKind());
+			System.out.println("FINISHED FOR " + arg0.getSourceFile() + "( "
+					+ (arg0.getSourceFile() == null ? "" : arg0.getSourceFile().getName()) + " ) " + arg0.getKind());
 	}
 
 	private void firstScanIfNoTypeDecls(CompilationUnitTree u) {
@@ -211,13 +219,26 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 			System.out.println("STARTING FOR " + arg0.getSourceFile() + "( "
 					+ (arg0.getSourceFile() == null ? "" : arg0.getSourceFile().getName()) + " ) " + arg0.getKind());
 		if (arg0.getKind() == Kind.GENERATE && started)
-			// System.out.println(classCounter.size());
 			if (classCounter.size() == 0) {
-//			System.out.println("BEFORE 2nd phase ");
+				if (DEBUG)
+					System.out.println("STARTING CREATING ATTRS NOT DECLARED");
 				pdgUtils.createNotDeclaredAttrRels(ast);
+
+				if (DEBUG)
+					System.out.println("STARTING CREATING STORE PACKAGES DEPS");
 				createStoredPackageDeps();
+
+				if (DEBUG)
+					System.out.println("STARTING DYNAMIC METHOD CALL");
+
 				dynamicMethodCallAnalysis();
+
+				if (DEBUG)
+					System.out.println("STARTING INTERPROCEDRAL MUTABILITY");
 				interproceduralPDGAnalysis();
+
+				if (DEBUG)
+					System.out.println("STARTING INITIALIZATION ANALYSIS");
 				initializationAnalysis();
 
 				shutdownDatabase();
@@ -274,9 +295,8 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 
 	public void shutdownDatabase() {
 		if (DEBUG)
-			System.out.println("SHUTDOWN THE DATABASE");
-		// graphDb.shutdown();
-		// AQUí IRÍA EL CÓDIGO DE INSERCIÓN AL SERVER
+			System.out.println("STARTING SHUTDOWN THE DATABASE");
+		
 		DatabaseFachade.CURRENT_INSERTION_STRATEGY.endAnalysis();
 		if (DEBUG)
 			System.out.println("SHUTDOWN THE DATABASE ENDED");
