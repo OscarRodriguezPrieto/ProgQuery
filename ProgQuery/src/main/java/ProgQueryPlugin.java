@@ -61,6 +61,6 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 	public String getName() {
 		return PLUGIN_NAME;
 	}
-//--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-	// o --add-exports com.sun.tools.javac.util=ALL-UNNAMED
+	
+	public static void main(String... args) {}
 }
