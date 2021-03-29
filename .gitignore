@@ -30,3 +30,6 @@ ProgQuery/.metadata/*
 binaries_bad/*
 __pycache__/*
 ProgQuery/javac.*.args
+ProgQuery/.idea/
+ProgQuery/ProgQuery.iml
+ProgQuery/out/

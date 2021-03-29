@@ -2,6 +2,8 @@ package database;
 
 import database.insertion.lazy.InfoToInsert;
 import database.insertion.lazy.DriverLazyInsertionManagerWithIter;
+import database.manager.NEO4JManager;
+import database.manager.NEO4JServerManager;
 import database.nodes.NodeTypes;
 import node_wrappers.Neo4jLazyServerDriverNode;
 import node_wrappers.NodeWrapper;
@@ -64,5 +66,11 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 					MAX_OPERATIONS_PER_TRANSACTION, DB_NAME);
 
 	}
+
+	@Override
+	public NEO4JManager getManager() {
+		return new NEO4JServerManager(ADDRESS,USER,PASS,DB_NAME);
+	}
+
 
 }

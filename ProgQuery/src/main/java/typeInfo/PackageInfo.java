@@ -24,6 +24,9 @@ public class PackageInfo {
 		currentProgram.setProperty("timestamp", ZonedDateTime.now().toString());
 
 	}
+	public static void setCurrentProgram(NodeWrapper currentProgram){
+		PackageInfo.currentProgram=currentProgram;
+	}
 
 	public static PackageInfo PACKAGE_INFO = new PackageInfo();
 	// private final Map<Symbol, Node> packageSet = new HashMap<>();

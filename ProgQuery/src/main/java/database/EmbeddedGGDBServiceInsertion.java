@@ -1,5 +1,6 @@
 package database;
 
+import database.manager.NEO4JManager;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
@@ -73,6 +74,12 @@ public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 		currentTransaction.commit();
 		currentTransaction.close();
 		EmbeddedDBManager.manager.shutdown();
+	}
+
+	@Override
+	public NEO4JManager getManager() {
+		//TODO
+		throw new IllegalStateException("NOT IMPLEMENTEd YET");
 	}
 
 }

@@ -1,6 +1,6 @@
 package database;
 
-import org.neo4j.graphdb.Transaction;
+import database.manager.NEO4JManager;
 
 import database.nodes.NodeTypes;
 import node_wrappers.NodeWrapper;
@@ -15,5 +15,7 @@ public interface InsertionStrategy {
 
 	void startAnalysis();
 	void endAnalysis();
+
+	NEO4JManager getManager();
 
 }

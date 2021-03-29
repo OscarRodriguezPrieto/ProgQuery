@@ -29,7 +29,9 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 		id=null;
 		InfoToInsert.INFO_TO_INSERT.addNewNode(this);
 	}
-
+	public Neo4jLazyServerDriverNode(long id) {
+		this.id=id;
+	}
 	public Neo4jLazyServerDriverNode(NodeTypes... labels) {
 
 		this();
