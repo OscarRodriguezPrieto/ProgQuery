@@ -23,7 +23,7 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 	Set<Label> labels = new HashSet<>();
 	Long id;
 	
-	Neo4jLazyServerDriverNode(long id) {
+	public Neo4jLazyServerDriverNode(long id) {
 		this.id=id;
 	}
 //	private static long counter=0;

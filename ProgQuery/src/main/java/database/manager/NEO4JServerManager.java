@@ -15,7 +15,7 @@ public class NEO4JServerManager implements NEO4JManager {
     private Session session;
 @Override
     public NodeWrapper getProgramFromDB(String programId, String userId) {
-        List<Record> programsIfAny = executeQuery(String.format("MATCH (p:PROGRAM) WHERE p.ID='%s' AND p:USER_ID='%s' RETURN ID(p)", programId, userId));
+        List<Record> programsIfAny = executeQuery(String.format("MATCH (p:PROGRAM) WHERE p.ID='%s' AND p.USER_ID='%s' RETURN ID(p)", programId, userId));
         if (programsIfAny.size() == 0)
             return null;
         return new Neo4jLazyServerDriverNode(programsIfAny.get(0).get(0).asLong());
