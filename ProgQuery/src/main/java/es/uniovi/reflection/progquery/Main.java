@@ -2,12 +2,19 @@ package es.uniovi.reflection.progquery;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -16,57 +23,36 @@ import javax.tools.ToolProvider;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import database.DatabaseFachade;
-import database.EmbeddedGGDBServiceInsertion;
 import database.Neo4jDriverLazyWrapperInsertion;
 import tasklisteners.GetStructuresAfterAnalyze;
 
 public class Main {
 
+	//-user=progquery -program=ExampleClasses -neo4j_host=156.35.94.130 -neo4j_database=debug -neo4j_password=secreto -src=C:\Users\VirtualUser\Source\Repos\StaticCodeAnalysis\Programs\ExampleClasses
 	public static Parameters parameters = new Parameters();
 	public static void main(String[] args) {
 		parseArguments(args);
 		
-		
-		File[] files = null;
-		if(parameters.list.isEmpty()) {
-			files = new File[parameters.inputFiles.length];
-			for(int i=0; i<parameters.inputFiles.length; i++)
-				files[i] = new File(parameters.inputFiles[i]);
-		}
-		else {		
-			try {
-			      File file = new File(parameters.list);
-			      Scanner reader = new Scanner(file); 
-			      ArrayList<String> fileFiles = new ArrayList<String>();
-			      while (reader.hasNextLine()) {
-			        String fileName = reader.nextLine();
-			        fileFiles.add(fileName.replace(" ", ""));
-			      }
-			      reader.close();
-			      
-			      files = new File[fileFiles.size()];
-			      for(int i=0; i<fileFiles.size(); i++)
-						files[i] = new File(fileFiles.get(i));
-		    } catch (FileNotFoundException e) {
-		    	System.out.println("An error occurred.");
-		    	System.exit(0);
-		    }
-		}	
-		
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null,null,null);
+		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null,null,Charset.forName("UTF-8"));
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-		List<File> array = Arrays.asList(files);
-		List<File> finalArray = new ArrayList<File>();
-
-		for(File file: array) {
-			if (!file.isDirectory()) {
-				finalArray.add(file);
-			}
-		}	
+		List<File> files = listFiles(parameters.sourceFolder);
 		
-		Iterable<? extends JavaFileObject> sources = fileManager.getJavaFileObjectsFromFiles(finalArray);
-		JavacTaskImpl compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, null, null, sources);
+		Iterable<? extends JavaFileObject> sources = fileManager.getJavaFileObjectsFromFiles(files);		
+		String[] compilerOptions = new String[] 
+		{
+				"-nowarn",
+				"-d",
+				Paths.get(parameters.sourceFolder,"target","classes").toAbsolutePath().toAbsolutePath().toString(),
+				"-g",
+				"-target",
+				"15",
+				"-source",
+				"15",
+				"-classpath",
+				parameters.class_path,			
+		};
+		JavacTaskImpl compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
 		
 		
 		DatabaseFachade.init(
@@ -78,7 +64,16 @@ public class Main {
 				parameters.neo4j_database,
 				parameters.max_operations_transaction)
 		);
-		compilerTask.addTaskListener(new GetStructuresAfterAnalyze(compilerTask, parameters.programId, parameters.userId));
+		compilerTask.addTaskListener(new GetStructuresAfterAnalyze(compilerTask, parameters.programId, parameters.userId));		
+		compilerTask.call();
+		// If errors
+		if (diagnostics.getDiagnostics().size() > 0) {
+			for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
+				System.err.format("Error on [%d,%d] in %s %s", diagnostic.getLineNumber(), diagnostic.getColumnNumber(),
+						diagnostic.getSource(), diagnostic.getMessage(null));
+			}
+		}
+		System.exit(0);
 	}
 	
 	
@@ -89,8 +84,6 @@ public class Main {
             parseParameter(parameter, inputFileNames);
         }
         
-        parameters.inputFiles = inputFileNames.toArray(new String[] {});
-     
         if (parameters.userId.isEmpty()) {
             System.out.println(OptionsConfiguration.noUser);
             System.exit(0);
@@ -123,7 +116,7 @@ public class Main {
                  return;
 	        }
         }
-        if (parameters.inputFiles.length == 0 && parameters.list.isEmpty()) {
+        if (parameters.sourceFolder.isEmpty()) {
             System.out.println(OptionsConfiguration.noInputMessage);
             System.exit(0);
             return;
@@ -135,8 +128,7 @@ public class Main {
 		parameters.neo4j_port_number = OptionsConfiguration.DEFAULT_NEO4J_PORT;
 		parameters.neo4j_mode = OptionsConfiguration.DEFAULT_NEO4J_MODE;
 		parameters.max_operations_transaction = OptionsConfiguration.DEFAULT_MAX_OPERATIONS_TRANSACTION;		
-		parameters.verbose = OptionsConfiguration.DEFAULT_VERBOSE; 
-		parameters.list = OptionsConfiguration.DEFAULT_LIST; 
+		parameters.verbose = OptionsConfiguration.DEFAULT_VERBOSE; 		
 	}
 	
 	private static void parseParameter(String parameter, List<String> inputFiles) {
@@ -192,6 +184,12 @@ public class Main {
                 return;
             }
         }
+        for(String opString:OptionsConfiguration.sourceFolderOptions) {
+            if (option.startsWith(opString)) {
+            	parameters.sourceFolder = parseValue(option.substring(opString.length(), option.length()));
+                return;
+            }
+        }
         for(String opString:OptionsConfiguration.neo4j_hostOptions) {
             if (option.startsWith(opString)) {
             	parameters.neo4j_host = parseValue(option.substring(opString.length(), option.length()));
@@ -226,13 +224,7 @@ public class Main {
             	parameters.class_path = parseValue(option.substring(opString.length(), option.length()));
                 return;
             }
-        }
-        for(String opString:OptionsConfiguration.listOptions) {
-            if (option.startsWith(opString)) {
-                parameters.list = parseValue(option.substring(opString.length(), option.length()));
-                return;
-            }
-        }   
+        }       
         for(String opString:OptionsConfiguration.verboseOptions) {
             if (option.startsWith(opString)) {
                 parameters.verbose = true;
@@ -250,6 +242,21 @@ public class Main {
         System.err.println(OptionsConfiguration.errorMessage);
         System.exit(2);  // 2 == Bad option assignment
         return null;
+    }
+    
+    public static List<File> listFiles(String path) {
+    	 try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+             // We want to find only regular files
+    		 return walk
+            		 .filter(Files::isRegularFile)
+            		 .filter(f -> f.getFileName().toString().endsWith(".java"))
+            		 .map(f -> f.toAbsolutePath().toFile())
+                     .collect(Collectors.toList());    		 
+             
+         } catch (IOException e) {
+             e.printStackTrace();
+             return new ArrayList<File>();
+         }
     }
 
 }

@@ -39,7 +39,7 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 
 		super();
 		MAX_OPERATIONS_PER_TRANSACTION = Integer.parseInt(max_operations_transaction);		
-		ADDRESS = host + "" + port;
+		ADDRESS = host + ":" + port;
 		USER = user;
 		PASS = password;
 		DB_NAME = database;
