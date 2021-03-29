@@ -60,7 +60,5 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 	@Override
 	public String getName() {
 		return PLUGIN_NAME;
-	}
-	
-	public static void main(String... args) {}
+	}	
 }
