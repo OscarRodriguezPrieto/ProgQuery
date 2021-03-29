@@ -1,15 +1,84 @@
 package es.uniovi.reflection.progquery;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+import com.sun.tools.javac.api.JavacTaskImpl;
+
+import database.DatabaseFachade;
+import database.EmbeddedGGDBServiceInsertion;
+import database.Neo4jDriverLazyWrapperInsertion;
+import tasklisteners.GetStructuresAfterAnalyze;
 
 public class Main {
 
 	public static Parameters parameters = new Parameters();
 	public static void main(String[] args) {
 		parseArguments(args);
+		
+		
+		File[] files = null;
+		if(parameters.list.isEmpty()) {
+			files = new File[parameters.inputFiles.length];
+			for(int i=0; i<parameters.inputFiles.length; i++)
+				files[i] = new File(parameters.inputFiles[i]);
+		}
+		else {		
+			try {
+			      File file = new File(parameters.list);
+			      Scanner reader = new Scanner(file); 
+			      ArrayList<String> fileFiles = new ArrayList<String>();
+			      while (reader.hasNextLine()) {
+			        String fileName = reader.nextLine();
+			        fileFiles.add(fileName.replace(" ", ""));
+			      }
+			      reader.close();
+			      
+			      files = new File[fileFiles.size()];
+			      for(int i=0; i<fileFiles.size(); i++)
+						files[i] = new File(fileFiles.get(i));
+		    } catch (FileNotFoundException e) {
+		    	System.out.println("An error occurred.");
+		    	System.exit(0);
+		    }
+		}	
+		
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null,null,null);
+		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+		List<File> array = Arrays.asList(files);
+		List<File> finalArray = new ArrayList<File>();
 
+		for(File file: array) {
+			if (!file.isDirectory()) {
+				finalArray.add(file);
+			}
+		}	
+		
+		Iterable<? extends JavaFileObject> sources = fileManager.getJavaFileObjectsFromFiles(finalArray);
+		JavacTaskImpl compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, null, null, sources);
+		
+		
+		DatabaseFachade.init(
+			new Neo4jDriverLazyWrapperInsertion(
+				parameters.neo4j_host,
+				parameters.neo4j_port_number,
+				parameters.neo4j_user,
+				parameters.neo4j_password,
+				parameters.neo4j_database,
+				parameters.max_operations_transaction)
+		);
+		compilerTask.addTaskListener(new GetStructuresAfterAnalyze(compilerTask, parameters.programId, parameters.userId));
 	}
 	
 	

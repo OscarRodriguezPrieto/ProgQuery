@@ -34,6 +34,16 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 		DB_NAME = connectionData.length == 4 ? connectionData[3] : null;
 		// System.out.println("SERVER " + maxNodes + " " + address);
 	}
+	
+	public Neo4jDriverLazyWrapperInsertion(String host, String port, String user, String password, String database, String max_operations_transaction) {
+
+		super();
+		MAX_OPERATIONS_PER_TRANSACTION = Integer.parseInt(max_operations_transaction);		
+		ADDRESS = host + "" + port;
+		USER = user;
+		PASS = password;
+		DB_NAME = database;
+	}
 
 	@Override
 	public NodeWrapper createNode(NodeTypes label) {
