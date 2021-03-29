@@ -33,3 +33,4 @@ ProgQuery/javac.*.args
 ProgQuery/.idea/
 ProgQuery/ProgQuery.iml
 ProgQuery/out/
+ProgQuery/.settings/*

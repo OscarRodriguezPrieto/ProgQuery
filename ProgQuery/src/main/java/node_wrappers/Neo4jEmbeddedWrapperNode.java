@@ -25,7 +25,7 @@ public class Neo4jEmbeddedWrapperNode implements NodeWrapper {
 		// if(node.getId()==2393)
 		// throw new IllegalStateException();
 	}
-
+	
 	public Node getNode() {
 		return node;
 	}
