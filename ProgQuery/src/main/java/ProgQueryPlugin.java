@@ -3,6 +3,8 @@
 
 import java.time.ZonedDateTime;
 
+import org.kohsuke.MetaInfServices;
+
 import com.sun.source.util.JavacTask;
 
 import database.DatabaseFachade;
@@ -11,6 +13,7 @@ import database.InsertionStrategy;
 import database.Neo4jDriverLazyWrapperInsertion;
 import tasklisteners.GetStructuresAfterAnalyze;
 
+@MetaInfServices(com.sun.source.util.Plugin.class)
 public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 
 	private static final String PLUGIN_NAME = "ProgQueryPlugin";
