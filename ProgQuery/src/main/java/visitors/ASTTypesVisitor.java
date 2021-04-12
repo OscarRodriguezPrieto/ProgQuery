@@ -200,7 +200,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// params declara return throws???¿
 		// De momento no, solo usamos el methodType
 
-		DefinitionCache.METHOD_TYPE_CACHE.put(s, constructorDef);
+		DefinitionCache.METHOD_DEF_CACHE.put(s, constructorDef);
 
 		return constructorDef;
 	}
@@ -253,7 +253,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// De momento no, solo usamos el methodType
 
 		ast.addAccesibleMethod(symbol, methodDecNode);
-		DefinitionCache.METHOD_TYPE_CACHE.put(symbol, methodDecNode);
+		DefinitionCache.METHOD_DEF_CACHE.put(symbol, methodDecNode);
 		return methodDecNode;
 	}
 
@@ -584,7 +584,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 		GraphUtils.connectWithParent(classNode, pair, RelationTypes.HAS_TYPE_DEF);
 
-		DefinitionCache.CLASS_TYPE_CACHE.putClassDefinition(currentTypeDecSymbol, classNode, ast.typeDecNodes,
+		DefinitionCache.TYPE_CACHE.putClassDefinition(currentTypeDecSymbol, classNode, ast.typeDecNodes,
 				typeDecUses);
 
 		TypeHierarchy.addTypeHierarchy(currentTypeDecSymbol, classNode, this, ast);
@@ -1194,6 +1194,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// System.out.println(methodSymbol.isConstructor());
 		String name = methodTree.getName().toString(), completeName = methodSymbol.owner + ":" + name,
 				fullyQualifiedName = completeName + methodSymbol.type;
+		
+		
 		NodeWrapper methodNode;
 
 		boolean prev = false;
@@ -1214,34 +1216,19 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			rel = RelationTypes.DECLARES_METHOD;
 		}
 
-		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol)) {
+		if (DefinitionCache.METHOD_DEF_CACHE.containsKey(methodSymbol)) {
 			ast.deleteAccesibleMethod(methodSymbol);
 			// For methods that are invoked in this class, after the removal of the
 			// non-declared edges of the class and before the visit of the method
-			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
+			DefinitionCache.METHOD_DEF_CACHE.putDefinition(methodSymbol, methodNode);
 
 			if (!methodNode.hasRelationship(rel, Direction.INCOMING))
 				GraphUtils.connectWithParent(methodNode, t, rel);
 		} else {
-			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
+			DefinitionCache.METHOD_DEF_CACHE.putDefinition(methodSymbol, methodNode);
 			GraphUtils.connectWithParent(methodNode, t, rel);
 		}
 
-		if (DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol)) {
-			ast.deleteAccesibleMethod(methodSymbol);
-			// For methods that are invoked in this class, after the removal of the
-			// non-declared edges of the class and before the visit of the method
-			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
-
-			if (!methodNode.hasRelationship(rel, Direction.INCOMING))
-				GraphUtils.connectWithParent(methodNode, t, rel);
-		} else {
-			DefinitionCache.METHOD_TYPE_CACHE.putDefinition(methodSymbol, methodNode);
-			GraphUtils.connectWithParent(methodNode, t, rel);
-		}
-//		t.getFirst().getStartingNode().getRelationships(EdgeDirection.OUTGOING, RelationTypes.DECLARES_METHOD)
-//				.forEach(r -> System.out.println(r.getEndNode().getProperty("fullyQualifiedName")));
-//		NodeUtils.nodeToString(t.getFirst().getStartingNode());
 
 		setMethodModifiersAndAnnotations(methodTree.getModifiers().getFlags(), methodNode,
 				t.getFirst().getStartingNode().hasLabel(NodeTypes.INTERFACE_DEF),
@@ -1361,7 +1348,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		String methodName = null, completeName = null, fullyQualifiedName = null;
 		if (methodInvocationTree.getMethodSelect() instanceof IdentifierTree)
 			addClassIdentifier(methodSymbol.owner);
-		boolean isInCache = DefinitionCache.METHOD_TYPE_CACHE.containsKey(methodSymbol);
+		boolean isInCache = DefinitionCache.METHOD_DEF_CACHE.containsKey(methodSymbol);
 		if (!isInCache) {
 			methodName = methodSymbol.name.toString();
 			completeName = methodSymbol.owner + ":" + methodName;
@@ -1371,7 +1358,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		if (methodSymbol.getThrownTypes().size() > 0)
 			currentMethodInvocations.add(methodSymbol);
 
-		NodeWrapper decNode = isInCache ? (NodeWrapper) DefinitionCache.METHOD_TYPE_CACHE.get(methodSymbol)
+		NodeWrapper decNode = isInCache ? (NodeWrapper) DefinitionCache.METHOD_DEF_CACHE.get(methodSymbol)
 				: methodSymbol.isConstructor()
 						? getNotDeclaredConsFromInv(methodSymbol, fullyQualifiedName, completeName)
 						: getNotDeclaredMethodDecNode(methodSymbol, fullyQualifiedName, methodName, completeName);
@@ -1576,7 +1563,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// else {
 		MethodSymbol consSymbol = (MethodSymbol) ((JCNewClass) newClassTree).constructor;
 
-		NodeWrapper constructorDef = DefinitionCache.METHOD_TYPE_CACHE.get(consSymbol);
+		NodeWrapper constructorDef = DefinitionCache.METHOD_DEF_CACHE.get(consSymbol);
 		if (constructorDef == null) {
 			String consType = consSymbol.type.toString();
 			String completeName = consSymbol.owner.toString() + ":<init>";

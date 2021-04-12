@@ -69,7 +69,7 @@ public class Main {
 		// If errors
 		if (diagnostics.getDiagnostics().size() > 0) {
 			for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
-				System.err.format("Error on [%d,%d] in %s %s", diagnostic.getLineNumber(), diagnostic.getColumnNumber(),
+				System.err.format("Error on [%d,%d] in %s %s\n", diagnostic.getLineNumber(), diagnostic.getColumnNumber(),
 						diagnostic.getSource(), diagnostic.getMessage(null));
 			}
 		}

@@ -148,26 +148,26 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 			TypeHierarchy.addTypeHierarchy((ClassSymbol) ((Type.ClassType) t).tsym, nonDeclaredTypeDec, null, ast);
 //			System.out.println("FINISEHD TYPE HIER FOR " + t);
 //			System.out.println("ENCLOSED ELEMENTS");
-			((ClassSymbol) type.tsym).getEnclosedElements().forEach(e -> {
+			((ClassSymbol) type.tsym).getEnclosedElements().forEach(elementSymbol -> {
 //				System.out.println("ELEMENT " + e);
 //				System.out.println("ELEMENT " + e.getKind());
-				if (e.getKind() != ElementKind.FIELD) {
+				if (elementSymbol.getKind() != ElementKind.FIELD) {
 					// System.out.println("TYPE" + e.type);
 					try {
-						if (!DefinitionCache.METHOD_TYPE_CACHE.containsKey(e)) {
+						if (!DefinitionCache.METHOD_DEF_CACHE.containsKey(elementSymbol)) {
 //							System.out.println("AFTER CONTAINS KEY");
-							if (e.getKind() == ElementKind.METHOD)
+							if (elementSymbol.getKind() == ElementKind.METHOD)
 								ASTTypesVisitor.createNonDeclaredMethodDuringTypeCreation(nonDeclaredTypeDec,
-										type.isInterface(), ast, (MethodSymbol) e);
-							else if (e.getKind() == ElementKind.CONSTRUCTOR)
+										type.isInterface(), ast, (MethodSymbol) elementSymbol);
+							else if (elementSymbol.getKind() == ElementKind.CONSTRUCTOR)
 								ASTTypesVisitor.getNotDeclaredConstructorDuringTypeCreation(nonDeclaredTypeDec,
-										(MethodSymbol) e);
+										(MethodSymbol) elementSymbol);
 						}
 					} catch (com.sun.tools.javac.code.Symbol.CompletionFailure ex) {
 						// System.out.println("CACHED RUNTIME");
 						// e.printStackTrace();
 						// throw new IllegalStateException(ex);
-						System.err.println("Failed to analyze " + e.getKind() + " of " + t.toString()
+						System.err.println("Failed to analyze " + elementSymbol.getKind() + " of " + t.toString()
 								+ ", due to missing symbols:\n" + ex.toString() + "\n");
 					}
 
@@ -315,7 +315,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 	}
 
 	private NodeWrapper putInCache(Object key, NodeWrapper typeNode) {
-		DefinitionCache.CLASS_TYPE_CACHE.put(key, typeNode);
+		DefinitionCache.TYPE_CACHE.put(key, typeNode);
 		return typeNode;
 	}
 }

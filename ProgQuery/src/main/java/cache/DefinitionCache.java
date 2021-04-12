@@ -22,11 +22,11 @@ import visitors.TypeVisitor;
 public class DefinitionCache<TKEY> {
 	private static final boolean DEBUG = false;
 	public static ASTAuxiliarStorage ast;
-	public static final DefinitionCache<Object> CLASS_TYPE_CACHE = new DefinitionCache<Object>();
+	public static final DefinitionCache<Object> TYPE_CACHE = new DefinitionCache<Object>();
 	// public static final DefinitionCache<TypeSymbol> PRIMITIVE_TYPE_CACHE =
 	// new DefinitionCache<TypeSymbol>();
 
-	public static final DefinitionCache<Symbol> METHOD_TYPE_CACHE = new DefinitionCache<Symbol>();
+	public static final DefinitionCache<Symbol> METHOD_DEF_CACHE = new DefinitionCache<Symbol>();
 
 	private final Map<TKEY, NodeWrapper> auxNodeCache = new HashMap<>();
 	final Map<TKEY, NodeWrapper> definitionNodeCache = new HashMap<>();
@@ -54,7 +54,9 @@ public class DefinitionCache<TKEY> {
 		if (auxNodeCache.containsKey(classSymbol)) {
 			oldClassNode = auxNodeCache.get(classSymbol);
 			for (RelationshipWrapper r : oldClassNode.getRelationships(Direction.OUTGOING,
-					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR, RelationTypes.DECLARES_FIELD,
+//					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR,
+					
+					RelationTypes.DECLARES_FIELD,
 					TypeRelations.IS_SUBTYPE_EXTENDS, TypeRelations.IS_SUBTYPE_IMPLEMENTS))
 				r.delete();
 			// System.out.println("TRYING TO REMOVE n=" + oldClassNode.getId());
@@ -198,24 +200,24 @@ public class DefinitionCache<TKEY> {
 		// System.out.println("looking for key " + key);
 		// System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.toString());
 		// System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.size());
-		if (DefinitionCache.CLASS_TYPE_CACHE.containsKey(key)) {
+		if (DefinitionCache.TYPE_CACHE.containsKey(key)) {
 
 			// System.out.println("RECOVERED FROM KEY " + key + "\n\t FROM " +
 			// type);
 			// DefinitionCache.CLASS_TYPE_CACHE.get(key).getLabels().forEach(System.out::print);
 			// System.out.println();
 			// System.out.println(type + " already in cache");
-			return DefinitionCache.CLASS_TYPE_CACHE.get(key);
+			return DefinitionCache.TYPE_CACHE.get(key);
 		}
 		// System.out.println("CREATING NEW TYPE " + type);
 		return createTypeDec(type, key, ast);
 	}
 
 	public static NodeWrapper getExistingType(TypeMirror type) {
-		if (DefinitionCache.CLASS_TYPE_CACHE.containsKey(type)) {
+		if (DefinitionCache.TYPE_CACHE.containsKey(type)) {
 
 			// System.out.println(type + " already in cache");
-			return DefinitionCache.CLASS_TYPE_CACHE.get(type);
+			return DefinitionCache.TYPE_CACHE.get(type);
 		}
 		throw new IllegalArgumentException("Not Type dounf for " + type);
 	}
