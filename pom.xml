@@ -52,7 +52,7 @@
       <configuration>
         <archive>
           <manifest>
-            <mainClass>ProgQueryPlugin</mainClass>
+            <mainClass>es.uniovi.reflection.progquery.ProgQueryPlugin</mainClass>
           </manifest>
         </archive>
         <descriptorRefs>

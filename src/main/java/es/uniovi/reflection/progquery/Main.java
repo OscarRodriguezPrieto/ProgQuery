@@ -1,7 +1,6 @@
 package es.uniovi.reflection.progquery;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -10,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,9 +20,9 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
-import database.DatabaseFachade;
-import database.Neo4jDriverLazyWrapperInsertion;
-import tasklisteners.GetStructuresAfterAnalyze;
+import es.uniovi.reflection.progquery.database.DatabaseFachade;
+import es.uniovi.reflection.progquery.database.Neo4jDriverLazyWrapperInsertion;
+import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
 
 public class Main {
 

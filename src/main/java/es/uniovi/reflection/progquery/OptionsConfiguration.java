@@ -23,7 +23,7 @@ public class OptionsConfiguration {
 	public static final String noProgram = copyrightMessage + "\nNo program specified. Type -help for help.\n";
 	public static final String noHost = copyrightMessage + "\nNo NEO4J host specified. Type -help for help.\n";
 	public static final String noPassword = copyrightMessage + "\nNo NEO4J user password specified. Type -help for help.\n";
-	public static final String noDataBasePath = copyrightMessage + "\nNo database path specified using NEO4J local mode. Type -help for help.\n";
+	public static final String noDataBasePath = copyrightMessage + "\nNo es.uniovi.reflection.progquery.database path specified using NEO4J local mode. Type -help for help.\n";
 	public static final String noInputMessage = copyrightMessage + "\nNo source folder specified. Type -help for help.\n";
 	public static final String unknownNEO4JMode = copyrightMessage + "\nUnknown neo4j mode option. Type -help for help.\n";
 
