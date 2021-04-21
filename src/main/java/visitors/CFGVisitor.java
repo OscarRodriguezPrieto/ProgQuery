@@ -378,7 +378,7 @@ public class CFGVisitor extends
 			loopTryIndexes.remove(lasts.getFirst());
 		}
 		lastsForBlock.getSecond().addAll(newLasts);
-		return lasts.getSecond();
+		return lastsForBlock.getSecond();
 	}
 
 	@Override
