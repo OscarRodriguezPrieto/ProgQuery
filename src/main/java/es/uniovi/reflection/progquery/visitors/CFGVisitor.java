@@ -125,15 +125,15 @@ public class CFGVisitor extends
 	private List<MutablePair<TryTree, Boolean>> trys = new ArrayList<MutablePair<TryTree, Boolean>>();
 
 	public CFGVisitor(NodeWrapper lastStatementNode, NodeWrapper exceptionalEnd, SimpleTreeNodeCache<Tree> CFGCache,
-			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> throwsTypesInStatements,
+			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> triesMayThrowTypesToExPartialRels,
 			Map<Tree, Pair<NodeWrapper, NodeWrapper>> finallyCache) {
 		this.finallyCache = finallyCache;
 		this.CFGCache = CFGCache;
 		this.lastStatementNode = lastStatementNode;
 		exceptionalMethodEnding = exceptionalEnd;
-		this.throwsTypesInStatements = throwsTypesInStatements;
-		Map<Type, List<PartialRelation<CFGRelationTypes>>> initialThrowTypes = throwsTypesInStatements.get(null);
-		linkThrowing(initialThrowTypes == null ? new HashMap<>() : null);
+		this.throwsTypesInStatements = triesMayThrowTypesToExPartialRels;
+		Map<Type, List<PartialRelation<CFGRelationTypes>>> nonHandledTrowTypesToPartialrels = triesMayThrowTypesToExPartialRels.get(null);
+		linkThrowing(nonHandledTrowTypesToPartialrels == null ? new HashMap<>() : nonHandledTrowTypesToPartialrels);
 	}
 
 	private void linkThrowing(Map<Type, List<PartialRelation<CFGRelationTypes>>> typesToRelations) {
@@ -804,7 +804,7 @@ public class CFGVisitor extends
 	}
 
 	public static void doCFGAnalysis(NodeWrapper methodNode, MethodTree tree, SimpleTreeNodeCache<Tree> cfgCache,
-			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> invocationsInStatements,
+			Map<TryTree, Map<Type, List<PartialRelation<CFGRelationTypes>>>> triesMayThrowTypesToExPartialRels,
 			Map<Tree, Pair<NodeWrapper, NodeWrapper>> finallyCache) {
 		NodeWrapper lastStatementNode = DatabaseFachade.CURRENT_DB_FACHADE
 				.createNodeWithoutExplicitTree(NodeTypes.CFG_NORMAL_END),
@@ -814,7 +814,7 @@ public class CFGVisitor extends
 		methodNode.createRelationshipTo(entryStatement, CFGRelationTypes.CFG_ENTRIES);
 
 		CFGVisitor.linkLasts(
-				new CFGVisitor(lastStatementNode, exceptionalEnd, cfgCache, invocationsInStatements, finallyCache).scan(
+				new CFGVisitor(lastStatementNode, exceptionalEnd, cfgCache, triesMayThrowTypesToExPartialRels, finallyCache).scan(
 						tree.getBody(), CFGVisitor.getNoNamePair(entryStatement, CFGRelationTypes.CFG_NEXT_STATEMENT)),
 				lastStatementNode);
 		exceptionalEnd.createRelationshipTo(methodNode, CFGRelationTypes.CFG_END_OF);

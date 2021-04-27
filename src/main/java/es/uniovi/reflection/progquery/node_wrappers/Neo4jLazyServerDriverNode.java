@@ -10,9 +10,16 @@ import java.util.Set;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 
+<<<<<<< HEAD:src/main/java/node_wrappers/Neo4jLazyServerDriverNode.java
+import database.insertion.lazy.InfoToInsert;
+import database.nodes.NodeTypes;
+import database.nodes.NodeUtils;
+import database.relations.RelationTypesInterface;
+=======
 import es.uniovi.reflection.progquery.database.insertion.lazy.InfoToInsert;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
+>>>>>>> 0ecfe6a91eb6d4ba2a6a5297c3940c89ab21f27c:src/main/java/es/uniovi/reflection/progquery/node_wrappers/Neo4jLazyServerDriverNode.java
 
 public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElement implements NodeWrapper {
 
@@ -22,16 +29,18 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 
 	Set<Label> labels = new HashSet<>();
 	Long id;
-	
+
 	public Neo4jLazyServerDriverNode(long id) {
-		this.id=id;
+		this.id = id;
 	}
+
 //	private static long counter=0;
 	public Neo4jLazyServerDriverNode() {
 //		id=counter++;
-		id=null;
+		id = null;
 		InfoToInsert.INFO_TO_INSERT.addNewNode(this);
 	}
+
 	public Neo4jLazyServerDriverNode(NodeTypes... labels) {
 
 		this();
@@ -176,6 +185,10 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 
 	}
 
+	@Override
+	public String toString() {
+		return NodeUtils.nodeToString(this);
+	}
 //	@Override
 //	public int hashCode() {
 //		final int prime = 31;
@@ -197,7 +210,5 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 //			return false;
 //		return true;
 //	}
-
-
 
 }

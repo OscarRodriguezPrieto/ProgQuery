@@ -1,7 +1,13 @@
 package es.uniovi.reflection.progquery.node_wrappers;
 
+<<<<<<< HEAD:src/main/java/node_wrappers/Neo4jLazyServerDriverRelationship.java
+import database.insertion.lazy.InfoToInsert;
+import database.nodes.NodeUtils;
+import database.relations.RelationTypesInterface;
+=======
 import es.uniovi.reflection.progquery.database.insertion.lazy.InfoToInsert;
 import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
+>>>>>>> 0ecfe6a91eb6d4ba2a6a5297c3940c89ab21f27c:src/main/java/es/uniovi/reflection/progquery/node_wrappers/Neo4jLazyServerDriverRelationship.java
 
 public class Neo4jLazyServerDriverRelationship extends AbstractNeo4jLazyServerDriverElement
 		implements RelationshipWrapper {
@@ -51,4 +57,8 @@ public class Neo4jLazyServerDriverRelationship extends AbstractNeo4jLazyServerDr
 		return rType.toString();
 	}
 
+	@Override
+	public String toString() {
+		return NodeUtils.nodeToStringNoRels(start) + "--[" + rType.name() + "]-->" + NodeUtils.nodeToStringNoRels(end);
+	}
 }
