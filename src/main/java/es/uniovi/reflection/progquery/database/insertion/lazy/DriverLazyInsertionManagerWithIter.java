@@ -33,7 +33,7 @@ public class DriverLazyInsertionManagerWithIter {
 			// ");
 //			int totalEdges = 0;
 			for (int i = 0; i < REPETITIONS; i++) {
-				 System.out.println("ITER " + i);
+//				 System.out.println("ITER " + i);
 				actionByParts(info.nodeSet.size(), MAX_OPERATIONS_PER_TRANSACTION, (start, end) -> executeNodesQuery(session,
 						info.nodeSet, nodeInfo, r -> r.list().get(0).values().get(0).asLong(), start, end));
 
@@ -58,7 +58,7 @@ public class DriverLazyInsertionManagerWithIter {
 			// ");
 //			int totalEdges = 0;
 			for (int i = 0; i < REPETITIONS; i++) {
-				 System.out.println("ITER " + i);
+//				 System.out.println("ITER " + i);
 				actionByParts(info.nodeSet.size(), MAX_OPERATIONS_PER_TRANSACTION, (start, end) -> executeNodesQuery(session,
 						info.nodeSet, nodeInfo, r -> r.list().get(0).values().get(0).asLong(), start, end));
 

@@ -20,9 +20,9 @@ public class ShutdownDBAfterAnalize implements TaskListener {
 
 	@Override
 	public void finished(TaskEvent arg0) {
-		System.out.println("FINISHING ONE TASK " + arg0.getKind());
-		System.out.println(
-				arg0.getCompilationUnit() == null ? null : arg0.getCompilationUnit().getSourceFile().getName());
+//		System.out.println("FINISHING ONE TASK " + arg0.getKind());
+//		System.out.println(
+//				arg0.getCompilationUnit() == null ? null : arg0.getCompilationUnit().getSourceFile().getName());
 		if (arg0.getKind().toString().equals("ANALYZE")) {
 			System.out.println("-*-*-*-*-*-*-*  AFTER ANALIZE TASK -*-*-*-*-*-*-*");
 

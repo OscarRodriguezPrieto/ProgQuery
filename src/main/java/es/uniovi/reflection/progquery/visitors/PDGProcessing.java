@@ -463,6 +463,7 @@ public class PDGProcessing {
 	public void createNotDeclaredAttrRels(ASTAuxiliarStorage ast) {
 		for (Entry<Symbol, List<Consumer<NodeWrapper>>> entry : toDo.entrySet()) {
 //			System.out.println(entry.getKey());
+			System.out.println( entry.getKey());
 			VarSymbol symbol = (VarSymbol) entry.getKey();
 			if (symbol.name.contentEquals("class"))
 				continue;
@@ -498,7 +499,7 @@ public class PDGProcessing {
 		// If you add C.this.attr, definition for C identifier is never found
 		// due to classes defs are not registered here
 		Symbol symbol = ((JCFieldAccess) memberSelectTree).sym;
-		if (symbol.getKind() == ElementKind.CLASS || symbol.getKind() == ElementKind.INTERFACE
+		if (symbol.getKind() == ElementKind.CLASS  || symbol.getKind() == ElementKind.ANNOTATION_TYPE || symbol.getKind() == ElementKind.INTERFACE
 				|| symbol.getKind() == ElementKind.ENUM || symbol.getKind() == ElementKind.METHOD
 				|| symbol.getKind() == ElementKind.CONSTRUCTOR || symbol.getKind() == ElementKind.PACKAGE)
 			return;

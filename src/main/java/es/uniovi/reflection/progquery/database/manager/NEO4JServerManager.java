@@ -1,6 +1,6 @@
 package es.uniovi.reflection.progquery.database.manager;
 
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyServerDriverNode;
+import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
@@ -18,7 +18,7 @@ public class NEO4JServerManager implements NEO4JManager {
         List<Record> programsIfAny = executeQuery(String.format("MATCH (p:PROGRAM) WHERE p.ID='%s' AND p.USER_ID='%s' RETURN ID(p)", programId, userId));
         if (programsIfAny.size() == 0)
             return null;
-        return new Neo4jLazyServerDriverNode(programsIfAny.get(0).get(0).asLong());
+        return new Neo4jLazyNode(programsIfAny.get(0).get(0).asLong());
     }
 
     public NEO4JServerManager(String address, String user, String password) {

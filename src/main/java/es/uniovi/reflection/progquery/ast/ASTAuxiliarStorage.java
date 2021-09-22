@@ -167,7 +167,7 @@ public class ASTAuxiliarStorage {
 	}
 
 	public void doInterproceduralPDGAnalysis() {
-
+	//SE USAN LOS CALLS EDGES PARA HACER EL PROCESAMIENTO
 		Map<NodeWrapper, Iterable<RelationshipWrapper>> methodDecToCalls = new HashMap<NodeWrapper, Iterable<RelationshipWrapper>>();
 		// Get Declarations Analysis
 		GetDeclarationFromExpression getDecs = new GetDeclarationFromExpression();

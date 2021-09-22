@@ -1,6 +1,7 @@
 package es.uniovi.reflection.progquery.database.insertion.lazy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -8,8 +9,8 @@ import java.util.Set;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import org.neo4j.graphdb.Label;
 
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyServerDriverNode;
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyServerDriverRelationship;
+import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
+import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyRelationship;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.node_wrappers.RelationshipWrapper;
 
@@ -19,22 +20,31 @@ public class InfoToInsert {
 
 	final List<RelationshipWrapper> relSet = new ArrayList<>();
 
+	public List<NodeWrapper> getNodeSet() {
+		return Collections.unmodifiableList(nodeSet);
+	}
+
+	public List<RelationshipWrapper> getRelSet() {
+
+		return Collections.unmodifiableList(relSet);
+	}
+
 	public static final InfoToInsert INFO_TO_INSERT = new InfoToInsert();
 
-	public void addNewNode(Neo4jLazyServerDriverNode newNode) {
+	public void addNewNode(Neo4jLazyNode newNode) {
 		nodeSet.add(newNode);
 	}
 
-	public void deleteNode(Neo4jLazyServerDriverNode node) {
+	public void deleteNode(Neo4jLazyNode node) {
 		nodeSet.remove(node);
 	}
 
-	public void addNewRel(Neo4jLazyServerDriverRelationship newRel) {
+	public void addNewRel(Neo4jLazyRelationship newRel) {
 		relSet.add(newRel);
 
 	}
 
-	public void deleteRel(Neo4jLazyServerDriverRelationship rel) {
+	public void deleteRel(Neo4jLazyRelationship rel) {
 		relSet.remove(rel);
 	}
 

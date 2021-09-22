@@ -85,7 +85,7 @@ public class InterproceduralPDG {
 						) {
 
 							// System.out.println("THERE IS STAT REL !!");
-							try {
+					//		try {
 								// TODO FIX SE NECESITA SABER SI TIENE SENTIDO O NO PASAR LAS
 								// LAMBDA_EXPRESSIONES
 								Pair<Integer, Boolean> mutatedParamIndexAndMust = Pair
@@ -104,10 +104,10 @@ public class InterproceduralPDG {
 								if (val == null)
 									val = 0;
 								possibleRelsToOcurr.put(mutatedParamIndexAndMust, val + 1);
-							} catch (NullPointerException n) {
-								System.out.println(NodeUtils.nodeToString(paramMutatedInCalledMethodDec.getKey()));
-								throw n;
-							}
+//							} catch (NullPointerException n) {
+//								System.out.println(NodeUtils.nodeToString(paramMutatedInCalledMethodDec.getKey()));
+//								throw n;
+//							}
 							// !(invocationReferringDec.getType().name().contains("MAY")
 							// ||
 							// )

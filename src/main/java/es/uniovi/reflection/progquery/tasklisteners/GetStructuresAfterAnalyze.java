@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.tools.JavaFileObject;
 
+import com.sun.source.tree.ModuleTree;
 import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 
 import com.sun.source.tree.ClassTree;
@@ -196,12 +197,14 @@ public class GetStructuresAfterAnalyze implements TaskListener {
         NodeWrapper compilationUnitNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(u,
                 NodeTypes.COMPILATION_UNIT);
         addPackageInfo(((JCCompilationUnit) u).packge, compilationUnitNode);
-        // System.out.println(fileName);
+        //System.out.println(fileName);
         compilationUnitNode.setProperty("fileName", fileName);
 
         argument = Pair.createPair(compilationUnitNode, null);
         cu = u;
-//		System.out.println("BEFORE SCAN TYPEDEC");
+	//	System.out.println("BEFORE SCAN TYPEDEC\n"+u);
+		if(typeDeclaration instanceof ModuleTree)
+		    return ;
         scan((ClassTree) typeDeclaration, true);
 //		System.out.println("AFTER SCAN TYPEDEC");
 

@@ -34,7 +34,7 @@ public class OptionsConfiguration {
 	public static final String[] neo4j_database_pathOptions = { "neo4j_database_path","ndbp" };
 	public static final String[] neo4j_userOptions = { "neo4j_user","nu" };
 	public static final String[] neo4j_modeOptions = { "neo4j_mode","nm" };
-	public static final String[] neo4j_modeNames = { "local", "server" };
+	public static final String[] neo4j_modeNames = { "local", "server", "no" };
 	public static final String[] neo4j_passwordOptions = { "neo4j_password","np" };
 	public static final String[] neo4j_hostOptions = { "neo4j_host","nh" };
 	public static final String[] neo4j_port_numberOptions = { "neo4j_port_number","npn" };

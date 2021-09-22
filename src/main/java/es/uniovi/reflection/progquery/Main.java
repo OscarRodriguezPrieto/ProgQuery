@@ -21,16 +21,18 @@ import javax.tools.ToolProvider;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import es.uniovi.reflection.progquery.database.DatabaseFachade;
-import es.uniovi.reflection.progquery.database.Neo4jDriverLazyWrapperInsertion;
+import es.uniovi.reflection.progquery.database.Neo4jDriverLazyInsertion;
+import es.uniovi.reflection.progquery.database.NotPersistentLazyInsertion;
 import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
 
 public class Main {
 
 	//-user=progquery -program=ExampleClasses -neo4j_host=156.35.94.130 -neo4j_database=debug -neo4j_password=secreto -src=C:\Users\VirtualUser\Source\Repos\StaticCodeAnalysis\Programs\ExampleClasses
-	public static Parameters parameters = new Parameters();
+    //-user=progquery -program=jfreechart -neo4j_host=156.35.94.130 -neo4j_database=debug -neo4j_password=secreto -src=C:\Users\Oskar\Desktop\investigacion\post-doc\pq_server_enterprise\git_projects\test_projects\jfreechart
+
+    public static Parameters parameters = new Parameters();
 	public static void main(String[] args) {
 		parseArguments(args);
-		
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null,null,Charset.forName("UTF-8"));
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
@@ -51,19 +53,21 @@ public class Main {
 				parameters.class_path,			
 		};
 		JavacTaskImpl compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
-		
-		
-		DatabaseFachade.init(
-			new Neo4jDriverLazyWrapperInsertion(
+
+		DatabaseFachade.init(parameters.neo4j_mode==OptionsConfiguration.DEFAULT_NEO4J_MODE?
+			new Neo4jDriverLazyInsertion(
 				parameters.neo4j_host,
 				parameters.neo4j_port_number,
 				parameters.neo4j_user,
 				parameters.neo4j_password,
 				parameters.neo4j_database,
-				parameters.max_operations_transaction)
+				parameters.max_operations_transaction):new NotPersistentLazyInsertion()
 		);
+
+
 		compilerTask.addTaskListener(new GetStructuresAfterAnalyze(compilerTask, parameters.programId, parameters.userId));		
 		compilerTask.call();
+
 		// If errors
 		if (diagnostics.getDiagnostics().size() > 0) {
 			for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
@@ -71,7 +75,7 @@ public class Main {
 						diagnostic.getSource(), diagnostic.getMessage(null));
 			}
 		}
-		System.exit(0);
+	//	System.exit(0);
 	}
 	
 	
@@ -92,6 +96,9 @@ public class Main {
             System.exit(0);
             return;
         }
+
+        if(parameters.neo4j_mode == OptionsConfiguration.DEFAULT_NEO4J_MODE) { //server
+
         if (parameters.neo4j_host.isEmpty()) {
             System.out.println(OptionsConfiguration.noHost);
             System.exit(0);
@@ -102,18 +109,18 @@ public class Main {
             System.exit(0);
             return;
         }
-        if(parameters.neo4j_mode == OptionsConfiguration.DEFAULT_NEO4J_MODE) { //server
 	        if (parameters.neo4j_database.isEmpty()) {
 	            parameters.neo4j_database = parameters.userId;
 	        }
         }
-        else {
-        	if (parameters.neo4j_database_path.isEmpty()) {
-        		 System.out.println(OptionsConfiguration.noDataBasePath);
-                 System.exit(0);
-                 return;
-	        }
-        }
+        //else {
+        	//if (parameters.neo4j_database_path.isEmpty()) {
+        		 //System.out.println(OptionsConfiguration.noDataBasePath);
+                 //System.exit(0);
+                //return;
+
+	       // }
+        //}
         if (parameters.sourceFolder.isEmpty()) {
             System.out.println(OptionsConfiguration.noInputMessage);
             System.exit(0);

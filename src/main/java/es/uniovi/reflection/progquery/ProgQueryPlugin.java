@@ -3,14 +3,11 @@ package es.uniovi.reflection.progquery;
 
 import java.time.ZonedDateTime;
 
+import es.uniovi.reflection.progquery.database.*;
 import org.kohsuke.MetaInfServices;
 
 import com.sun.source.util.JavacTask;
 
-import es.uniovi.reflection.progquery.database.DatabaseFachade;
-import es.uniovi.reflection.progquery.database.EmbeddedGGDBServiceInsertion;
-import es.uniovi.reflection.progquery.database.InsertionStrategy;
-import es.uniovi.reflection.progquery.database.Neo4jDriverLazyWrapperInsertion;
 import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
 
 @MetaInfServices(com.sun.source.util.Plugin.class)
@@ -40,11 +37,11 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 			userID = ANONYMOUS_USER;
 		}
 		DatabaseFachade
-				.init(args.length == 1 ? new EmbeddedGGDBServiceInsertion()
-						: args[1].contains("S")
+				.init(args.length == 1 ? new NotPersistentLazyInsertion():
+						args[1].contains("S")
 								? args.length == 2 ? invalidArgs()
 										: args.length == 3 ? serverTwoArgs(args[2])
-												: new Neo4jDriverLazyWrapperInsertion(Integer.parseInt(args[3]),
+												: new Neo4jDriverLazyInsertion(Integer.parseInt(args[3]),
 														args[2])
 								: args.length > 2 ? new EmbeddedGGDBServiceInsertion(args[2])
 										: new EmbeddedGGDBServiceInsertion());
@@ -57,7 +54,7 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 
 	private InsertionStrategy serverTwoArgs(String arg2) {
 
-		return new Neo4jDriverLazyWrapperInsertion(arg2);
+		return new Neo4jDriverLazyInsertion(arg2);
 	}
 
 	@Override

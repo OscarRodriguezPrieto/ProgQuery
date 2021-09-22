@@ -5,25 +5,21 @@ import es.uniovi.reflection.progquery.database.insertion.lazy.DriverLazyInsertio
 import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.database.manager.NEO4JServerManager;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyServerDriverNode;
+import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 
-public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
+public class Neo4jDriverLazyInsertion extends NotPersistentLazyInsertion{
 	private final int MAX_OPERATIONS_PER_TRANSACTION;
 	private final String ADDRESS, USER, PASS, DB_NAME;
 
 	private static final int DEFAULT_MAX = 80_000;
 
-	@Override
-	public NodeWrapper createNode() {
-		return new Neo4jLazyServerDriverNode();
-	}
 
-	public Neo4jDriverLazyWrapperInsertion(String connectionString) {
+	public Neo4jDriverLazyInsertion(String connectionString) {
 		this(DEFAULT_MAX, connectionString);
 	}
 
-	public Neo4jDriverLazyWrapperInsertion(int maxNodes, String connectionString) {
+	public Neo4jDriverLazyInsertion(int maxNodes, String connectionString) {
 
 		super();
 		MAX_OPERATIONS_PER_TRANSACTION = maxNodes;
@@ -35,7 +31,7 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 		// System.out.println("SERVER " + maxNodes + " " + address);
 	}
 	
-	public Neo4jDriverLazyWrapperInsertion(String host, String port, String user, String password, String database, String max_operations_transaction) {
+	public Neo4jDriverLazyInsertion(String host, String port, String user, String password, String database, String max_operations_transaction) {
 
 		super();
 		MAX_OPERATIONS_PER_TRANSACTION = Integer.parseInt(max_operations_transaction);		
@@ -43,26 +39,6 @@ public class Neo4jDriverLazyWrapperInsertion implements InsertionStrategy {
 		USER = user;
 		PASS = password;
 		DB_NAME = database;
-	}
-
-	@Override
-	public NodeWrapper createNode(NodeTypes label) {
-		return new Neo4jLazyServerDriverNode(label);
-	}
-
-	@Override
-	public NodeWrapper createNode(NodeTypes label, Object[] props) {
-		return new Neo4jLazyServerDriverNode(label, props);
-	}
-
-	@Override
-	public NodeWrapper createNode(Object[] props) {
-		return new Neo4jLazyServerDriverNode(props);
-	}
-
-	@Override
-	public void startAnalysis() {
-
 	}
 
 	@Override

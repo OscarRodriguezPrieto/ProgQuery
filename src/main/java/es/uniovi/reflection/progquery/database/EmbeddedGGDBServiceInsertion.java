@@ -67,7 +67,7 @@ public class EmbeddedGGDBServiceInsertion implements InsertionStrategy {
 	@Override
 	public void endAnalysis() {
 		// System.out.println("END");
-		System.out.println("JUST BEFORE SHUTDOWN");
+//		System.out.println("JUST BEFORE SHUTDOWN");
 //		System.out.println("TOTAL OF NODES TO INSERT " + Neo4jEmbeddedWrapperNode.counter);
 //		System.out.println(t.00);
 		currentTransaction.commit();

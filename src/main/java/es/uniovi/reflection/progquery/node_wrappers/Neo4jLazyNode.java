@@ -14,7 +14,7 @@ import es.uniovi.reflection.progquery.database.insertion.lazy.InfoToInsert;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
 
-public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElement implements NodeWrapper {
+public class Neo4jLazyNode extends AbstractNeo4jLazyServerDriverElement implements NodeWrapper {
 
 	Map<RelationTypesInterface, List<RelationshipWrapper>> incomingRels = new HashMap<>(),
 			outgoingRels = new HashMap<>();
@@ -23,18 +23,18 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 	Set<Label> labels = new HashSet<>();
 	Long id;
 
-	public Neo4jLazyServerDriverNode(long id) {
+	public Neo4jLazyNode(long id) {
 		this.id = id;
 	}
 
 //	private static long counter=0;
-	public Neo4jLazyServerDriverNode() {
+	public Neo4jLazyNode() {
 //		id=counter++;
 		id = null;
 		InfoToInsert.INFO_TO_INSERT.addNewNode(this);
 	}
 
-	public Neo4jLazyServerDriverNode(NodeTypes... labels) {
+	public Neo4jLazyNode(NodeTypes... labels) {
 
 		this();
 		for (NodeTypes label : labels)
@@ -42,13 +42,13 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 
 	}
 
-	public Neo4jLazyServerDriverNode(NodeTypes label, Object... props) {
+	public Neo4jLazyNode(NodeTypes label, Object... props) {
 		this(props);
 		this.labels.add(label);
 
 	}
 
-	public Neo4jLazyServerDriverNode(Object... props) {
+	public Neo4jLazyNode(Object... props) {
 		super(props);
 		InfoToInsert.INFO_TO_INSERT.addNewNode(this);
 	}
@@ -60,12 +60,12 @@ public class Neo4jLazyServerDriverNode extends AbstractNeo4jLazyServerDriverElem
 
 	@Override
 	public RelationshipWrapper createRelationshipTo(NodeWrapper end, RelationTypesInterface r) {
-		RelationshipWrapper rel = new Neo4jLazyServerDriverRelationship(this, end, r);
+		RelationshipWrapper rel = new Neo4jLazyRelationship(this, end, r);
 		List<RelationshipWrapper> relList = outgoingRels.get(r);
 		if (relList == null)
 			outgoingRels.put(r, relList = new ArrayList<>());
 		relList.add(rel);
-		Neo4jLazyServerDriverNode castEnd = (Neo4jLazyServerDriverNode) end;
+		Neo4jLazyNode castEnd = (Neo4jLazyNode) end;
 		relList = castEnd.incomingRels.get(r);
 		if (relList == null)
 			castEnd.incomingRels.put(r, relList = new ArrayList<>());

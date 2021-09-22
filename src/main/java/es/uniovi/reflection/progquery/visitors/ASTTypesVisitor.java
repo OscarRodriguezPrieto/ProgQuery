@@ -135,7 +135,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	private boolean outsideAnnotation = true;
 	private boolean isInAccessibleContext = true;
 	private Set<Name> gotoLabelsInDoWhile = new HashSet<>();
-	private boolean inADoWhile = false;
+	private boolean inADoWhile = false, inALambda=false;
 
 	public Set<NodeWrapper> getTypeDecUses() {
 		return typeDecUses;
@@ -976,8 +976,10 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		lambdaExpressionNode.setProperty("bodyKind", lambdaExpressionTree.getBodyKind().toString());
 		GraphUtils.connectWithParent(lambdaExpressionNode, t);
 		attachTypeDirect(lambdaExpressionNode, lambdaExpressionTree);
+		inALambda=true;
 		scan(lambdaExpressionTree.getBody(),
 				Pair.createPair(lambdaExpressionNode, RelationTypes.LAMBDA_EXPRESSION_BODY));
+		//DEBERÍAMOS PROCESAR PRIMERO LOS PARAMETROS??
 		for (int i = 0; i < lambdaExpressionTree.getParameters().size(); i++)
 			scan(lambdaExpressionTree.getParameters().get(i),
 					Pair.createPair(new PartialRelationWithProperties<RelationTypes>(lambdaExpressionNode,
@@ -985,7 +987,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// scan(lambdaExpressionTree.getParameters(),
 		// Pair.createPair(lambdaExpressionNode,
 		// RelationTypes.LAMBDA_EXPRESSION_PARAMETERS));
-
+		inALambda=false;
 		return null;
 	}
 
@@ -1359,10 +1361,14 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 				: methodSymbol.isConstructor()
 						? getNotDeclaredConsFromInv(methodSymbol, fullyQualifiedName, completeName)
 						: getNotDeclaredMethodDecNode(methodSymbol, fullyQualifiedName, methodName, completeName);
+//LATER USED FOR INTERPROCEDURAL PROCESSING
+		if(!inALambda) {
+			RelationshipWrapper callRelation = methodState.lastMethodDecVisited.createRelationshipTo(methodInvocationNode,
+					CGRelationTypes.CALLS);
+			callRelation.setProperty("mustBeExecuted", must);
+		}
+		//////
 
-		RelationshipWrapper callRelation = methodState.lastMethodDecVisited.createRelationshipTo(methodInvocationNode,
-				CGRelationTypes.CALLS);
-		callRelation.setProperty("mustBeExecuted", must);
 		methodInvocationNode.createRelationshipTo(decNode, CGRelationTypes.HAS_DEF);
 		methodInvocationNode.createRelationshipTo(decNode, CGRelationTypes.REFERS_TO);
 		pdgUtils.addParamsPrevModifiedForInv(methodInvocationNode, methodState);
@@ -1571,10 +1577,13 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		newClassNode.createRelationshipTo(constructorDef, CGRelationTypes.HAS_DEF);
 		newClassNode.createRelationshipTo(constructorDef, CGRelationTypes.REFERS_TO);
 
-		// } if (lastMethodDecVisited != null)
-		RelationshipWrapper callRelation = methodState.lastMethodDecVisited.createRelationshipTo(newClassNode,
-				CGRelationTypes.CALLS);
-		callRelation.setProperty("mustBeExecuted", must);
+		//Later used for interprocedural processing
+		if(!inALambda) {
+			RelationshipWrapper callRelation = methodState.lastMethodDecVisited.createRelationshipTo(newClassNode,
+					CGRelationTypes.CALLS);
+			callRelation.setProperty("mustBeExecuted", must);
+		}
+
 		if (consSymbol.getThrownTypes().size() > 0)
 			currentMethodInvocations.add(consSymbol);
 
@@ -1867,7 +1876,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		 * el retorno de NodeWrapper tipo parametrizered type 4� en vez de las dos
 		 * llamadas es VAR_DEC - itsTYPEis-> tipo <-USES_TYPE-current
 		 */
-//		System.out.println("VARIABLE!!!");
+	//	System.out.println("VARIABLE!!!");
 //		System.out.println(variableTree);
 		boolean isAttr = t.getFirst().getRelationType().equals(RelationTypes.HAS_STATIC_INIT);
 		boolean isMethodParam = t.getFirst().getRelationType().equals(RelationTypes.CALLABLE_HAS_PARAMETER)

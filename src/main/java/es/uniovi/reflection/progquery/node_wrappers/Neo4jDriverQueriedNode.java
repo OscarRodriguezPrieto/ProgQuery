@@ -8,7 +8,7 @@ import org.neo4j.graphdb.Label;
 
 import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
 
-public class Neo4jDriverQueriedNode extends Neo4jLazyServerDriverNode implements NodeWrapper {
+public class Neo4jDriverQueriedNode extends Neo4jLazyNode implements NodeWrapper {
 
 	public Neo4jDriverQueriedNode(long id) {
 		super(id);

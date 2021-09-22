@@ -4,18 +4,18 @@ import es.uniovi.reflection.progquery.database.insertion.lazy.InfoToInsert;
 import es.uniovi.reflection.progquery.database.nodes.NodeUtils;
 import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
 
-public class Neo4jLazyServerDriverRelationship extends AbstractNeo4jLazyServerDriverElement
+public class Neo4jLazyRelationship extends AbstractNeo4jLazyServerDriverElement
 		implements RelationshipWrapper {
 	private NodeWrapper start, end;
 	private RelationTypesInterface rType;
 
-	public Neo4jLazyServerDriverRelationship(NodeWrapper start, NodeWrapper end, RelationTypesInterface rType) {
+	public Neo4jLazyRelationship(NodeWrapper start, NodeWrapper end, RelationTypesInterface rType) {
 		this(start, rType);
 		this.end = end;
 
 	}
 
-	public Neo4jLazyServerDriverRelationship(NodeWrapper start, RelationTypesInterface rType) {
+	public Neo4jLazyRelationship(NodeWrapper start, RelationTypesInterface rType) {
 		this.start = start;
 		this.rType = rType;
 		InfoToInsert.INFO_TO_INSERT.addNewRel(this);
@@ -42,8 +42,8 @@ public class Neo4jLazyServerDriverRelationship extends AbstractNeo4jLazyServerDr
 	public void delete() {
 		// System.out.println(i++);
 		InfoToInsert.INFO_TO_INSERT.deleteRel(this);
-		((Neo4jLazyServerDriverNode) start).removeOutgoingRel(this);
-		((Neo4jLazyServerDriverNode) end).removeIncomingRel(this);
+		((Neo4jLazyNode) start).removeOutgoingRel(this);
+		((Neo4jLazyNode) end).removeIncomingRel(this);
 	}
 
 	@Override
