@@ -457,6 +457,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		if (isStaticInit) {
 			prevState = methodState;
 			methodState = new MethodState(lastStaticConsVisited = lastBlockVisited);
+			pdgUtils.visitNewMethod();
 			ast.newMethodDeclaration(methodState);
 		}
 
@@ -829,6 +830,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 	@Override
 	public ASTVisitorResult visitForLoop(ForLoopTree forLoopTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+//		System.out.println(forLoopTree);
 
 		NodeWrapper forLoopNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(forLoopTree,
 				NodeTypes.FOR_LOOP);
