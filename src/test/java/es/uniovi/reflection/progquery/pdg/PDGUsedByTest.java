@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PDGUsedByTest extends APIBasedTest {
 
-    private static final String SRC_DIR="testPrograms/pdg_test/src", TEST_NAME="pdg_test";
+    private static final String SRC_DIR="testPrograms\\pdg_test\\src", TEST_NAME="pdg_test";
     public PDGUsedByTest() {
         super(SRC_DIR, TEST_NAME);
     }

@@ -981,7 +981,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		inALambda=true;
 		scan(lambdaExpressionTree.getBody(),
 				Pair.createPair(lambdaExpressionNode, RelationTypes.LAMBDA_EXPRESSION_BODY));
-		//DEBERÍAMOS PROCESAR PRIMERO LOS PARAMETROS??
+		//DEBERIAMOS PROCESAR PRIMERO LOS PARAMETROS??
 		for (int i = 0; i < lambdaExpressionTree.getParameters().size(); i++)
 			scan(lambdaExpressionTree.getParameters().get(i),
 					Pair.createPair(new PartialRelationWithProperties<RelationTypes>(lambdaExpressionNode,
