@@ -508,11 +508,11 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// pasa
 
 		prevMust = must;
-		boolean isAUnconditionalDefault = caseTree.getExpression() == null && !anyBreak;
+		boolean isAUnconditionalDefault = caseTree.getExpressions().isEmpty() && !anyBreak;
 		must = prevMust && isAUnconditionalDefault;
 		if (!isAUnconditionalDefault)
 			pdgUtils.enteringNewBranch();
-		scan(caseTree.getExpression(), Pair.createPair(caseNode, RelationTypes.CASE_EXPR));
+		scan(caseTree.getExpressions(), Pair.createPair(caseNode, RelationTypes.CASE_EXPR));
 		scan(caseTree.getStatements(), Pair.createPair(caseNode, RelationTypes.CASE_STATEMENTS));
 
 		must = prevMust;
@@ -747,7 +747,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		GraphUtils.connectWithParent(doWhileLoopNode, t);
 		boolean prevInWh = inADoWhile, prevMust = must;
 		inADoWhile = true;
-		pdgUtils.enteringNewBranch();
+//		pdgUtils.enteringNewBranch();
 
 		scan(doWhileLoopTree.getStatement(), Pair.createPair(doWhileLoopNode, RelationTypes.DO_WHILE_STATEMENT));
 		scan(doWhileLoopTree.getCondition(), Pair.createPair(doWhileLoopNode, RelationTypes.DO_WHILE_CONDITION));
@@ -759,8 +759,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 				prevMust = auxMust;
 			}
 		}
-		if (!must)
-			pdgUtils.exitingCurrentBranch();
+//		if (!must)
+//			pdgUtils.exitingCurrentBranch();
 		must = prevMust;
 		methodState.putCfgNodeInCache(doWhileLoopTree, doWhileLoopNode);
 		return null;
@@ -847,7 +847,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		scan(forLoopTree.getStatement(), Pair.createPair(forLoopNode, RelationTypes.FORLOOP_STATEMENT));
 		scan(forLoopTree.getUpdate(), Pair.createPair(forLoopNode, RelationTypes.FORLOOP_UPDATE));
 
-		pdgUtils.enteringNewBranch();
+		pdgUtils.exitingCurrentBranch();
 		must = prevMust;
 
 		return null;
