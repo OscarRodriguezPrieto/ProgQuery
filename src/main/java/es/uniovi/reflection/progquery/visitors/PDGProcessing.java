@@ -334,8 +334,7 @@ public class PDGProcessing {
 				return true;
 			}
 
-			else if (dec.hasLabel(NodeTypes.PARAMETER_DEF) && !dec
-					.hasRelationship(RelationTypes.LAMBDA_EXPRESSION_PARAMETERS, Direction.INCOMING) ) {
+			else if (isNormalParameter(methodState,dec)  ) {
 				if (rel == PDGRelationTypes.STATE_MODIFIED_BY) {
 					// System.out.println("ANALIZING STATE MOD BY of PARAM
 					// \n" + NodeUtils.nodeToString(dec));
@@ -351,6 +350,20 @@ public class PDGProcessing {
 					parametersPreviouslyModified.add(dec);
 			}
 			// }
+		}
+		return false;
+	}
+
+	private boolean isNormalParameter(MethodState methodState, NodeWrapper dec) {
+		if(dec.hasLabel(NodeTypes.PARAMETER_DEF)) {
+			RelationshipWrapper paramRel = dec
+					.getRelationships(Direction.INCOMING, RelationTypes.CALLABLE_HAS_PARAMETER,RelationTypes.LAMBDA_EXPRESSION_PARAMETERS).get(0);
+//		if(dec.getProperty("name").toString().contentEquals("onClose")) {
+//			System.out.println("ON CLOSE " + (paramRel.getStartNode() == methodState.lastMethodDecVisited));
+//			System.out.println("ON CLOSE " + (paramRel.getStartNode().getProperty("fullyQualifiedName")));
+//		}
+			//ASI SE DEBERIA CONTROLAR QUE NO HAY LAMBDA NI PARAMETROS FINAL EN CLASES ANONIMAS
+			return paramRel.getStartNode()==methodState.lastMethodDecVisited;
 		}
 		return false;
 	}
@@ -462,8 +475,7 @@ public class PDGProcessing {
 
 	public void createNotDeclaredAttrRels(ASTAuxiliarStorage ast) {
 		for (Entry<Symbol, List<Consumer<NodeWrapper>>> entry : toDo.entrySet()) {
-//			System.out.println(entry.getKey());
-			System.out.println( entry.getKey());
+//			System.out.println(entry.getKey())<
 			VarSymbol symbol = (VarSymbol) entry.getKey();
 			if (symbol.name.contentEquals("class"))
 				continue;

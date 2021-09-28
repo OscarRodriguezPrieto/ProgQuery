@@ -187,6 +187,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		constructorDef.setProperty("name", "<init>");
 		constructorDef.setProperty("fullyQualifiedName", fullyQualifiedName);
 		constructorDef.setProperty("completeName", completeName);
+
 		// ClassSymbol ownerSymbol = (ClassSymbol) s.owner;
 
 		modifierAccessLevelToNode(s.getModifiers(), constructorDef);
@@ -1566,6 +1567,10 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// if ((((JCNewClass) newClassTree).constructorType) == null)
 		// System.out.println("NO CONS TYPE: " + newClassTree.toString());
 		// else {
+//		System.out.println(newClassTree);
+//		System.out.println(((JCNewClass) newClassTree).constructor);
+//
+//		System.out.println(((JCNewClass) newClassTree).constructor.getClass());
 		MethodSymbol consSymbol = (MethodSymbol) ((JCNewClass) newClassTree).constructor;
 
 		NodeWrapper constructorDef = DefinitionCache.METHOD_DEF_CACHE.get(consSymbol);

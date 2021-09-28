@@ -178,6 +178,7 @@ public class ASTAuxiliarStorage {
 		// });
 
 		methodInfo.values().forEach(mInfo -> {
+			//FOR EACH METHOD
 			getDecs.setInfoForMethod(mInfo);
 			Iterable<RelationshipWrapper> callRels = mInfo.methodNode.getRelationships(Direction.OUTGOING,
 					CGRelationTypes.CALLS);
@@ -201,6 +202,7 @@ public class ASTAuxiliarStorage {
 //			;}
 
 		);
+
 
 	}
 

@@ -1,11 +1,14 @@
 package es.uniovi.reflection.progquery.pdg;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import es.uniovi.reflection.progquery.database.nodes.NodeUtils;
+import es.uniovi.reflection.progquery.database.relations.CGRelationTypes;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.MethodInfo;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import org.neo4j.graphdb.Direction;
@@ -93,11 +96,7 @@ public class GetDeclarationFromExpression {
 				RelationshipWrapper methodInvocationRelIfExists = identOrMemberSel
 						.getSingleRelationship(Direction.INCOMING, RelationTypes.METHODINVOCATION_METHOD_SELECT);
 				if (methodInvocationRelIfExists == null || identOrMemberSel.hasLabel(NodeTypes.MEMBER_SELECTION)) {
-					// System.out.println("NULL FUCK OTHER:");
-					// System.out.println(identOrMemberSel
-					// .getSingleRelationship(RelationTypes.METHODINVOCATION_METHOD_SELECT,
-					// Direction.OUTGOING));
-					// System.out.println(NodeUtils.nodeToString(identOrMemberSel));
+
 					// SI es el nombre de una clase (tipicamente campo estatico
 					// de clase) retornamos null
 					return null;
@@ -147,22 +146,21 @@ public class GetDeclarationFromExpression {
 		// NodeUtils.nodeToString(identifier));
 		NodeWrapper dec = getDecFromExp(identifier);
 		// System.out.println(dec);
+//		if(identifier.getProperty("name").toString().contentEquals("super"))
+//		{
+//			System.out.println("SUPER DEC");
+//			System.out.println(dec);
+//		}if(identifier.getProperty("name").toString().contentEquals("this"))
+//		{
+//			System.out.println("THIS DEC");
+//			System.out.println(dec);
+//		}
+
 		if (dec != null) {
 			List<PDGMutatedDecInfoInMethod> identInfo = new ArrayList<>();
 			// System.out.println("FOUND DEC\n" + NodeUtils.nodeToString(dec));
 
 			identInfo.add(new PDGMutatedDecInfoInMethod(false,
-					// dec.hasLabel(NodeTypes.ATTR_DEC) ||
-					// dec.hasLabel(NodeTypes.PARAMETER_DEC)
-					// ||
-					// // instance method
-					// (dec.hasLabel(NodeTypes.THIS_REF)
-					// &&
-					// !(identifier.getProperty("name").toString().contentEquals("this")
-					// ||
-					// identifier.getProperty("name").toString().contentEquals("super")))
-					// ? IsOuterMostLeftImplicitThisOrParam.YES
-					// : IsOuterMostLeftImplicitThisOrParam.NO,
 					dec.hasLabel(NodeTypes.ATTR_DEF) && !(Boolean) dec.getProperty("isStatic") ||
 					// instance method
 							dec.hasLabel(NodeTypes.THIS_REF)
@@ -233,9 +231,20 @@ public class GetDeclarationFromExpression {
 	public Pair<List<PDGMutatedDecInfoInMethod>, Boolean> scanMethodInvocation(NodeWrapper methodInvocation) {
 
 		Map<Integer, List<PDGMutatedDecInfoInMethod>> varDecsInArguments = new HashMap<>();
-		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> thisArgRet = scan(methodInvocation
-				.getSingleRelationship(Direction.OUTGOING, RelationTypes.METHODINVOCATION_METHOD_SELECT).getEndNode());
-		varDecsInArguments.put(0, thisArgRet.getFirst());
+		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> thisArgRet;
+		NodeWrapper calleeMethodNode = methodInvocation.getSingleRelationship( Direction.OUTGOING, CGRelationTypes.HAS_DEF).getEndNode();
+
+//		if(callee.getProperty("isStatic")== null)
+//			System.out.println(methodInvocation.getSingleRelationship( Direction.OUTGOING, CGRelationTypes.HAS_DEF).getEndNode());
+
+			//CONSTRUCTOR CALLS LIKE THIS() SUPER(), OR NON STATIC CALLS REQUIRE LEFT PROCESSING (ARG 0) STATIC CALLS DOES NOT AND HAVE AN EMPTY LIST INSTED
+			thisArgRet		 = calleeMethodNode.hasLabel(NodeTypes.CONSTRUCTOR_DEF) || !(Boolean)calleeMethodNode.getProperty("isStatic")?
+					scan(methodInvocation
+					.getSingleRelationship(Direction.OUTGOING, RelationTypes.METHODINVOCATION_METHOD_SELECT).getEndNode())
+					:
+					Pair.create(new ArrayList<>(),false);
+			varDecsInArguments.put(0, thisArgRet.getFirst());
+
 
 		for (RelationshipWrapper argumentRel : methodInvocation.getRelationships(Direction.OUTGOING,
 				RelationTypes.METHODINVOCATION_ARGUMENTS))
@@ -275,6 +284,19 @@ public class GetDeclarationFromExpression {
 
 	public List<Pair<NodeWrapper, Boolean>> scanNewClass(NodeWrapper newClass) {
 
+		Map<Integer, List<PDGMutatedDecInfoInMethod>> varDecsInArguments = new HashMap<>();
+		//We introduce always de ARG 0 never affecting the this object on the caller so empty list
+		varDecsInArguments.put(0,new ArrayList<>());
+
+		for (RelationshipWrapper argumentRel : newClass.getRelationships(Direction.OUTGOING,
+				RelationTypes.NEW_CLASS_ARGUMENTS))
+			// System.out.println("Argument " + (int)
+			// argumentRel.getProperty("argumentIndex") + ":\n"
+			// + NodeUtils.nodeToString(argumentRel.getEndNode()));
+			varDecsInArguments.put((int) argumentRel.getProperty("argumentIndex"),
+					scan(argumentRel.getEndNode()).getFirst());
+
+		invocationsMayModifyVars.put(newClass, varDecsInArguments);
 		return new ArrayList<Pair<NodeWrapper, Boolean>>();
 	}
 }

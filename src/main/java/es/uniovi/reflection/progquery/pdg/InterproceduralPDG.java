@@ -46,6 +46,7 @@ public class InterproceduralPDG {
 
 //		System.out.println(
 //				"INTERPROCEDURAL FLOW TRAVERSING :\n" + methodInfo.methodNode.getProperty("fullyQualifiedName"));
+
 		NodeWrapper methodDec = methodInfo.methodNode;
 		methodDecsAnalyzed.add(methodDec);
 		// SE RECUPERAN LOS CALLS DE CADA M�TODO
@@ -68,6 +69,8 @@ public class InterproceduralPDG {
 					}
 				});
 
+//				System.out.println(
+//						"CONTINUING INTERPROCEDURAL FLOW TRAVERSING :\n" + methodInfo.methodNode.getProperty("fullyQualifiedName"));
 				// Si pueden ser referidos por el mismo, misma signatura
 				// Mapa argNumber, tipoRel=May/must->ocurrences
 				Map<Pair<Integer, Boolean>, Integer> possibleRelsToOcurr = new HashMap<Pair<Integer, Boolean>, Integer>();
@@ -76,6 +79,15 @@ public class InterproceduralPDG {
 				// ITERAMOS SOBRE LAS POSIBLES DEFINICIONES DE LOS M�TODOS LLAMADOS
 				for (RelationshipWrapper invocationReferringDec : possibleMethodDecsForCalls) {
 					MethodInfo calledMethodInfo = fromMethodDecNodeToInfo.get(invocationReferringDec.getEndNode());
+//					if (calledMethodInfo != null)
+//					{
+//						System.out.println(	"calledMethodInfo.paramsToPDGRelations");
+//						System.out.println(	calledMethodInfo.methodNode.getProperty("fullyQualifiedName"));
+//
+//						System.out.println(	calledMethodInfo.paramsToPDGRelations);
+//					}
+
+
 					if (calledMethodInfo != null)
 						// ITERAMOS SOBRE CADA UNO DE LOS PAR�METROS (INCLUIDOS THIS -0-) cuyo estado se
 						// modifica (o puede) durante la ejecuci�n del m�todo llamado
@@ -167,6 +179,7 @@ public class InterproceduralPDG {
 //		System.out.println("PROCESSING INVOCATION for arg " + argNumber + " in line "
 //				+ callRel.getEndNode().getProperty("lineNumber") + ", method "
 //				+ methodInfo.methodNode.getProperty("fullyQualifiedName"));
+
 		Map<NodeWrapper, PDGRelationTypes> paramRelsOnMethod = methodInfo.paramsToPDGRelations;
 		// Saco la ifnormacion de las declaraciones que pueden mutar en la invocacion
 		// (al ser referenciadas directa o indirectamente por los argumentos de la
@@ -178,7 +191,7 @@ public class InterproceduralPDG {
 			// System.out.println("There is info!");
 			List<PDGMutatedDecInfoInMethod> invocationModifyThisVarInfo = invocationModifyVarsInfo.get(argNumber);
 //			System.out.println("VARS MUTATED IN THIS INV/ARG");
-//			System.out.println(invocationModifyThisVarInfo);
+//			System.out.println(invocationModifyVarsInfo);
 			for (PDGMutatedDecInfoInMethod varMayOrMustBeModified : invocationModifyThisVarInfo) {
 				boolean isMay = varMayOrMustBeModified.isMay || !must;
 				// System.out.println("DEC:\n" +
@@ -195,7 +208,7 @@ public class InterproceduralPDG {
 				// "\n"
 				// + NodeUtils.nodeToStrin
 				Set<NodeWrapper> paramsSet = methodInfo.callsToParamsPreviouslyModified.get(callRel.getEndNode());
-				if (varMayOrMustBeModified.dec.hasLabel(NodeTypes.PARAMETER_DEF)
+				if (varMayOrMustBeModified.dec.hasLabel(NodeTypes.PARAMETER_DEF) && varMayOrMustBeModified.dec.getRelationships(Direction.INCOMING, RelationTypes.CALLABLE_HAS_PARAMETER,RelationTypes.LAMBDA_EXPRESSION_PARAMETERS).get(0).getStartNode()==methodInfo.methodNode
 						&& (paramsSet == null || !paramsSet.contains(varMayOrMustBeModified.dec)))
 
 					addNewPDGRelFromParamToMethod(
