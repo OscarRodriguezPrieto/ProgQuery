@@ -20,6 +20,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
+import com.sun.tools.javac.api.JavacTool;
 import es.uniovi.reflection.progquery.database.DatabaseFachade;
 import es.uniovi.reflection.progquery.database.Neo4jDriverLazyInsertion;
 import es.uniovi.reflection.progquery.database.NotPersistentLazyInsertion;
@@ -34,6 +35,8 @@ public class Main {
 	public static void main(String[] args) {
 		parseArguments(args);
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+
 		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null,null,Charset.forName("UTF-8"));
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 		List<File> files = listFiles(parameters.sourceFolder);
@@ -54,7 +57,12 @@ public class Main {
 		};
 		JavacTaskImpl compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
 
-		DatabaseFachade.init(parameters.neo4j_mode==OptionsConfiguration.DEFAULT_NEO4J_MODE?
+//        System.out.println(		((JavacTaskImpl)compilerTask).getContext().getClass());
+//        System.out.println(		ToolProvider.getSystemJavaCompiler().getClass());
+//        System.out.println(		ToolProvider.getSystemJavaCompiler().name());
+
+
+        DatabaseFachade.init(parameters.neo4j_mode==OptionsConfiguration.DEFAULT_NEO4J_MODE?
 			new Neo4jDriverLazyInsertion(
 				parameters.neo4j_host,
 				parameters.neo4j_port_number,

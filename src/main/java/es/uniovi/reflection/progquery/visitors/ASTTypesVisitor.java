@@ -312,6 +312,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	@Override
 	public ASTVisitorResult visitArrayType(ArrayTypeTree arrayTypeTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
+		System.out.println("ARRAY TYPE:\n"+arrayTypeTree);
 		NodeWrapper arrayTypeNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNodeExplicitCats(arrayTypeTree,
 				NodeTypes.ARRAY_TYPE, NodeCategory.AST_TYPE, NodeCategory.AST_NODE);
 		GraphUtils.connectWithParent(arrayTypeNode, t);
@@ -431,7 +432,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 	@Override
 	public ASTVisitorResult visitBinary(BinaryTree binaryTree, Pair<PartialRelation<RelationTypes>, Object> t) {
-
+//System.out.println(binaryTree);
 		NodeWrapper binaryNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(binaryTree,
 				NodeTypes.BINARY_OPERATION);
 		binaryNode.setProperty("operator", binaryTree.getKind().toString());
@@ -548,6 +549,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 		// }
 
+//		System.out.println("CURRENT CLASS:\n"+classTree);
+
 		ClassSymbol previousClassSymbol = currentTypeDecSymbol;
 		currentTypeDecSymbol = ((JCClassDecl) classTree).sym;
 		// Console s = System.console();
@@ -653,9 +656,10 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 		// String fileName =
 		// compilationUnitTree.getSourceFile().getName().toString();
-//		 System.err.println("CU:\n" + 
+//		 System.out.println("CU:\n" +
 //		 compilationUnitTree.getSourceFile().getName().toString());
-//		 System.err.println(compilationUnitTree);
+//		 System.out.println(compilationUnitTree);
+
 
 		// if (DEBUG)
 		// System.out.println(fileName);
@@ -927,12 +931,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	@Override
 	public ASTVisitorResult visitInstanceOf(InstanceOfTree instanceOfTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
-
+//		System.out.println(instanceOfTree);
 		NodeWrapper instanceOfNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(instanceOfTree,
 				NodeTypes.INSTANCE_OF);
 		GraphUtils.attachTypeDirect(instanceOfNode, instanceOfTree, "boolean", "BOOLEAN", ast);
 		GraphUtils.connectWithParent(instanceOfNode, t);
-
+//		System.out.println( instanceOfTree.getType().);
 		addClassIdentifier(JavacInfo.getTypeMirror(instanceOfTree.getType()));
 		scan(instanceOfTree.getExpression(), Pair.createPair(instanceOfNode, RelationTypes.INSTANCE_OF_EXPR));
 		scan(instanceOfTree.getType(), Pair.createPair(instanceOfNode, RelationTypes.INSTANCE_OF_TYPE));
@@ -1196,8 +1200,9 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// System.out.println(methodSymbol.isConstructor());
 		String name = methodTree.getName().toString(), completeName = methodSymbol.owner + ":" + name,
 				fullyQualifiedName = completeName + methodSymbol.type;
-		
-		
+
+
+//		 System.out.println("METHOD:\t"+fullyQualifiedName);
 		NodeWrapper methodNode;
 
 		boolean prev = false;
@@ -1236,6 +1241,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 				t.getFirst().getStartingNode().hasLabel(NodeTypes.INTERFACE_DEF),
 				methodTree.getModifiers().getAnnotations());
 		String accessLevel = methodNode.getProperty("accessLevel").toString();
+
+//		System.out.println(NodeUtils.nodeToString(classState.currentClassDec));
 
 		if (!methodSymbol.isConstructor() && isInAccessibleContext
 				&& (accessLevel.contentEquals("public") || accessLevel.contentEquals("protected")
@@ -1499,6 +1506,9 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		} else if (parent.hasLabel(NodeTypes.INTERFACE_DEF)) {
 			checkAbstractMod(modifiers, parent);
 			modifierAccessLevelLimitedToNode(modifiers, parent);
+			parent.setProperty("isFinal", false);
+			parent.setProperty("isStatic", false);
+
 		} else if (parent.hasLabel(NodeTypes.ENUM_ELEMENT)) {
 			parent.setProperty("isStatic", true);
 			parent.setProperty("isFinal", true);
@@ -1506,6 +1516,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 		} else if (parent.hasLabel(NodeTypes.ENUM_DEF)) {
 			modifierAccessLevelLimitedToNode(modifiers, parent);
+			parent.setProperty("isFinal", true);
+			parent.setProperty("isStatic", false);
 		} else
 			throw new IllegalStateException(
 					"Label with modifiers no checked.\n" + NodeUtils.nodeToString(t.getFirst().getStartingNode()));
