@@ -312,7 +312,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	@Override
 	public ASTVisitorResult visitArrayType(ArrayTypeTree arrayTypeTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
-		System.out.println("ARRAY TYPE:\n"+arrayTypeTree);
+//		System.out.println("ARRAY TYPE:\n"+arrayTypeTree);
 		NodeWrapper arrayTypeNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNodeExplicitCats(arrayTypeTree,
 				NodeTypes.ARRAY_TYPE, NodeCategory.AST_TYPE, NodeCategory.AST_NODE);
 		GraphUtils.connectWithParent(arrayTypeNode, t);
