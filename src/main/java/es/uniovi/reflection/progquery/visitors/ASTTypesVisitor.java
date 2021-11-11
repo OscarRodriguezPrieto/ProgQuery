@@ -544,8 +544,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	public ASTVisitorResult visitClass(ClassTree classTree, Pair<PartialRelation<RelationTypes>, Object> pair) {
 		if (DEBUG)
 			System.out.println("Visitando clase " + classTree.getSimpleName());
-		// System.out.println(" clase " + classTree.getSimpleName() + "(" +
-		// classTree.getClass() + ")");
+//		 System.out.println(" clase " + classTree.getSimpleName() + "(" +
+//		 classTree.getClass() + ")");
 
 		// }
 
@@ -1895,7 +1895,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		 * el retorno de NodeWrapper tipo parametrizered type 4� en vez de las dos
 		 * llamadas es VAR_DEC - itsTYPEis-> tipo <-USES_TYPE-current
 		 */
-	//	System.out.println("VARIABLE!!!");
+//		System.out.println("VARIABLE!!!");
 //		System.out.println(variableTree);
 		boolean isAttr = t.getFirst().getRelationType().equals(RelationTypes.HAS_STATIC_INIT);
 		boolean isMethodParam = t.getFirst().getRelationType().equals(RelationTypes.CALLABLE_HAS_PARAMETER)

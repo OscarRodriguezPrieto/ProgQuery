@@ -83,7 +83,7 @@ public class Main {
 						diagnostic.getSource(), diagnostic.getMessage(null));
 			}
 		}
-	//	System.exit(0);
+		System.exit(0);
 	}
 	
 	

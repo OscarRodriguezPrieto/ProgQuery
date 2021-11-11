@@ -55,18 +55,16 @@ public class JavacInfo {
 			return new Object[0];
 		// find offset of the specified AST node
 		long position = currentJavacInfo.sourcePositions.getStartPosition(currentJavacInfo.currCompilationUnit, tree);
-		// return lineMap.getLineNumber(position);
-		// return
-		// currentJavacInfo.sourcePositions.getStartPosition(currentJavacInfo.currCompilationUnit,
-		// tree);
-		// System.out.println();
-		return new Object[] { "lineNumber", lineMap.getLineNumber(position), "column",
-				lineMap.getColumnNumber(position), "position", position
-				// "endColumn"
 
-				// , lineMap.get(arg0, arg1)(
-				// currentJavacInfo.sourcePositions.getEndPosition(currentJavacInfo.currCompilationUnit,
-				// tree))
+		long line = -1;
+		long column = -1;
+		if(position!=-1) {
+			 line = lineMap.getLineNumber(position);
+			 column = lineMap.getColumnNumber(position);
+		}
+
+		return new Object[] { "lineNumber", line, "column",
+				column, "position", position
 		};
 
 	}
