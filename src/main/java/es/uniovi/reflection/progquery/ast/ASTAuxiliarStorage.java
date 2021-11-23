@@ -101,7 +101,10 @@ public class ASTAuxiliarStorage {
 	}
 
 	public void deleteAccesibleMethod(MethodSymbol ms) {
+//		int starting=accesibleMethods.size();
 		accesibleMethods.remove(ms);
+//		if(starting!=accesibleMethods.size())
+//			throw new IllegalStateException("ESTA BORRANDO ALGUNO");
 	}
 	// public void putConditionInCfgCache(ExpressionTree tree, NodeWrapper n) {
 	// if (tree instanceof ParenthesizedTree)

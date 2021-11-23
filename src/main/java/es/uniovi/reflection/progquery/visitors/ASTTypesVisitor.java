@@ -109,6 +109,7 @@ import es.uniovi.reflection.progquery.utils.dataTransferClasses.ClassState;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.MethodState;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.VisitorResultImpl;
+import scala.reflect.internal.Symbols;
 
 public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialRelation<RelationTypes>, Object>> {
 
@@ -313,6 +314,9 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	public ASTVisitorResult visitArrayType(ArrayTypeTree arrayTypeTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
 //		System.out.println("ARRAY TYPE:\n"+arrayTypeTree);
+//		System.out.println("ARRAY TYPE:\n"+arrayTypeTree.getKind());
+//		System.out.println("ARRAY TYPE:\n"+arrayTypeTree.getClass());
+
 		NodeWrapper arrayTypeNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNodeExplicitCats(arrayTypeTree,
 				NodeTypes.ARRAY_TYPE, NodeCategory.AST_TYPE, NodeCategory.AST_NODE);
 		GraphUtils.connectWithParent(arrayTypeNode, t);
@@ -978,11 +982,22 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	@Override
 	public ASTVisitorResult visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree,
 			Pair<PartialRelation<RelationTypes>, Object> t) {
+
 		NodeWrapper lambdaExpressionNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(lambdaExpressionTree,
 				NodeTypes.LAMBDA_EXPRESSION);
 		lambdaExpressionNode.setProperty("bodyKind", lambdaExpressionTree.getBodyKind().toString());
 		GraphUtils.connectWithParent(lambdaExpressionNode, t);
 		attachTypeDirect(lambdaExpressionNode, lambdaExpressionTree);
+
+		MethodState prevState = methodState;
+		methodState=new MethodState(lambdaExpressionNode);
+		pdgUtils.visitNewMethod();
+		ast.newMethodDeclaration(methodState);
+
+		boolean prevInside = insideConstructor;
+		insideConstructor = false;
+		boolean prevIsInAccesibleCtxt = isInAccessibleContext;
+		isInAccessibleContext = false;
 		inALambda=true;
 		scan(lambdaExpressionTree.getBody(),
 				Pair.createPair(lambdaExpressionNode, RelationTypes.LAMBDA_EXPRESSION_BODY));
@@ -995,6 +1010,21 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// Pair.createPair(lambdaExpressionNode,
 		// RelationTypes.LAMBDA_EXPRESSION_PARAMETERS));
 		inALambda=false;
+		//lambda expressions do not have this ref!
+//		pdgUtils.setThisRefOfInstanceMethod(methodState, classState.currentClassDec);
+//		This line is to do posterior processing like PDG intraprocedural
+//		ast.addInfo(methodTree, methodNode, methodState);
+
+		//Currently, we do not support control flow analysis of lambdas
+//			CFGVisitor.doCFGAnalysis(methodNode, methodTree, methodState.cfgNodeCache,
+//					ast.getTrysToExceptionalPartialRelations(methodState.invocationsInStatements),
+//					methodState.finallyCache);
+		insideConstructor = prevInside;
+		isInAccessibleContext = prevIsInAccesibleCtxt;
+		must = true;
+		methodState = prevState;
+		ast.endMethodDeclaration();
+
 		return null;
 	}
 
@@ -1257,8 +1287,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// && !(Boolean) classState.currentClassDec.getProperty("isFinal")));
 
 		boolean prevIsInAccesibleCtxt = isInAccessibleContext;
-//		if(methodState!=null)
-//System.out.println("PREVIOUS CACHE SIZE "+methodState.cfgNodeCache.size());
 		isInAccessibleContext = false;
 		MethodState prevState = methodState;
 		must = true;
@@ -1322,17 +1350,11 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 					methodState.finallyCache);
 		insideConstructor = prev;
 		isInAccessibleContext = prevIsInAccesibleCtxt;
-		// System.out.println("METHOD " + methodTree.getName() + " END
-		// METHODEC");
 		must = true;
-//		if(methodState!=null)
-//System.out.println("LAST CACHE SIZE "+methodState.cfgNodeCache.size());
 		methodState = prevState;
-
-//		System.out.println("RECOVERING previous state\n");
-//		if(methodState!=null)
-//System.out.println("RECOVERED CACHE SIZE "+methodState.cfgNodeCache.size());
 		ast.endMethodDeclaration();
+//		if(fullyQualifiedName.contains("com.intuit.karate.core.ScenarioEngine:executeFunction"))
+//			throw new IllegalArgumentException("STOOOP");
 		return null;
 
 	}
@@ -1544,6 +1566,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 	@Override
 	public ASTVisitorResult visitNewClass(NewClassTree newClassTree,
 			Pair<PartialRelation<RelationTypes>, Object> pair) {
+//		System.out.println(newClassTree);
 		NodeWrapper newClassNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(newClassTree,
 				NodeTypes.NEW_INSTANCE);
 		Type type = JavacInfo.getTypeDirect(newClassTree.getIdentifier());
@@ -1583,7 +1606,19 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 //		System.out.println(((JCNewClass) newClassTree).constructor);
 //
 //		System.out.println(((JCNewClass) newClassTree).constructor.getClass());
-		MethodSymbol consSymbol = (MethodSymbol) ((JCNewClass) newClassTree).constructor;
+Symbol newClassConstructor=((JCNewClass) newClassTree).constructor;
+//if(newClassConstructor instanceof ClassSymbol)
+//{
+//	System.out.println(newClassConstructor);
+//	System.out.println(newClassConstructor.getClass());
+//	System.out.println(((ClassSymbol)newClassConstructor).isConstructor());
+//	System.out.println(((ClassSymbol)newClassConstructor).type);
+//	System.out.println(((ClassSymbol)newClassConstructor).owner);
+//	System.out.println(((ClassSymbol)newClassConstructor.owner).
+//			);
+
+//}
+		MethodSymbol consSymbol = (MethodSymbol) newClassConstructor;
 
 		NodeWrapper constructorDef = DefinitionCache.METHOD_DEF_CACHE.get(consSymbol);
 		if (constructorDef == null) {
@@ -1644,10 +1679,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		// TODO INSTEAD of L<> to denote it is parameterized, use the visitor to
 		// L<T<U>,D>--> changes return null by types--> NO HACE FALTA EL TIPO DE
 		// JAVA YA LO TIENE
-		// scan(parameterizedTypeTree.getTypeArguments(),
-		// Pair.createPair(parameterizedNode,
-		// RelationTypes.PARAMETERIZEDTYPE_TYPEARGUMENTS));
-		// System.out.println(NodeUtils.nodeToString(parameterizedNode));
+
 		parameterizedNode.setProperty("actualType",
 				((JCTypeApply) parameterizedTypeTree).type.tsym.getQualifiedName() + "<>");
 		return null;
