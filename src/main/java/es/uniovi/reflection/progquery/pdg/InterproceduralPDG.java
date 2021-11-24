@@ -176,9 +176,9 @@ public class InterproceduralPDG {
 	 */
 	private void createRelationsIfNeededForArgumentNumber(int argNumber, RelationshipWrapper callRel, boolean must,
 			MethodInfo methodInfo) {
-		System.out.println("PROCESSING INVOCATION for arg " + argNumber + " in line "
-				+ callRel.getEndNode().getProperty("lineNumber") + ", method "
-				+ methodInfo.methodNode.getProperty("fullyQualifiedName"));
+		//System.out.println("PROCESSING INVOCATION for arg " + argNumber + " in line "
+		//		+ callRel.getEndNode().getProperty("lineNumber") + ", method "
+		//		+ methodInfo.methodNode.getProperty("fullyQualifiedName"));
 
 		Map<NodeWrapper, PDGRelationTypes> paramRelsOnMethod = methodInfo.paramsToPDGRelations;
 		// Saco la ifnormacion de las declaraciones que pueden mutar en la invocacion
@@ -190,8 +190,8 @@ public class InterproceduralPDG {
 		if (invocationModifyVarsInfo != null) {
 			// System.out.println("There is info!");
 			List<PDGMutatedDecInfoInMethod> invocationModifyThisVarInfo = invocationModifyVarsInfo.get(argNumber);
-			System.out.println("VARS MUTATED IN THIS INV/ARG");
-			System.out.println(invocationModifyVarsInfo);
+		//	System.out.println("VARS MUTATED IN THIS INV/ARG");
+		//	System.out.println(invocationModifyVarsInfo);
 			for (PDGMutatedDecInfoInMethod varMayOrMustBeModified : invocationModifyThisVarInfo) {
 				boolean isMay = varMayOrMustBeModified.isMay || !must;
 				// System.out.println("DEC:\n" +
