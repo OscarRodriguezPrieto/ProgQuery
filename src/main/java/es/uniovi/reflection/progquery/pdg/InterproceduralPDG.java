@@ -73,19 +73,12 @@ public class InterproceduralPDG {
 //						"CONTINUING INTERPROCEDURAL FLOW TRAVERSING :\n" + methodInfo.methodNode.getProperty("fullyQualifiedName"));
 				// Si pueden ser referidos por el mismo, misma signatura
 				// Mapa argNumber, tipoRel=May/must->ocurrences
-				Map<Pair<Integer, Boolean>, Integer> possibleRelsToOcurr = new HashMap<Pair<Integer, Boolean>, Integer>();
+				Map<MutatedParamInCallInfo, Integer> possibleRelsToOcurr = new HashMap<MutatedParamInCallInfo, Integer>();
 				int possibleDecsSize = 0;
 
 				// ITERAMOS SOBRE LAS POSIBLES DEFINICIONES DE LOS M�TODOS LLAMADOS
 				for (RelationshipWrapper invocationReferringDec : possibleMethodDecsForCalls) {
 					MethodInfo calledMethodInfo = fromMethodDecNodeToInfo.get(invocationReferringDec.getEndNode());
-//					if (calledMethodInfo != null)
-//					{
-//						System.out.println(	"calledMethodInfo.paramsToPDGRelations");
-//						System.out.println(	calledMethodInfo.methodNode.getProperty("fullyQualifiedName"));
-//
-//						System.out.println(	calledMethodInfo.paramsToPDGRelations);
-//					}
 
 
 					if (calledMethodInfo != null)
@@ -100,17 +93,17 @@ public class InterproceduralPDG {
 					//		try {
 								// TODO FIX SE NECESITA SABER SI TIENE SENTIDO O NO PASAR LAS
 								// LAMBDA_EXPRESSIONES
-								Pair<Integer, Boolean> mutatedParamIndexAndMust = Pair
-										.create(paramMutatedInCalledMethodDec.getKey().hasLabel(NodeTypes.THIS_REF) ? 0
-												: (Integer) paramMutatedInCalledMethodDec.getKey()
-														.getRelationships(Direction.INCOMING,
-																RelationTypes.CALLABLE_HAS_PARAMETER
-																,RelationTypes.LAMBDA_EXPRESSION_PARAMETERS
-														)
-														.get(0)
-														.getProperty("paramIndex"),
+int paramIndex=paramMutatedInCalledMethodDec.getKey().hasLabel(NodeTypes.THIS_REF) ? 0
+		: (Integer) paramMutatedInCalledMethodDec.getKey()
+		.getRelationships(Direction.INCOMING,
+				RelationTypes.CALLABLE_HAS_PARAMETER
+				,RelationTypes.LAMBDA_EXPRESSION_PARAMETERS
+		)
+		.get(0)
+		.getProperty("paramIndex");
+								MutatedParamInCallInfo mutatedParamIndexAndMust = new MutatedParamInCallInfo(paramIndex,
 												paramMutatedInCalledMethodDec
-														.getValue() == PDGRelationTypes.STATE_MODIFIED_BY);
+														.getValue() == PDGRelationTypes.STATE_MODIFIED_BY, calledMethodInfo.varArgParamIndex==paramIndex );
 
 								Integer val = possibleRelsToOcurr.get(mutatedParamIndexAndMust);
 								if (val == null)
@@ -128,11 +121,11 @@ public class InterproceduralPDG {
 				}
 //				System.out.println("POSSIBLE RELS FOR " + methodInfo.methodNode.getProperty("fullyQualifiedName"));
 //				System.out.println(possibleRelsToOcurr);
-				for (Entry<Pair<Integer, Boolean>, Integer> possibleRel : possibleRelsToOcurr.entrySet())
+				for (Entry<MutatedParamInCallInfo, Integer> possibleRel : possibleRelsToOcurr.entrySet())
 
-					createRelationsIfNeededForArgumentNumber(possibleRel.getKey().getFirst(), callRel,
-							possibleRel.getValue() == possibleDecsSize ? possibleRel.getKey().getSecond() : false,
-							methodInfo);
+					createRelationsIfNeededForArgumentNumber(possibleRel.getKey().getArgNumber(), callRel,
+							possibleRel.getValue() == possibleDecsSize ? possibleRel.getKey().isMay() : false,
+							methodInfo, possibleRel.getKey().isVargArgs());
 			}
 		createStoredDecToInvRels(methodInfo);
 	}
@@ -175,12 +168,12 @@ public class InterproceduralPDG {
 	 * tipo es r si s�lo hay en algunas s-r->e , el tipo es MAY_
 	 */
 	private void createRelationsIfNeededForArgumentNumber(int argNumber, RelationshipWrapper callRel, boolean must,
-			MethodInfo methodInfo) {
+			MethodInfo methodInfo, boolean isVargArgsParam) {
 		//System.out.println("PROCESSING INVOCATION for arg " + argNumber + " in line "
 		//		+ callRel.getEndNode().getProperty("lineNumber") + ", method "
 		//		+ methodInfo.methodNode.getProperty("fullyQualifiedName"));
 
-		Map<NodeWrapper, PDGRelationTypes> paramRelsOnMethod = methodInfo.paramsToPDGRelations;
+
 		// Saco la ifnormacion de las declaraciones que pueden mutar en la invocacion
 		// (al ser referenciadas directa o indirectamente por los argumentos de la
 		// invocaci�n : invocationModifyVarsInfo asocia el index de cada arg (el objeto
@@ -190,58 +183,61 @@ public class InterproceduralPDG {
 		if (invocationModifyVarsInfo != null) {
 			// System.out.println("There is info!");
 			List<PDGMutatedDecInfoInMethod> invocationModifyThisVarInfo = invocationModifyVarsInfo.get(argNumber);
+			if(isVargArgsParam ){
+				if(invocationModifyThisVarInfo==null)
+				return ;
+				else{
+					for(int anyArgIndex:invocationModifyVarsInfo.keySet())
+						if(anyArgIndex>=argNumber)
+							addPDGRelsForVarsInArg(methodInfo,invocationModifyVarsInfo.get(argNumber), callRel,false);
+				}
+			}else
+			{
+				addPDGRelsForVarsInArg(methodInfo,invocationModifyThisVarInfo, callRel,must);
+			}
+
 		//	System.out.println("VARS MUTATED IN THIS INV/ARG");
 		//	System.out.println(invocationModifyVarsInfo);
-			for (PDGMutatedDecInfoInMethod varMayOrMustBeModified : invocationModifyThisVarInfo) {
-				boolean isMay = varMayOrMustBeModified.isMay || !must;
-				// System.out.println("DEC:\n" +
-				// NodeUtils.nodeToString(varMayOrMustBeModified.dec));
+
+		}
+	}
+	private void addPDGRelsForVarsInArg(MethodInfo methodInfo,List<PDGMutatedDecInfoInMethod> invocationModifyThisVarInfo, RelationshipWrapper callRel, boolean must){
+		for (PDGMutatedDecInfoInMethod varMayOrMustBeModified : invocationModifyThisVarInfo) {
+			boolean isMay = varMayOrMustBeModified.isMay || !must;
+			// System.out.println("DEC:\n" +
+			// NodeUtils.nodeToString(varMayOrMustBeModified.dec));
 //				if (varMayOrMustBeModified.dec == null)
 //					System.out.println("DEC NULL IN PARAM");
-				addNewPDGRelFromAnyDecToInv(!isMay, varMayOrMustBeModified.dec, callRel.getEndNode(),
-						varMayOrMustBeModified.dec.hasLabel(NodeTypes.THIS_REF)
-								|| varMayOrMustBeModified.isOuterMostImplicitThisOrP != IsInstance.NO,
+			addNewPDGRelFromAnyDecToInv(!isMay, varMayOrMustBeModified.dec, callRel.getEndNode(),
+					varMayOrMustBeModified.dec.hasLabel(NodeTypes.THIS_REF)
+							|| varMayOrMustBeModified.isOuterMostImplicitThisOrP != IsInstance.NO,
+					methodInfo);
+
+			Map<NodeWrapper, PDGRelationTypes> paramRelsOnMethod = methodInfo.paramsToPDGRelations;
+			Set<NodeWrapper> paramsSet = methodInfo.callsToParamsPreviouslyModified.get(callRel.getEndNode());
+			if (varMayOrMustBeModified.dec.hasLabel(NodeTypes.PARAMETER_DEF) && varMayOrMustBeModified.dec.getRelationships(Direction.INCOMING, RelationTypes.CALLABLE_HAS_PARAMETER,RelationTypes.LAMBDA_EXPRESSION_PARAMETERS).get(0).getStartNode()==methodInfo.methodNode
+					&& (paramsSet == null || !paramsSet.contains(varMayOrMustBeModified.dec)))
+
+				addNewPDGRelFromParamToMethod(
+						((paramsSet = methodInfo.callsToParamsMaybePreviouslyModified
+								.get(callRel.getEndNode())) == null
+								|| !paramsSet.contains(varMayOrMustBeModified.dec)) && !isMay
+								&& (Boolean) callRel.getProperty("mustBeExecuted"),
+						paramRelsOnMethod, varMayOrMustBeModified.dec);
+			else if (varMayOrMustBeModified.dec.hasLabel(NodeTypes.ATTR_DEF)
+					&& varMayOrMustBeModified.isOuterMostImplicitThisOrP != IsInstance.NO
+					&& methodInfo.thisNodeIfNotStatic != null) {
+				addNewPDGRelFromParamToMethod(
+						!(isMay || IsInstance.MAYBE == varMayOrMustBeModified.isOuterMostImplicitThisOrP)
+								&& (Boolean) callRel.getProperty("mustBeExecuted"),
+						paramRelsOnMethod, methodInfo.thisNodeIfNotStatic);
+
+				// IMPLICIT THIS TO INVOCATION
+
+				addNewPDGRelFromAnyDecToInv(!isMay, methodInfo.thisNodeIfNotStatic, callRel.getEndNode(), true,
 						methodInfo);
-				// System.out.println("CREATING A STATE_MAY_MOD " + isMay + "
-				// REL:\n"
-				// + NodeUtils.nodeToString(varMayOrMustBeModified.getFirst()) +
-				// "\n"
-				// + NodeUtils.nodeToStrin
-				Set<NodeWrapper> paramsSet = methodInfo.callsToParamsPreviouslyModified.get(callRel.getEndNode());
-				if (varMayOrMustBeModified.dec.hasLabel(NodeTypes.PARAMETER_DEF) && varMayOrMustBeModified.dec.getRelationships(Direction.INCOMING, RelationTypes.CALLABLE_HAS_PARAMETER,RelationTypes.LAMBDA_EXPRESSION_PARAMETERS).get(0).getStartNode()==methodInfo.methodNode
-						&& (paramsSet == null || !paramsSet.contains(varMayOrMustBeModified.dec)))
-
-					addNewPDGRelFromParamToMethod(
-							((paramsSet = methodInfo.callsToParamsMaybePreviouslyModified
-									.get(callRel.getEndNode())) == null
-									|| !paramsSet.contains(varMayOrMustBeModified.dec)) && !isMay
-									&& (Boolean) callRel.getProperty("mustBeExecuted"),
-							paramRelsOnMethod, varMayOrMustBeModified.dec);
-				else if (varMayOrMustBeModified.dec.hasLabel(NodeTypes.ATTR_DEF)
-						&& varMayOrMustBeModified.isOuterMostImplicitThisOrP != IsInstance.NO
-						&& methodInfo.thisNodeIfNotStatic != null) {
-					addNewPDGRelFromParamToMethod(
-							!(isMay || IsInstance.MAYBE == varMayOrMustBeModified.isOuterMostImplicitThisOrP)
-									&& (Boolean) callRel.getProperty("mustBeExecuted"),
-							paramRelsOnMethod, methodInfo.thisNodeIfNotStatic);
-					// methodInfo.thisNodeIfNotStatic.createRelationshipTo(callRel.getEndNode(),
-					// isMay || IsOuterMostLeftImplicitThisOrParam.MAYBE ==
-					// varMayOrMustBeModified.isOuterMostImplicitThisOrP
-					// ? PDGRelationTypes.STATE_MAY_BE_MODIFIED :
-					// PDGRelationTypes.STATE_MODIFIED_BY);
-					// IMPLICIT THIS TO INVOCATION
-
-					addNewPDGRelFromAnyDecToInv(!isMay, methodInfo.thisNodeIfNotStatic, callRel.getEndNode(), true,
-							methodInfo);
-				}
-
-				// TODAV�A NO
-				// varMayOrMustBeModified.getFirst().createRelationshipTo(methodInfo.methodNodeWrapper,
-				// isMay || !(Boolean) callRel.getProperty("mustBeExecuted")
-				// ? PDGRelationTypes.STATE_MAY_BE_MODIFIED :
-				// PDGRelationTypes.STATE_MODIFIED_BY);
 			}
-		}
+	}
 	}
 
 	private Map<Pair<NodeWrapper, Pair<NodeWrapper, Boolean>>, PDGRelationTypes> getRelMapForMethod(

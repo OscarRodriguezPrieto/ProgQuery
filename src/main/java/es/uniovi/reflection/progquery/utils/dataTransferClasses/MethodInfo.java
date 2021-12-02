@@ -27,14 +27,14 @@ public class MethodInfo {
 	private List<RelationshipWrapper> decToInstanceInvRels = new ArrayList<>();
 	public Map<NodeWrapper, Set<NodeWrapper>> callsToParamsPreviouslyModified,
 			callsToParamsMaybePreviouslyModified;
-
+public final int varArgParamIndex;
 	public MethodInfo(MethodTree tree, NodeWrapper methodNode,
 			Map<NodeWrapper, NodeWrapper> identificationForLeftAssignExprs,
 //			Map<NodeWrapper, Boolean> instanceAssignments,
 			NodeWrapper thisNodeForMethod,
 			PDGRelationTypes thisRelationsOnThisMethod, Map<NodeWrapper, PDGRelationTypes> paramsToPDGRelations,
 			Map<NodeWrapper, Set<NodeWrapper>> callsToParamsPreviouslyModified,
-			Map<NodeWrapper, Set<NodeWrapper>> callsToParamsMaybePreviouslyModified) {
+			Map<NodeWrapper, Set<NodeWrapper>> callsToParamsMaybePreviouslyModified, int varArgParamIndex) {
 		super();
 		this.tree = tree;
 		this.methodNode = methodNode;
@@ -50,6 +50,7 @@ public class MethodInfo {
 			this.paramsToPDGRelations.put(thisNodeForMethod, thisRelationsOnThisMethod);
 		this.callsToParamsPreviouslyModified = callsToParamsPreviouslyModified;
 		this.callsToParamsMaybePreviouslyModified = callsToParamsMaybePreviouslyModified;
+		this.varArgParamIndex=varArgParamIndex;
 	}
 
 

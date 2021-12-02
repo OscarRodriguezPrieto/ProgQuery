@@ -62,7 +62,7 @@ public class ASTAuxiliarStorage {
 	// private final Set<Pair<Node, NodeWrapper>> calls = new HashSet<>();
 	private final Map<MethodSymbol, NodeWrapper> accesibleMethods = new HashMap<>();
 	private final Map<NodeWrapper, Set<NodeWrapper>> callGraph = new HashMap<>();
-
+public static final int NO_VARG_ARG=-1;
 	// public void addThrowsInfoToMethod(String methodName, List<Type>
 	// exceptionTypes) {
 	// methodNamesToExceptionThrowsTypes.put(methodName, exceptionTypes);
@@ -87,12 +87,12 @@ public class ASTAuxiliarStorage {
 		return methodInfo;
 	}
 
-	public void addInfo(MethodTree methodTree, NodeWrapper methodNode, MethodState methodState) {
+	public void addInfo(MethodTree methodTree, NodeWrapper methodNode, MethodState methodState, int varArgParamIndex) {
 
 		methodInfo.put(methodNode,
 				new MethodInfo(methodTree, methodNode, methodState.identificationForLeftAssignExprs,
 						methodState.thisNode, methodState.thisRelationsOnThisMethod, methodState.paramsToPDGRelations,
-						methodState.callsToParamsPreviouslyModified, methodState.callsToParamsMaybePreviouslyModified));
+						methodState.callsToParamsPreviouslyModified, methodState.callsToParamsMaybePreviouslyModified, varArgParamIndex));
 	}
 
 	public void addAccesibleMethod(MethodSymbol ms, NodeWrapper method) {

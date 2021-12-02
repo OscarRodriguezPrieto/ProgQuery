@@ -1223,8 +1223,16 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
 		if (DEBUG) {
 			System.out.println("\tVisiting method declaration " + methodTree.getName());
+		System.out.println(((JCMethodDecl)methodTree).getReceiverParameter());
+		System.out.println(((JCMethodDecl)methodTree).completesNormally);
+		System.out.println(((JCMethodDecl)methodTree).defaultValue);
+		System.out.println(((JCMethodDecl)methodTree).sym.isVarArgs());
 			System.out.println(methodTree);
 		}
+
+//		System.out.println(((JCMethodDecl)methodTree).);
+
+
 		MethodSymbol methodSymbol = ((JCMethodDecl) methodTree).sym;
 
 		// System.out.println(methodSymbol.isConstructor());
@@ -1298,6 +1306,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		methodNode.setProperty("fullyQualifiedName", fullyQualifiedName);
 		methodNode.setProperty("completeName", completeName);
 		methodNode.setProperty("isDeclared", true);
+		methodNode.setProperty("isVarArgs",methodSymbol.isVarArgs());
+
 		if (DEBUG) {
 			System.out.println("METHOD DECLARATION :" + methodTree.getClass());
 
@@ -1322,11 +1332,11 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 			scan(methodTree.getTypeParameters().get(i),
 					Pair.createPair(new PartialRelationWithProperties<RelationTypes>(methodNode,
 							RelationTypes.CALLABLE_HAS_TYPEPARAMETERS, "paramIndex", i + 1)));
-
-		for (int i = 0; i < methodTree.getParameters().size(); i++)
-			scan(methodTree.getParameters().get(i),
+		int nParams=0;
+		for (nParams = 0; nParams < methodTree.getParameters().size(); nParams++)
+			scan(methodTree.getParameters().get(nParams),
 					Pair.createPair(new PartialRelationWithProperties<RelationTypes>(methodNode,
-							RelationTypes.CALLABLE_HAS_PARAMETER, "paramIndex", i + 1)));
+							RelationTypes.CALLABLE_HAS_PARAMETER, "paramIndex", nParams + 1)));
 
 		methodTree.getThrows().forEach((throwsTree) -> {
 			TypeMirror type = ((JCExpression) throwsTree).type;
@@ -1340,7 +1350,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 		scan(methodTree.getReceiverParameter(), Pair.createPair(methodNode, RelationTypes.HAS_RECEIVER_PARAMETER));
 
 		pdgUtils.setThisRefOfInstanceMethod(methodState, classState.currentClassDec);
-		ast.addInfo(methodTree, methodNode, methodState);
+		ast.addInfo(methodTree, methodNode, methodState, methodSymbol.isVarArgs()?nParams:ASTAuxiliarStorage.NO_VARG_ARG);
 
 //		System.out.println("Initiating cfg for:\n"+methodTree);
 //		System.out.println("... AND BODY "+methodTree.getBody());
@@ -1929,6 +1939,7 @@ Symbol newClassConstructor=((JCNewClass) newClassTree).constructor;
 		 */
 //		System.out.println("VARIABLE!!!");
 //		System.out.println(variableTree);
+
 		boolean isAttr = t.getFirst().getRelationType().equals(RelationTypes.HAS_STATIC_INIT);
 		boolean isMethodParam = t.getFirst().getRelationType().equals(RelationTypes.CALLABLE_HAS_PARAMETER)
 				|| t.getFirst().getRelationType().equals(RelationTypes.LAMBDA_EXPRESSION_PARAMETERS);
