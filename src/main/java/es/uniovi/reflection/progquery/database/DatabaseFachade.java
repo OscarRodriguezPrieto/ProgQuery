@@ -18,6 +18,7 @@ import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.node_wrappers.WrapperUtils;
 import es.uniovi.reflection.progquery.utils.JavacInfo;
+import scala.reflect.internal.Symbols;
 
 public class DatabaseFachade {
 	private final InsertionStrategy insertionStrategy;
@@ -147,7 +148,11 @@ public class DatabaseFachade {
 	}
 
 	public NodeWrapper createNonDeclaredCLASSTypeDecNode(ClassType c, NodeTypes type) {
-		return createNode(type, getTypeDecProperties((ClassSymbol) c.tsym, false));
+		return createNonDeclaredCLASSTypeDecNode((ClassSymbol) c.tsym,  type);
+
+	}
+	public NodeWrapper createNonDeclaredCLASSTypeDecNode(ClassSymbol c, NodeTypes type) {
+		return createNode(type, getTypeDecProperties(c, false));
 
 	}
 }

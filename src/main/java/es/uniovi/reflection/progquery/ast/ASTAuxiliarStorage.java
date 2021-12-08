@@ -67,6 +67,7 @@ public static final int NO_VARG_ARG=-1;
 	// exceptionTypes) {
 	// methodNamesToExceptionThrowsTypes.put(methodName, exceptionTypes);
 	// }
+	//A trustuble invocation, is a new clsas or constructor that cannot have polimorfism, REFER_TO always to a sigle method i think, they dont need Hierarchy + call analysisi con MAY_REFE_TO
 	public void checkIfTrustableInvocation(MethodInvocationTree methodInvocationTree, MethodSymbol methodSymbol,
 			NodeWrapper methodInvocationNode) {
 		if (methodInvocationTree.getMethodSelect().getKind() == Kind.IDENTIFIER) {

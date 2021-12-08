@@ -1,7 +1,9 @@
 package es.uniovi.reflection.progquery.tasklisteners;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.tools.JavaFileObject;
 
@@ -38,6 +40,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
     private static final boolean DEBUG = false;
     private final JavacTask task;
     private Map<JavaFileObject, Integer> classCounter = new HashMap<JavaFileObject, Integer>();
+
     // private Set<CompilationUnitTree> unitsInTheSameFile = new
     // HashSet<CompilationUnitTree>();
     private boolean started = false;
@@ -63,7 +66,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
             if (retrievedProgram != null) {
                 PackageInfo.setCurrentProgram(retrievedProgram);
 
-            	return;
+                return;
             }
         }
         PackageInfo.createCurrentProgram(programID, userID);
@@ -88,12 +91,15 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 //			System.out.println(arg0.getTypeElement().toString());	
 //			String[] tydcSplit = arg0.getTypeElement().toString().split("\\.");
 //			System.out.println(tydcSplit+" "+tydcSplit.length);
-//			if (tydcSplit.length > 0)
-//				System.out.println("splIT:"+tydcSplit[tydcSplit.length - 1]);
-
             started = true;
             int currentTypeCounter = classCounter.get(cuTree.getSourceFile());
-            if (cuTree.getTypeDecls().size() == 0)
+//            if (cuTree.getSourceFile().toString().contains("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\javassist\\src\\main\\javassist\\tools\\rmi\\StubGenerator.java")) {
+//            System.out.println("ACTUAL CU:"+cuTree.getSourceFile());
+//            System.out.println("N counter:" + currentTypeCounter);
+//                System.out.println("N typedecs:" + cuTree.getTypeDecls().size());
+
+//            }
+           if (cuTree.getTypeDecls().size() == 0)
 //				System.out.println("SCANNING CU " + cuTree.getSourceFile().getName() + " WITH 0 TYPEDECS");
                 firstScanIfNoTypeDecls(cuTree);
             else {
@@ -139,19 +145,15 @@ public class GetStructuresAfterAnalyze implements TaskListener {
                 if (firstClass)
                     firstScan(cuTree, cuTree.getTypeDecls().get(nextTypeDecIndex));
                 else
-                    scan((ClassTree) cuTree.getTypeDecls().get(nextTypeDecIndex), false);
+                    scan((ClassTree) cuTree.getTypeDecls().get(nextTypeDecIndex), false, cuTree);
 
             }
 
             if (currentTypeCounter <= 0)
                 classCounter.remove(cuTree.getSourceFile());
 
+
         }
-//		if (classCounter.size() <= 25) {
-//			System.out.println("CLASS_COUNTER:");
-//			for (Entry<JavaFileObject, Integer> entry : classCounter.entrySet())
-//				System.out.println(entry.getKey().getName() + "," + entry.getValue());
-//		}
         if (DEBUG)
             System.out.println("FINISHED FOR " + arg0.getSourceFile() + "( "
                     + (arg0.getSourceFile() == null ? "" : arg0.getSourceFile().getName()) + " ) " + arg0.getKind());
@@ -171,7 +173,6 @@ public class GetStructuresAfterAnalyze implements TaskListener {
         compilationUnitNode.setProperty("fileName", fileName);
 
         argument = Pair.createPair(compilationUnitNode, null);
-        cu = u;
 //		System.out.println("FIRST SCAN WITH NO TYPE DECS");
     }
 
@@ -184,33 +185,33 @@ public class GetStructuresAfterAnalyze implements TaskListener {
         return packageNode;
     }
 
-    private void firstScan(CompilationUnitTree u, Tree typeDeclaration) {
-//		System.out.println("BEFORE SETTING JAVAC INFOf");
-        JavacInfo.setJavacInfo(new JavacInfo(u, task));
+    private void firstScan(CompilationUnitTree cu, Tree typeDeclaration) {
+//    System.out.println("FIRST SCAN!");
+
+        JavacInfo.setJavacInfo(new JavacInfo(cu, task));
 //		System.out.println("AFTER SETTING JAVAC INFOf");
 
-        String fileName = u.getSourceFile().getName();
+        String fileName = cu.getSourceFile().getName();
         // transaction = DatabaseFachade.beginTx();
 
         // InsertionStrategy.CURRENT_INSERTION_STRATEGY.startAnalysis();
 
-        NodeWrapper compilationUnitNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(u,
+        NodeWrapper compilationUnitNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(cu,
                 NodeTypes.COMPILATION_UNIT);
-        addPackageInfo(((JCCompilationUnit) u).packge, compilationUnitNode);
+        addPackageInfo(((JCCompilationUnit) cu).packge, compilationUnitNode);
         //System.out.println(fileName);
         compilationUnitNode.setProperty("fileName", fileName);
 
         argument = Pair.createPair(compilationUnitNode, null);
-        cu = u;
-	//	System.out.println("BEFORE SCAN TYPEDEC\n"+u);
-		if(typeDeclaration instanceof ModuleTree)
-		    return ;
-        scan((ClassTree) typeDeclaration, true);
+        //	System.out.println("BEFORE SCAN TYPEDEC\n"+u);
+        if (typeDeclaration instanceof ModuleTree)
+            return;
+        scan((ClassTree) typeDeclaration, true, cu);
 //		System.out.println("AFTER SCAN TYPEDEC");
 
     }
 
-    private void scan(ClassTree typeDeclaration, boolean first) {
+    private void scan(ClassTree typeDeclaration, boolean first, CompilationUnitTree cu) {
         // if (DEBUG) {
 //		System.out.println("-*-*-*-*-*-*-* NEW TYPE DECLARATION AND VISITOR-*-*-*-*-*-*-*");
 //		System.out.println("CU:\t" + cu.getSourceFile().getName());
@@ -219,6 +220,9 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 //		System.out.println("TYPE_DEC:\t" + ((JCClassDecl) typeDeclaration).sym);
         // }
         DefinitionCache.ast = ast;
+//        System.out.println("SCANING "+typeDeclaration.getSimpleName());
+//        System.out.println(cu.getSourceFile());
+//        System.out.println(typeDeclaration);
 
         new ASTTypesVisitor(typeDeclaration, first, pdgUtils, ast, argument.getFirst().getStartingNode()).scan(cu,
                 argument);
