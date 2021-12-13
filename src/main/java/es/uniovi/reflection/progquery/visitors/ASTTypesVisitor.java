@@ -672,7 +672,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 //                compilationUnitTree.getSourceFile().toString().contains("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\io\\ReadOptions.java")
 //                        ||
 //                        compilationUnitTree.getSourceFile().toString().contains("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\javassist\\src\\main\\javassist\\tools\\rmi\\StubGenerator.java")) {
-//            System.out.println("CU:\n" + compilationUnitTree.getSourceFile().getName().toString());
+            System.out.println("CU:\n" + compilationUnitTree.getSourceFile().getName().toString());
 //            System.out.println(compilationUnitTree);
 //        }
 //		 if("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\index\\ShortIndex.java".contentEquals(compilationUnitTree.getSourceFile().getName().toString()))
@@ -1394,7 +1394,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     @Override
     public ASTVisitorResult visitMethodInvocation(MethodInvocationTree methodInvocationTree,
                                                   Pair<PartialRelation<RelationTypes>, Object> pair) {
-//        System.out.println(methodInvocationTree);
+        System.out.println(methodInvocationTree);
         NodeWrapper methodInvocationNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(methodInvocationTree,
                 NodeTypes.METHOD_INVOCATION);
 //		Le dejo de tipo error type?=> Habria que ver todos los eror type anteriores....
@@ -1433,10 +1433,25 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             //4) Podría ser común CALLS, HAS_REF,, REFERS_TO
 
         } else {
-            MethodSymbol methodSymbol =
-//				((JCMethodInvocation)methodInvocationTree).
+            if(symbol==null)
+            {
+                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type);
+                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.getClass());
+
+                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym);
+                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym.getClass());
+
+                if(methodInvocationTree.getMethodSelect() instanceof MemberSelectTree) {
+                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym);
+                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym.getClass());
+                }
+
+
+            }
+            MethodSymbol methodSymbol = (MethodSymbol) (symbol==null?
+				((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym:symbol);
 //				
-                    (MethodSymbol) JavacInfo.getSymbolFromTree(methodInvocationTree.getMethodSelect());
+//                    (MethodSymbol) symbol;
             String methodName = null, completeName = null, fullyQualifiedName = null;
             if (methodInvocationTree.getMethodSelect() instanceof IdentifierTree)
                 addClassIdentifier(methodSymbol.owner);
@@ -1893,6 +1908,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     @Override
     public ASTVisitorResult visitTry(TryTree tryTree, Pair<PartialRelation<RelationTypes>, Object> t) {
 
+//        System.out.println(tryTree);
         NodeWrapper tryNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(tryTree, NodeTypes.TRY_STATEMENT);
         GraphUtils.connectWithParent(tryNode, t);
         boolean hasCatchingComponent = tryTree.getCatches().size() > 0 || tryTree.getFinallyBlock() != null;

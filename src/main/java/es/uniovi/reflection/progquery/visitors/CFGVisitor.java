@@ -673,8 +673,10 @@ public class CFGVisitor extends
 		}
 		NodeWrapper tryNode = CFGCache.get(tryTree);
 		List<PartialRelation<CFGRelationTypes>> previousLasts = nextStatement(tryNode, lasts.getSecond());
-		for (Tree t : tryTree.getResources())
-			previousLasts = nextStatement((StatementTree) t, previousLasts);
+		for (Tree tryResource : tryTree.getResources())
+			//vardecs and not idents, if (int he future), try stmts allow   more statements, it will work
+			if(tryResource instanceof StatementTree)
+				previousLasts = nextStatement((StatementTree) tryResource, previousLasts);
 
 		// Lo pasamos sin etiqueta para no tener que a�adirlo a los catch ni al
 		// finally
