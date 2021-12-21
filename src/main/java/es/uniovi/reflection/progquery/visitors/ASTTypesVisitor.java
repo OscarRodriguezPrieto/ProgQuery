@@ -1435,17 +1435,17 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         } else {
             if(symbol==null)
             {
-                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type);
-                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.getClass());
-
-                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym);
-                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym.getClass());
-
-                if(methodInvocationTree.getMethodSelect() instanceof MemberSelectTree) {
-                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym);
-                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym.getClass());
-                }
-
+//                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type);
+//                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.getClass());
+//
+//                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym);
+//                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym.getClass());
+//
+//                if(methodInvocationTree.getMethodSelect() instanceof MemberSelectTree) {
+//                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym);
+//                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym.getClass());
+//                }
+        return null;
 
             }
             MethodSymbol methodSymbol = (MethodSymbol) (symbol==null?
