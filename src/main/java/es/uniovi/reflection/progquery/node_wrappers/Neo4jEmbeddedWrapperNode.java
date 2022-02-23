@@ -132,6 +132,7 @@ public class Neo4jEmbeddedWrapperNode implements NodeWrapper {
 	public void delete() {
 //		counter--;
 		// node.getRelationships().forEach(r -> r.delete());
+//		System.out.println("DELETING "+NodeUtils.nodeToStringNoRels(this));
 		node.delete();
 	}
 

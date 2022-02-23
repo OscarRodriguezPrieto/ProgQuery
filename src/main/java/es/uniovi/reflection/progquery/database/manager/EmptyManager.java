@@ -11,7 +11,7 @@ public class EmptyManager implements NEO4JManager {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 }

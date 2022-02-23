@@ -1,12 +1,9 @@
 package es.uniovi.reflection.progquery.database;
 
 import es.uniovi.reflection.progquery.database.insertion.lazy.InfoToInsert;
-import es.uniovi.reflection.progquery.database.insertion.lazy.DriverLazyInsertionManagerWithIter;
+import es.uniovi.reflection.progquery.database.insertion.lazy.DriverLazyInsertionService;
 import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.database.manager.NEO4JServerManager;
-import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
-import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 
 public class Neo4jDriverLazyInsertion extends NotPersistentLazyInsertion{
 	private final int MAX_OPERATIONS_PER_TRANSACTION;
@@ -44,11 +41,11 @@ public class Neo4jDriverLazyInsertion extends NotPersistentLazyInsertion{
 	@Override
 	public void endAnalysis() {
 		if (DB_NAME == null)
-			DriverLazyInsertionManagerWithIter.defaultDBInsertion(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER, PASS,
+			DriverLazyInsertionService.defaultDBInsertion(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER, PASS,
 					MAX_OPERATIONS_PER_TRANSACTION);
 		else
 
-			DriverLazyInsertionManagerWithIter.insertToSpecificDB(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER, PASS,
+			DriverLazyInsertionService.insertToSpecificDB(InfoToInsert.INFO_TO_INSERT, ADDRESS, USER, PASS,
 					MAX_OPERATIONS_PER_TRANSACTION, DB_NAME);
 
 	}

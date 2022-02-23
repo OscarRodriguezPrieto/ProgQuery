@@ -18,7 +18,7 @@ import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 
 import static org.neo4j.driver.Values.parameters;
 
-public class DriverLazyInsertionManagerWithIter {
+public class DriverLazyInsertionService {
 	private static final int REPETITIONS =1 ;
 
 	public static void defaultDBInsertion(InfoToInsert info, String server_address, final String USER,
@@ -41,8 +41,6 @@ public class DriverLazyInsertionManagerWithIter {
 				actionByParts(info.relSet.size(), MAX_OPERATIONS_PER_TRANSACTION,
 						(start, end) -> executeRelsQuery(session, relInfo, start, end));
 			}
-			// System.out.println("AFTER ANALYSIS " + totalEdges + " edges");
-
 		}
 	}
 	public static void insertToSpecificDB(InfoToInsert info, String server_address, final String USER,

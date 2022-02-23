@@ -3,15 +3,12 @@ package es.uniovi.reflection.progquery;
 
 import java.time.ZonedDateTime;
 
-import com.sun.tools.javac.api.JavacTaskImpl;
 import es.uniovi.reflection.progquery.database.*;
 import org.kohsuke.MetaInfServices;
 
 import com.sun.source.util.JavacTask;
 
 import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
-
-import javax.tools.ToolProvider;
 
 @MetaInfServices(com.sun.source.util.Plugin.class)
 public class ProgQueryPlugin implements com.sun.source.util.Plugin {
@@ -46,8 +43,8 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 										: args.length == 3 ? serverTwoArgs(args[2])
 												: new Neo4jDriverLazyInsertion(Integer.parseInt(args[3]),
 														args[2])
-								: args.length > 2 ? new EmbeddedGGDBServiceInsertion(args[2])
-										: new EmbeddedGGDBServiceInsertion());
+								: args.length > 2 ? new EmbeddedInsertion(args[2])
+										: new EmbeddedInsertion());
 		task.addTaskListener(new GetStructuresAfterAnalyze(task, programID, userID));
 //		System.out.println(		((JavacTaskImpl)task).getContext().getClass());
 //		System.out.println(		ToolProvider.getSystemJavaCompiler().getClass());

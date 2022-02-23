@@ -5,6 +5,7 @@ import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
 
+import java.io.IOException;
 import java.util.List;
 
 public class NEO4JServerManager implements NEO4JManager {
@@ -35,16 +36,9 @@ public class NEO4JServerManager implements NEO4JManager {
         return session.writeTransaction(tx -> tx.run(query).list());
     }
 
-    /*
-    public List<Record> executeQuery(String query, String[] userIds, String[] programIds) {
-        return session.writeTransaction(tx -> {
-            Result result = tx.run(CypherAdapter.limitQuery(query, userIds, programIds));
-            return result.list();
-        });
-    }*/
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         session.close();
         driver.close();
     }

@@ -61,13 +61,15 @@ public class GetStructuresAfterAnalyze implements TaskListener {
         // this.graphDb = graphDb;
         DatabaseFachade.CURRENT_INSERTION_STRATEGY.startAnalysis();
         if (MERGING_ALLOWED) {
-            NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getManager();
-            NodeWrapper retrievedProgram = manager.getProgramFromDB(programID, userID);
+            NodeWrapper retrievedProgram = null;
+            try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getManager()) {
+                 retrievedProgram = manager.getProgramFromDB(programID, userID);
+            }
             if (retrievedProgram != null) {
                 PackageInfo.setCurrentProgram(retrievedProgram);
-
                 return;
             }
+
         }
         PackageInfo.createCurrentProgram(programID, userID);
     }
@@ -99,7 +101,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 //                System.out.println("N typedecs:" + cuTree.getTypeDecls().size());
 
 //            }
-           if (cuTree.getTypeDecls().size() == 0)
+            if (cuTree.getTypeDecls().size() == 0)
 //				System.out.println("SCANNING CU " + cuTree.getSourceFile().getName() + " WITH 0 TYPEDECS");
                 firstScanIfNoTypeDecls(cuTree);
             else {

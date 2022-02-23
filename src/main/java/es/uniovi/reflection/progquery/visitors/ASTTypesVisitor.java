@@ -672,7 +672,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 //                compilationUnitTree.getSourceFile().toString().contains("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\io\\ReadOptions.java")
 //                        ||
 //                        compilationUnitTree.getSourceFile().toString().contains("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\javassist\\src\\main\\javassist\\tools\\rmi\\StubGenerator.java")) {
-            System.out.println("CU:\n" + compilationUnitTree.getSourceFile().getName().toString());
+        System.out.println("CU:\n" + compilationUnitTree.getSourceFile().getName().toString());
 //            System.out.println(compilationUnitTree);
 //        }
 //		 if("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\index\\ShortIndex.java".contentEquals(compilationUnitTree.getSourceFile().getName().toString()))
@@ -1277,6 +1277,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
         if (DefinitionCache.METHOD_DEF_CACHE.containsKey(methodSymbol)) {
             ast.deleteAccesibleMethod(methodSymbol);
+//            System.out.println(fullyQualifiedName + " DECLARED METHOD PUT");
             // For methods that are invoked in this class, after the removal of the
             // non-declared edges of the class and before the visit of the method
             DefinitionCache.METHOD_DEF_CACHE.putDefinition(methodSymbol, methodNode);
@@ -1284,6 +1285,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             if (!methodNode.hasRelationship(rel, Direction.INCOMING))
                 GraphUtils.connectWithParent(methodNode, t, rel);
         } else {
+//            System.out.println(fullyQualifiedName + " DECLARED METHOD PUT--- no prev found");
             DefinitionCache.METHOD_DEF_CACHE.putDefinition(methodSymbol, methodNode);
             GraphUtils.connectWithParent(methodNode, t, rel);
         }
@@ -1433,8 +1435,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             //4) Podría ser común CALLS, HAS_REF,, REFERS_TO
 
         } else {
-            if(symbol==null)
-            {
+            if (symbol == null) {
 //                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type);
 //                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.getClass());
 //
@@ -1445,11 +1446,11 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 //                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym);
 //                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym.getClass());
 //                }
-        return null;
+                return null;
 
             }
-            MethodSymbol methodSymbol = (MethodSymbol) (symbol==null?
-				((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym:symbol);
+            MethodSymbol methodSymbol = (MethodSymbol) (symbol == null ?
+                    ((JCTree.JCMethodInvocation) methodInvocationTree).type.tsym : symbol);
 //				
 //                    (MethodSymbol) symbol;
             String methodName = null, completeName = null, fullyQualifiedName = null;
@@ -1655,6 +1656,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         NodeWrapper newClassNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(newClassTree,
                 NodeTypes.NEW_INSTANCE);
 
+        //the possible body (ANONYMOUS CLASS NEWS) is visited before, to create the declared CONSTRUCTOR_DEFINITION before instantiate a non-declared
+        // node that need to be updated in the cache, also for the embedded mode leads to errors -->
+        // the nondelcared constructor def created before visiting the body, is correctly substituted when visiting body,
+        // and then when you try to link newClassNode with it s definition Neo4j says, cannot create a relationship to a deleted node
+        scan(newClassTree.getClassBody(), Pair.createPair(newClassNode, RelationTypes.NEW_CLASS_BODY));
+
         //POrque no hay trustuble invocations??? TODO Checkear
         Type type = JavacInfo.getTypeDirect(newClassTree.getIdentifier());
         Symbol newClassConstructor = ((JCNewClass) newClassTree).constructor;
@@ -1732,8 +1739,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             scan(newClassTree.getArguments().get(i),
                     Pair.createPair(new PartialRelationWithProperties<RelationTypes>(newClassNode,
                             RelationTypes.NEW_CLASS_ARGUMENTS, "argumentIndex", i + 1)));
-
-        scan(newClassTree.getClassBody(), Pair.createPair(newClassNode, RelationTypes.NEW_CLASS_BODY));
 
 
         // Redundancia justificada para las consultas

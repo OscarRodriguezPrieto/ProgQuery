@@ -50,5 +50,6 @@ public class OptionsConfiguration {
 	public static final String DEFAULT_NEO4J_MODE = "server";
 	public static final String DEFAULT_NEO4J_PORT = "7687";
 	public static final String DEFAULT_NEO4J_USER = "neo4j";
-	public static final String DEFAULT_MAX_OPERATIONS_TRANSACTION = "80000";	
+	public static final String DEFAULT_MAX_OPERATIONS_TRANSACTION = "80000";
+
 }
