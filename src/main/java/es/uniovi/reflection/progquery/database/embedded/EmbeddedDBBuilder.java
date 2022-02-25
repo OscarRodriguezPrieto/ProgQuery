@@ -13,12 +13,12 @@ public class EmbeddedDBBuilder {
     private static final String DEFAULT_DB_DIR = "", DEFAULT_DB_NAME = "neo4j";
 
     private DatabaseManagementService manager;
-    private String dbName;
+    private String database_name;
 
-    public EmbeddedDBBuilder(String dbDir, String dbName) {
-        this.dbName = dbName;
+    public EmbeddedDBBuilder(String database_directory, String database_name) {
+        this.database_name = database_name;
         manager = configuration(new DatabaseManagementServiceBuilder(
-                Paths.get(dbDir)), dbName);
+                Paths.get(database_directory)), database_name);
         registerShutdownHook(manager);
     }
 
@@ -28,8 +28,7 @@ public class EmbeddedDBBuilder {
 
 
     public GraphDatabaseService getNewEmbeddedDBService() {
-
-       return manager.database(dbName);
+       return manager.database(database_name);
     }
 
 
@@ -52,10 +51,10 @@ public class EmbeddedDBBuilder {
         return false;
     }
 
-    public static DatabaseManagementService configuration(DatabaseManagementServiceBuilder dbmsBuilder, String dbName) {
+    public static DatabaseManagementService configuration(DatabaseManagementServiceBuilder dbmsBuilder, String database_name) {
 
         return dbmsBuilder
-                .setConfig(GraphDatabaseSettings.default_database, dbName)
+                .setConfig(GraphDatabaseSettings.default_database, database_name)
                 .build();
     }
 

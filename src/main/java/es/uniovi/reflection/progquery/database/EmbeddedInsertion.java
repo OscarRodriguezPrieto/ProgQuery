@@ -10,6 +10,8 @@ import org.neo4j.graphdb.Transaction;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.node_wrappers.Neo4jEmbeddedWrapperNode;
 
+import java.io.File;
+
 public class EmbeddedInsertion implements InsertionStrategy {
     private GraphDatabaseService gDBService;
     private Transaction currentTransaction;
@@ -21,18 +23,14 @@ public class EmbeddedInsertion implements InsertionStrategy {
         gDBService = dbBuilder.getNewEmbeddedDBService();
     }
 
-    public EmbeddedInsertion(String dbPath) {
-
-        String[] dirsInPath = dbPath.split("/");
-        final String dbName = dirsInPath.length == 0 ? dbPath : dirsInPath[dirsInPath.length - 1],
-                dbDir = dbPath.substring(0, dbPath.length() - dbName.length());
-        dbBuilder=new EmbeddedDBBuilder(dbDir, dbName);
+    public EmbeddedInsertion(String database_path) {
+        File file = new File(database_path);
+        dbBuilder = new EmbeddedDBBuilder(file.getParent(), file.getName());
         gDBService = dbBuilder.getNewEmbeddedDBService();
     }
 
     @Override
     public Neo4jEmbeddedWrapperNode createNode() {
-
         return new Neo4jEmbeddedWrapperNode(currentTransaction.createNode());
     }
 
@@ -41,7 +39,6 @@ public class EmbeddedInsertion implements InsertionStrategy {
         Neo4jEmbeddedWrapperNode wrapper = createNode();
         wrapper.getNode().addLabel(label);
         return wrapper;
-
     }
 
     @Override
