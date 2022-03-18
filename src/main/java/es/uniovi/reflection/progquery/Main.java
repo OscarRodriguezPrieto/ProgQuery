@@ -6,9 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,18 +24,43 @@ import es.uniovi.reflection.progquery.database.EmbeddedInsertion;
 import es.uniovi.reflection.progquery.database.Neo4jDriverLazyInsertion;
 import es.uniovi.reflection.progquery.database.NotPersistentLazyInsertion;
 import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
+import org.eclipse.collections.api.factory.map.MutableMapFactory;
+import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.impl.map.mutable.MutableMapFactoryImpl;
 
 public class Main {
 
     //-user=progquery -program=ExampleClasses -neo4j_host=156.35.94.130 -neo4j_database=debug -neo4j_password=secreto -src=C:\Users\VirtualUser\Source\Repos\StaticCodeAnalysis\Programs\ExampleClasses
-    //-user=progquery -program=jfreechart -neo4j_host=156.35.94.130 -neo4j_database=debug -neo4j_password=secreto -src=C:\Users\Oskar\Desktop\investigacion\post-doc\pq_server_enterprise\git_projects\test_projects\jfreechart
+    //-user=progquery -program=ExampleClasses -neo4j_database=debug -neo4j_mode=local -src=C:\Users\Miguel\Source\codeanalysis\codeanalysis-tool\Programs\ExampleClasses
 
     public static Parameters parameters = new Parameters();
+
+    static {
+        try {
+            MutableMapFactoryImpl variable = new MutableMapFactoryImpl();
+            MutableMap map1 = variable.withMap(new HashMap<>());
+            System.out.println("El Map tiene" + map1.size());
+
+            List<MutableMapFactory> factories = new ArrayList();
+            Iterator var = ServiceLoader.load(MutableMapFactory.class).iterator();
+            while (var.hasNext()) {
+                factories.add((MutableMapFactory) var.next());
+            }
+            System.out.println(factories.size());
+
+            MutableMap map = factories.get(0).withMap(new HashMap<>());
+            System.out.println(map.size());
+            //GraphDatabaseSettings st = new GraphDatabaseSettings();
+
+        } catch (Throwable t) {
+            System.err.println("\n\n\n\nFUYU" + t.getCause());
+            t.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         parseArguments(args);
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
 
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
@@ -59,22 +82,23 @@ public class Main {
                 };
         JavacTaskImpl compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
 
-//        System.out.println(		((JavacTaskImpl)compilerTask).getContext().getClass());
-//        System.out.println(		ToolProvider.getSystemJavaCompiler().getClass());
-//        System.out.println(		ToolProvider.getSystemJavaCompiler().name());
-
         final String LOCAL_MODE = OptionsConfiguration.neo4j_modeNames[0];
-        DatabaseFachade.init(parameters.neo4j_mode.contentEquals(OptionsConfiguration.DEFAULT_NEO4J_MODE) ?
-                new Neo4jDriverLazyInsertion(
-                        parameters.neo4j_host,
-                        parameters.neo4j_port_number,
-                        parameters.neo4j_user,
-                        parameters.neo4j_password,
-                        parameters.neo4j_database,
-                        parameters.max_operations_transaction) :
-                parameters.neo4j_mode.contentEquals(LOCAL_MODE) ? new EmbeddedInsertion(parameters.neo4j_database) : new NotPersistentLazyInsertion()
-        );
-
+        try {
+            DatabaseFachade.init(parameters.neo4j_mode.contentEquals(OptionsConfiguration.DEFAULT_NEO4J_MODE) ?
+                    new Neo4jDriverLazyInsertion(
+                            parameters.neo4j_host,
+                            parameters.neo4j_port_number,
+                            parameters.neo4j_user,
+                            parameters.neo4j_password,
+                            parameters.neo4j_database,
+                            parameters.max_operations_transaction) : parameters.neo4j_mode.contentEquals(LOCAL_MODE) ?
+                    new EmbeddedInsertion(
+                            Paths.get(new File(parameters.sourceFolder).getCanonicalPath(),"target",parameters.neo4j_database).toAbsolutePath().toString()
+                    ) : new NotPersistentLazyInsertion()
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         compilerTask.addTaskListener(new GetStructuresAfterAnalyze(compilerTask, parameters.programId, parameters.userId));
         compilerTask.call();

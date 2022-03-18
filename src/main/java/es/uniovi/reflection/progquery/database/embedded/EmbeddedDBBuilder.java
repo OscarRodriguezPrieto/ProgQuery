@@ -17,8 +17,7 @@ public class EmbeddedDBBuilder {
 
     public EmbeddedDBBuilder(String database_directory, String database_name) {
         this.database_name = database_name;
-        manager = configuration(new DatabaseManagementServiceBuilder(
-                Paths.get(database_directory)), database_name);
+        manager = configuration(new DatabaseManagementServiceBuilder(Paths.get(database_directory)), database_name);
         registerShutdownHook(manager);
     }
 
@@ -27,15 +26,10 @@ public class EmbeddedDBBuilder {
     }
 
 
-    public GraphDatabaseService getNewEmbeddedDBService() {
-       return manager.database(database_name);
-    }
+    public GraphDatabaseService getNewEmbeddedDBService() { return manager.database(database_name); }
 
 
     private static void registerShutdownHook(final DatabaseManagementService managementService) {
-        // Registers a shutdown hook for the Neo4j instance so that it
-        // shuts down nicely when the VM exits (even if you "Ctrl-C" the
-        // running application).
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -52,15 +46,10 @@ public class EmbeddedDBBuilder {
     }
 
     public static DatabaseManagementService configuration(DatabaseManagementServiceBuilder dbmsBuilder, String database_name) {
-
         return dbmsBuilder
                 .setConfig(GraphDatabaseSettings.default_database, database_name)
                 .build();
     }
 
-    public void shutdownManager() {
-
-
-        manager.shutdown();
-    }
+    public void shutdownManager() { manager.shutdown(); }
 }

@@ -1,14 +1,17 @@
 package es.uniovi.reflection.progquery;
-//import org.neo4j.graphdb.GraphDatabaseService;
-
 import java.time.ZonedDateTime;
+import java.util.*;
 
 import es.uniovi.reflection.progquery.database.*;
+import org.eclipse.collections.api.factory.map.MutableMapFactory;
+import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.impl.map.mutable.MutableMapFactoryImpl;
 import org.kohsuke.MetaInfServices;
 
 import com.sun.source.util.JavacTask;
 
 import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
+import org.neo4j.configuration.GraphDatabaseSettings;
 
 @MetaInfServices(com.sun.source.util.Plugin.class)
 public class ProgQueryPlugin implements com.sun.source.util.Plugin {
@@ -20,8 +23,10 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 		// final GraphDatabaseService graphDb = args.length > 0 ?
 		// DatabaseFachade.getDB(args[0]) : DatabaseFachade.getDB();
 		// First argument if any contents the db path
-
 		// DatabaseFachade.setDB(graphDb);
+
+		Thread.currentThread().setContextClassLoader(ProgQueryPlugin.class.getClassLoader());
+
 		final String ANONYMOUS_PROGRAM = "ANONYMOUS_PROGRAM_", ANONYMOUS_USER = "ANONYMOUS_USER";
 		String programID, userID;
 		if (args.length == 0) {
