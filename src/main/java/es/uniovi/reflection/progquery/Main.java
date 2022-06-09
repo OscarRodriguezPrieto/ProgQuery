@@ -35,29 +35,6 @@ public class Main {
 
     public static Parameters parameters = new Parameters();
 
-    static {
-        try {
-            MutableMapFactoryImpl variable = new MutableMapFactoryImpl();
-            MutableMap map1 = variable.withMap(new HashMap<>());
-            System.out.println("El Map tiene" + map1.size());
-
-            List<MutableMapFactory> factories = new ArrayList();
-            Iterator var = ServiceLoader.load(MutableMapFactory.class).iterator();
-            while (var.hasNext()) {
-                factories.add((MutableMapFactory) var.next());
-            }
-            System.out.println(factories.size());
-
-            MutableMap map = factories.get(0).withMap(new HashMap<>());
-            System.out.println(map.size());
-            //GraphDatabaseSettings st = new GraphDatabaseSettings();
-
-        } catch (Throwable t) {
-            System.err.println("\n\n\n\nFUYU" + t.getCause());
-            t.printStackTrace();
-        }
-    }
-
     public static void main(String[] args) {
         parseArguments(args);
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

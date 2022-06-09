@@ -672,7 +672,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 //                compilationUnitTree.getSourceFile().toString().contains("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\io\\ReadOptions.java")
 //                        ||
 //                        compilationUnitTree.getSourceFile().toString().contains("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\javassist\\src\\main\\javassist\\tools\\rmi\\StubGenerator.java")) {
-        System.out.println("CU:\n" + compilationUnitTree.getSourceFile().getName().toString());
+//        System.out.println("CU:\n" + compilationUnitTree.getSourceFile().getName().toString());
 //            System.out.println(compilationUnitTree);
 //        }
 //		 if("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects\\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\index\\ShortIndex.java".contentEquals(compilationUnitTree.getSourceFile().getName().toString()))
@@ -1388,15 +1388,14 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     private static void printType(ExpressionTree e) {
         Type type = JavacInfo.getTypeDirect(e);
 
-        System.out.println(type.getClass());
-        System.out.println(type.tsym);
-        System.out.println(type.tsym.getClass());
-    }
+//        System.out.println(type.getClass());
+//        System.out.println(type.tsym);
+//        System.out.println(type.tsym.getClass());
+}
 
     @Override
     public ASTVisitorResult visitMethodInvocation(MethodInvocationTree methodInvocationTree,
                                                   Pair<PartialRelation<RelationTypes>, Object> pair) {
-        System.out.println(methodInvocationTree);
         NodeWrapper methodInvocationNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(methodInvocationTree,
                 NodeTypes.METHOD_INVOCATION);
 //		Le dejo de tipo error type?=> Habria que ver todos los eror type anteriores....
@@ -1668,23 +1667,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         NodeWrapper constructorDef = null;
         if (newClassConstructor instanceof ClassSymbol && type instanceof ErrorType && ((ClassSymbol) newClassConstructor).sourcefile == null && ((ClassSymbol) newClassConstructor).getTypeParameters().size() == 0) {
 
-            printType(newClassTree.getIdentifier());
-            System.out.println(((ClassSymbol) newClassConstructor).isDynamic());
-            System.out.println(((ClassSymbol) newClassConstructor).className());
-            System.out.println(((ClassSymbol) newClassConstructor).getQualifiedName());
-
-            System.out.println(((ClassSymbol) newClassConstructor.owner).getQualifiedName());
-
-            System.out.println(((ClassSymbol) newClassConstructor.owner).packge());
-            System.out.println(((ClassSymbol) newClassConstructor).sourcefile);
-            System.out.println(((ClassSymbol) newClassConstructor).getEnclosedElements());
-            System.out.println(((ClassSymbol) newClassConstructor).getSuperclass());
-            System.out.println(((ClassSymbol) newClassConstructor).getTypeParameters());
-            System.out.println(((ClassSymbol) newClassConstructor).isAbstract());
-            System.out.println(((ClassSymbol) newClassConstructor).isCompleted());
-            System.out.println(((ClassSymbol) newClassConstructor).exists());
-            System.out.println(((ClassSymbol) newClassConstructor).packge());
-
             NodeWrapper generatedCLassNode = TypeVisitor.generatedClassType((ClassSymbol) newClassConstructor.owner, ast);
 
             if (!typeDecUses.contains(generatedCLassNode)) {
@@ -1817,14 +1799,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     @Override
     public ASTVisitorResult visitPrimitiveType(PrimitiveTypeTree primitiveTypeTree,
                                                Pair<PartialRelation<RelationTypes>, Object> t) {
-//		System.err.println("PRINTIIING PRIMITIVE TYPE\n" + primitiveTypeTree);
-//		System.out.println(		primitiveTypeTree.getKind());
-//		System.out.println(		primitiveTypeTree.getPrimitiveTypeKind());
-//		System.out.println(		((JCPrimitiveTypeTree) primitiveTypeTree).pos);
-//		System.out.println(		((JCPrimitiveTypeTree) primitiveTypeTree).getStartPosition());
-//		System.out.println(		((JCPrimitiveTypeTree) primitiveTypeTree).isPoly());
-//		System.out.println(		((JCPrimitiveTypeTree) primitiveTypeTree).isStandalone());
-//		System.out.println(		((JCPrimitiveTypeTree) primitiveTypeTree).getStartPosition());
         NodeWrapper primitiveTypeNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNodeExplicitCats(
                 primitiveTypeTree, NodeTypes.PRIMITIVE_TYPE, NodeCategory.AST_TYPE, NodeCategory.AST_NODE);
         // primitiveTypeNode.setProperty("primitiveTypeKind",
@@ -2058,10 +2032,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
          * TODO variableTree.getType() instead of ((JCVariableDecl) variableTree).type
          */
         Type type = ((JCVariableDecl) variableTree).type;
-        if (type == null) {
-            type = ((JCVariableDecl) variableTree).sym.type;
-            System.out.println("TYPE WAS NULLL!");
-        }
         // System.out.println("Attributing var " + variableTree);
         GraphUtils.attachType(variableNode, type, ast);
         addClassIdentifier(type);
@@ -2084,7 +2054,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             Pair<List<NodeWrapper>, List<NodeWrapper>> param = ((Pair<Pair<List<NodeWrapper>, List<NodeWrapper>>, List<NodeWrapper>>) t
                     .getSecond()).getFirst();
             (s.isStatic() ? param.getSecond() : param.getFirst()).add(methodState.lastMethodDecVisited);
-            // pdgUtils.endMethod(methodState, classState.currentClassDec);
 
         } else
             GraphUtils.connectWithParent(variableNode, t);
@@ -2094,11 +2063,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         if (!(isMethodParam || isAttr)) {
             methodState.putCfgNodeInCache(variableTree, variableNode);
             addInvocationInStatement(variableNode);
-            // System.out.println("AST VISIT VARIABLE registered in " +
-            // es.uniovi.reflection.progquery.ast.cfgNodeCache.hashCode());
-            // System.out.println(variableTree);
         }
-        // System.out.println("VISITING VARIABLE " + variableTree);
         pdgUtils.putDecInCache(s, variableNode);
 
         scan(variableTree.getType(), Pair.createPair(variableNode, RelationTypes.HAS_VARIABLEDECL_TYPE));

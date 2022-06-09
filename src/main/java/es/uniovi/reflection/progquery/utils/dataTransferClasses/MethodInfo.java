@@ -24,7 +24,7 @@ public class MethodInfo {
 	public Map<NodeWrapper, PDGRelationTypes> paramsToPDGRelations;
 	public NodeWrapper thisNodeIfNotStatic;
 
-	private List<RelationshipWrapper> decToInstanceInvRels = new ArrayList<>();
+//	private List<RelationshipWrapper> decToInstanceInvRels = new ArrayList<>();
 	public Map<NodeWrapper, Set<NodeWrapper>> callsToParamsPreviouslyModified,
 			callsToParamsMaybePreviouslyModified;
 public final int varArgParamIndex;
@@ -54,11 +54,11 @@ public final int varArgParamIndex;
 	}
 
 
-	public void addRelTodecToInstanceInvRels(RelationshipWrapper rel) {
-		// System.out.println("ADDING INV REL " + rel.getStartNodeId() + "\t" +
-		// rel.getEndNodeId());
-		decToInstanceInvRels.add(rel);
-	}
+//	public void addRelTodecToInstanceInvRels(RelationshipWrapper rel) {
+//		// System.out.println("ADDING INV REL " + rel.getStartNodeId() + "\t" +
+//		// rel.getEndNodeId());
+//		decToInstanceInvRels.add(rel);
+//	}
 
 
 }

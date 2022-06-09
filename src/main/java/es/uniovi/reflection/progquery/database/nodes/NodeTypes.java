@@ -13,7 +13,7 @@ public enum NodeTypes implements Label {
 							NodeCategory.DEFINITION), BINARY_OPERATION(NodeCategory.EXPRESSION), BLOCK(
 									NodeCategory.STATEMENT), BREAK_STATEMENT(NodeCategory.STATEMENT), CASE_STATEMENT(
 
-											NodeCategory.STATEMENT), CATCH_BLOCK(
+											NodeCategory.AST_NODE), CATCH_BLOCK(
 
 													NodeCategory.STATEMENT), CLASS_DEF(NodeCategory.TYPE_DEFINITION,
 															NodeCategory.DEFINITION,

@@ -67,12 +67,13 @@ public class EmbeddedInsertion implements InsertionStrategy {
     public void startAnalysis() {
 
         currentTransaction = gDBService.beginTx();
-        System.out.printf("OPEN TRANS %s FORM EMBDEDDED INSERTION\n", currentTransaction.toString());
+
+        //TODO LOG System.out.printf("OPEN TRANS %s FORM EMBDEDDED INSERTION\n", currentTransaction.toString());
     }
 
     @Override
     public void endAnalysis() {
-        System.out.printf("CLOSING TRANS %s FOR EMBDEDDED INSERTION\n", currentTransaction.toString());
+        //TODO LOG System.out.printf("CLOSING TRANS %s FOR EMBDEDDED INSERTION\n", currentTransaction.toString());
         currentTransaction.commit();
         currentTransaction.close();
         //All the EmbeddedManager instances are actually closed, because its currentTransaction is closed
