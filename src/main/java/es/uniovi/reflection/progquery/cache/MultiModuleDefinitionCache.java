@@ -25,16 +25,18 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
         fromKeyToExternalKey = keyToExternal;
     }
 
+
     public static void initExternalCache(String programID, String userID) {
         try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getManager()) {
             DefinitionCache.TYPE_CACHE =
                     new MultiModuleDefinitionCache<>(manager.getDeclaredTypeDefsFrom(programID, userID), (Object o) -> {
                         if (o instanceof ClassSymbol) {
                             ClassSymbol cs = (ClassSymbol) o;
-                            System.out.println(
-                                    cs.sourcefile.getName() + "   " + cs.getQualifiedName().toString() + "   " +
-                                            cs.fullname);
-                            return new ExternalTypeDefKey(cs.sourcefile.getName(), cs.getQualifiedName().toString());
+                            String fileName = cs.sourcefile == null ? cs.classfile.getName() : cs.sourcefile.getName();
+                            System.out.println(fileName + "    " + cs.getSimpleName().toString() + "   " +
+                                    cs.getQualifiedName().toString() + "   " + cs.fullname);
+                            return new ExternalTypeDefKey(fileName, cs.getSimpleName().toString());
+
                         }
                         return null;
                     });
@@ -45,23 +47,26 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
     public void put(TKEY k, NodeWrapper v) {
 
         if (externalDefinitionCache.containsKey(fromKeyToExternalKey.apply(k)))
-            throw new IllegalArgumentException("There is already an external definition with this Key=" + fromKeyToExternalKey.apply(k) );
+            throw new IllegalArgumentException(
+                    "There is already an external definition with this Key=" + fromKeyToExternalKey.apply(k));
 
         super.put(k, v);
     }
+
     public NodeWrapper get(TKEY k) {
-        ExternalTypeDefKey externalKey=fromKeyToExternalKey.apply(k);
-        return externalDefinitionCache.containsKey(externalKey) ? externalDefinitionCache.get(externalKey) : super.get(k);
+        ExternalTypeDefKey externalKey = fromKeyToExternalKey.apply(k);
+        return externalDefinitionCache.containsKey(externalKey) ? externalDefinitionCache.get(externalKey) :
+                super.get(k);
     }
 
     public boolean containsKey(TKEY k) {
-        if(super.containsKey(k))
+        if (super.containsKey(k))
             return true;
-        return externalDefinitionCache.containsKey(fromKeyToExternalKey.apply(k)) ;
+        return externalDefinitionCache.containsKey(fromKeyToExternalKey.apply(k));
     }
 
     public boolean containsDef(TKEY k) {
-        if(super.containsDef(k))
+        if (super.containsDef(k))
             return true;
         return externalDefinitionCache.containsKey(fromKeyToExternalKey.apply(k));
     }
