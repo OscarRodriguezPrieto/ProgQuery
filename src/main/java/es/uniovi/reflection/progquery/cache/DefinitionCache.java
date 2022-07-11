@@ -19,6 +19,7 @@ import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,29 +29,10 @@ public class DefinitionCache<TKEY> {
     public static DefinitionCache<Object> TYPE_CACHE;
     public static DefinitionCache<Symbol> METHOD_DEF_CACHE;
 
-
-    private final Map<TKEY, NodeWrapper> auxNodeCache = new HashMap<>();
+    final Map<TKEY, NodeWrapper> auxNodeCache = new HashMap<>();
     final Map<TKEY, NodeWrapper> definitionNodeCache = new HashMap<>();
-    private final Map<ExternalTypeDefKey, NodeWrapper> externalDefinitionCache;
-
-    public DefinitionCache(Stream<Pair<NodeWrapper, ExternalTypeDefKey>> externalDefs) {
-        externalDefinitionCache =
-                externalDefs.collect(Collectors.toMap(pair -> pair.getSecond(), pair -> pair.getFirst()));
-    }
-
-    public static void initExternalCache(String programID, String userID) {
-        try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getManager()) {
-            DefinitionCache.TYPE_CACHE = new DefinitionCache<>(manager.getDeclaredTypeDefsFrom(programID,userID));
-//            DefinitionCache.METHOD_DEF_CACHE = new DefinitionCache<>(retrievePreviousMethods(), null);
-        }
-    }
-
-    public DefinitionCache() {
-        externalDefinitionCache = new HashMap<>();
-    }
 
     public void put(TKEY k, NodeWrapper v) {
-
         if (DEBUG)
             System.out.println("putting " + k + " " + v);
         // System.out.println("Trying to put ");
@@ -120,14 +102,6 @@ public class DefinitionCache<TKEY> {
 
     public boolean containsDef(TKEY k) {
         return definitionNodeCache.containsKey(k);
-    }
-
-    public int totalTypesCached() {
-        return auxNodeCache.size();
-    }
-
-    public int totalDefsCached() {
-        return definitionNodeCache.size();
     }
 
 

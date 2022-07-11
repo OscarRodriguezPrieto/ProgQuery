@@ -27,4 +27,10 @@ public class ExternalTypeDefKey {
     public int hashCode() {
         return Objects.hash(fileName, fullyQualifiedTypeName);
     }
+
+    @Override
+    public String toString() {
+        return "ExternalTypeDefKey{" + "fileName='" + fileName + '\'' + ", fullyQualifiedTypeName='" +
+                fullyQualifiedTypeName + '\'' + '}';
+    }
 }

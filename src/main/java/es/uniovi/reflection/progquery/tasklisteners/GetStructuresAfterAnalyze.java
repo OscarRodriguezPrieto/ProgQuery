@@ -13,6 +13,7 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import es.uniovi.reflection.progquery.ast.ASTAuxiliarStorage;
 import es.uniovi.reflection.progquery.cache.DefinitionCache;
+import es.uniovi.reflection.progquery.cache.MultiModuleDefinitionCache;
 import es.uniovi.reflection.progquery.database.DatabaseFachade;
 import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
@@ -67,7 +68,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
                 retrievedProgram = manager.getProgramFromDB(programID, userID);
             }
             if (retrievedProgram != null) {
-                DefinitionCache.initExternalCache(programID,userID);
+                MultiModuleDefinitionCache.initExternalCache(programID,userID);
                 PackageInfo.setCurrentProgram(retrievedProgram);
                 return;
             }
