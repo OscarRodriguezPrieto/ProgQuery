@@ -68,13 +68,8 @@ public class GraphUtils {
 	// }
 	public static void attachTypeDirect(NodeWrapper node, ExpressionTree exp, ASTAuxiliarStorage ast) {
 		Type type = JavacInfo.getTypeDirect(exp);
-		// if (type != null) {
 		attachType(node, type,ast);
-		// } else {
-		// System.out.println("exp: " + exp.toString());
-		// System.out.println(attachType(exp, node, JavacInfo.getPath(exp)));
-		//
-		// }
+
 	}
 /*
 	public static void attachTypeDirectIdent(NodeWrapper node, IdentifierTree exp) {
@@ -112,8 +107,6 @@ public class GraphUtils {
 	}*/
 
 	public static void attachType(NodeWrapper node, Type type, ASTAuxiliarStorage ast) {
-//System.out.println(type);
-//System.out.println(NodeUtils.nodeToString(node));
 		attachTypeDirect(node, type, type.toString(), type.getKind().toString(),ast);
 	}
 
@@ -123,7 +116,6 @@ public class GraphUtils {
 	}
 
 	private static void attachTypeDirect(NodeWrapper node, Type type, String actualType, String typeKind, ASTAuxiliarStorage ast) {
-//		System.out.println("Type "+type);
 		attachTypeDirect(node, DefinitionCache.getOrCreateType(type,ast), actualType, typeKind);
 	}
 

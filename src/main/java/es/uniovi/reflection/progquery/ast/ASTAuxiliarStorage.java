@@ -102,18 +102,9 @@ public static final int NO_VARG_ARG=-1;
 	}
 
 	public void deleteAccesibleMethod(MethodSymbol ms) {
-//		int starting=accesibleMethods.size();
 		accesibleMethods.remove(ms);
-//		if(starting!=accesibleMethods.size())
-//			throw new IllegalStateException("ESTA BORRANDO ALGUNO");
 	}
-	// public void putConditionInCfgCache(ExpressionTree tree, NodeWrapper n) {
-	// if (tree instanceof ParenthesizedTree)
-	// n = n.getSingleRelationship(RelationTypes.PARENTHESIZED_ENCLOSES,
-	// Direction.OUTGOING).getEndNode();
-	// if (tree != null)
-	// cfgNodeCache.put(tree, n);
-	// }
+
 
 	public void enterInNewTry(TryTree tryTree, MethodState m) {
 		lastInvocationInStatementLists.push(new ArrayList<Pair<NodeWrapper, List<MethodSymbol>>>());

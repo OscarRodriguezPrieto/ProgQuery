@@ -46,6 +46,7 @@ public class JavacInfo {
 		types = com.sun.tools.javac.code.Types.instance(((com.sun.tools.javac.api.BasicJavacTask) task).getContext());
 		this.sourcePositions = trees.getSourcePositions();
 		symTab = Symtab.instance(((com.sun.tools.javac.api.BasicJavacTask) task).getContext());
+
 	}
 
 	public static Object[] getPosition(Tree tree) {
