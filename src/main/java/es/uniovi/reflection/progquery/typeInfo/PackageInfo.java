@@ -10,7 +10,6 @@ import es.uniovi.reflection.progquery.cache.DefinitionCache;
 import es.uniovi.reflection.progquery.cache.NotDuplicatingArcsDefCache;
 import es.uniovi.reflection.progquery.database.DatabaseFachade;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
-import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.PGRelationTypes;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;

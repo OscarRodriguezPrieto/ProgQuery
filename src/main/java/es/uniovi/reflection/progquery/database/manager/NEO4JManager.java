@@ -2,6 +2,7 @@ package es.uniovi.reflection.progquery.database.manager;
 
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
+import es.uniovi.reflection.progquery.utils.types.ExternalNotDefinedTypeKey;
 import es.uniovi.reflection.progquery.utils.types.ExternalTypeDefKey;
 
 import java.util.List;
@@ -16,7 +17,8 @@ public interface NEO4JManager extends AutoCloseable {
     Stream<Pair<NodeWrapper, ExternalTypeDefKey>> getDeclaredMethodsFrom(String programID, String userID) ;
 
 
-    Stream<Pair<NodeWrapper, ExternalTypeDefKey>> getDeclaredTypeDefsFrom(String programID, String userID) ;
+    Stream<Pair<NodeWrapper, ExternalNotDefinedTypeKey>> getNotDeclaredTypesFrom(String programID, String userID) ;
+    Stream<Pair<NodeWrapper, ExternalNotDefinedTypeKey>> getDeclaredTypeDefsFrom(String programID, String userID) ;
 
     @Override
     void close();

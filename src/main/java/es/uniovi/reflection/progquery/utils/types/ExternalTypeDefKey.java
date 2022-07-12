@@ -2,14 +2,13 @@ package es.uniovi.reflection.progquery.utils.types;
 
 import java.util.Objects;
 
-public class ExternalTypeDefKey {
+public class ExternalTypeDefKey extends ExternalNotDefinedTypeKey {
 
     private String fileName;
-    private String fullyQualifiedTypeName;
 
     public ExternalTypeDefKey(String fileName, String fullyQualifiedTypeName) {
+        super(fullyQualifiedTypeName);
         this.fileName = fileName;
-        this.fullyQualifiedTypeName = fullyQualifiedTypeName;
     }
 
     @Override

@@ -2,15 +2,11 @@ package es.uniovi.reflection.progquery.cache;
 
 import com.sun.tools.javac.code.Symbol;
 import es.uniovi.reflection.progquery.ast.ASTAuxiliarStorage;
-import es.uniovi.reflection.progquery.database.DatabaseFachade;
-import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypes;
 import es.uniovi.reflection.progquery.database.relations.TypeRelations;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.node_wrappers.RelationshipWrapper;
-import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
-import es.uniovi.reflection.progquery.utils.types.ExternalTypeDefKey;
 import es.uniovi.reflection.progquery.visitors.KeyTypeVisitor;
 import es.uniovi.reflection.progquery.visitors.TypeVisitor;
 import org.neo4j.graphdb.Direction;
@@ -19,9 +15,6 @@ import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DefinitionCache<TKEY> {
     private static final boolean DEBUG = false;
@@ -46,12 +39,11 @@ public class DefinitionCache<TKEY> {
             throw new IllegalArgumentException("Key " + k + " already in definition");
     }
 
-    public void putClassDefinition(TKEY classSymbol, NodeWrapper classDec, Set<NodeWrapper> typeDecNodeList,
-                                   Set<NodeWrapper> typeDecsUses) {
-        NodeWrapper oldClassNode = null;
 
-        if (auxNodeCache.containsKey(classSymbol)) {
-            oldClassNode = auxNodeCache.get(classSymbol);
+    public void putClassDefinition(TKEY classSymbol, NodeWrapper classDec,
+                                   Set<NodeWrapper> typeDecNodeList, Set<NodeWrapper> typeDecsUses) {
+        NodeWrapper oldClassNode = getFromNotDefinedCache(classSymbol);
+        if (oldClassNode != null) {
             for (RelationshipWrapper r : oldClassNode.getRelationships(Direction.OUTGOING,
                     //					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR,
 
@@ -68,7 +60,7 @@ public class DefinitionCache<TKEY> {
     }
 
     public void putDefinition(TKEY k, NodeWrapper v) {
-        putDefinition(k, v, auxNodeCache.get(k));
+        putDefinition(k, v, getFromNotDefinedCache(k));
     }
 
     private void putDefinition(TKEY k, NodeWrapper v, NodeWrapper previousNode) {
@@ -96,6 +88,10 @@ public class DefinitionCache<TKEY> {
         return definitionNodeCache.containsKey(k) ? definitionNodeCache.get(k) : auxNodeCache.get(k);
     }
 
+    protected NodeWrapper getFromNotDefinedCache(TKEY k) {
+        return auxNodeCache.get(k);
+    }
+
     public boolean containsKey(TKEY k) {
         return auxNodeCache.containsKey(k) || definitionNodeCache.containsKey(k);
     }
@@ -106,30 +102,16 @@ public class DefinitionCache<TKEY> {
 
 
     public static NodeWrapper getOrCreateType(TypeMirror type, Object key, ASTAuxiliarStorage ast) {
-        // System.out.println(type + " inspected in es.uniovi.reflection.progquery.cache");
-        // System.out.println("looking for key " + key);
-        // System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.toString());
-        // System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.size());
-        if (DefinitionCache.TYPE_CACHE.containsKey(key)) {
-
-            // System.out.println("RECOVERED FROM KEY " + key + "\n\t FROM " +
-            // type);
-            // DefinitionCache.CLASS_TYPE_CACHE.get(key).getLabels().forEach(System.out::print);
-            // System.out.println();
-            // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
+        if (DefinitionCache.TYPE_CACHE.containsKey(key))
             return DefinitionCache.TYPE_CACHE.get(key);
-        }
-        // System.out.println("CREATING NEW TYPE " + type);
         return createTypeDec(type, key, ast);
     }
 
     public static NodeWrapper getExistingType(TypeMirror type) {
-        if (DefinitionCache.TYPE_CACHE.containsKey(type)) {
-
-            // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
+        if (DefinitionCache.TYPE_CACHE.containsKey(type))
             return DefinitionCache.TYPE_CACHE.get(type);
-        }
-        throw new IllegalArgumentException("Not Type dounf for " + type);
+
+        throw new IllegalArgumentException("Not Type found for " + type);
     }
 
     public static NodeWrapper getOrCreateType(TypeMirror type, ASTAuxiliarStorage ast) {

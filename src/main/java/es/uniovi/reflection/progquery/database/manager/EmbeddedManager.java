@@ -4,6 +4,7 @@ import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.node_wrappers.Neo4jEmbeddedWrapperNode;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
+import es.uniovi.reflection.progquery.utils.types.ExternalNotDefinedTypeKey;
 import es.uniovi.reflection.progquery.utils.types.ExternalTypeDefKey;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterator;
@@ -36,13 +37,19 @@ public class EmbeddedManager implements NEO4JManager {
     }
 
     @Override
-    public Stream<Pair<NodeWrapper, ExternalTypeDefKey>> getDeclaredTypeDefsFrom(String programID, String userID) {
+    public Stream<Pair<NodeWrapper, ExternalNotDefinedTypeKey>> getDeclaredTypeDefsFrom(String programID, String userID) {
         final String TYPE_NODE = "type", TYPE_NAME = "type.fullyQualifiedName", FILE_NAME = "cu.fileName";
-        return currentTransaction.execute(String.format(NEO4JServerManager.QUERY, programID, userID, TYPE_NODE))
+        return currentTransaction.execute(String.format(NEO4JServerManager.DEFINED_TYPES_QUERY, programID, userID, TYPE_NODE))
                 .stream().map(record -> Pair.create(new Neo4jEmbeddedWrapperNode((Node) record.get(TYPE_NODE)),
                         new ExternalTypeDefKey((String) record.get(FILE_NAME), (String) record.get(TYPE_NAME))));
     }
-
+    @Override
+    public Stream<Pair<NodeWrapper, ExternalNotDefinedTypeKey>> getNotDeclaredTypesFrom(String programID, String userID) {
+        final String TYPE_NODE = "type", TYPE_NAME = "type.fullyQualifiedName";
+        return currentTransaction.execute(String.format(NEO4JServerManager.NON_DEFINED_TYPES_QUERY, programID, userID, TYPE_NODE))
+                .stream().map(record -> Pair.create(new Neo4jEmbeddedWrapperNode((Node) record.get(TYPE_NODE)),
+                        new ExternalNotDefinedTypeKey( (String) record.get(TYPE_NAME))));
+    }
     @Override
     public void close() {
     }
