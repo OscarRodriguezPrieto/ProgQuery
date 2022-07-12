@@ -38,6 +38,7 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
             DefinitionCache.TYPE_CACHE =
                     new MultiModuleDefinitionCache<>(manager.getDeclaredTypeDefsFrom(programID, userID),
                             manager.getNotDeclaredTypesFrom(programID, userID), (Object o) -> {
+                        //ESTO SOLO SE VA A LLAMAR PARA PREGUNTAR SI ALGO ESTA EN LA EXTERNAL CACHE
                         if (o instanceof ClassSymbol) {
                             ClassSymbol cs = (ClassSymbol) o;
                             if (cs.sourcefile == null && cs.classfile == null)

@@ -473,20 +473,25 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     @Override
 
     public ASTVisitorResult visitClass(ClassTree classTree, Pair<PartialRelation<RelationTypes>, Object> pair) {
-        if (DEBUG) {
-            System.out.println("Visitando clase " + classTree.getSimpleName());
-            System.out.println(" clase " + classTree.getSimpleName() + "(" + classTree.getClass() + ")");
+        //        if (DEBUG) {
+        System.out.println("Visitando clase " + classTree.getSimpleName());
+        System.out.println(" clase " + classTree.getSimpleName() + "(" + classTree.getClass() + ")");
+        if (((JCClassDecl) classTree).sym.sourcefile != null) {
+            System.out.println(" class in " + ((JCClassDecl) classTree).sym.sourcefile.getName());
+            System.out.println(" class in " + ((JCClassDecl) classTree).sym.sourcefile.getKind());
+        } else if (((JCClassDecl) classTree).sym.classfile != null) {
+            System.out.println("binary in " + ((JCClassDecl) classTree).sym.classfile.getName());
+            System.out.println("binary in " + ((JCClassDecl) classTree).sym.classfile.getKind());
         }
+        //        }
 
 
         ClassSymbol previousClassSymbol = currentTypeDecSymbol;
         currentTypeDecSymbol = ((JCClassDecl) classTree).sym;
-        // Console s = System.console();
         String simpleName = classTree.getSimpleName().toString();
 
         String fullyQualifiedType = currentTypeDecSymbol.toString();
         if (simpleName.equals("")) {
-            // System.out.println(fullyQualifiedType);
             String[] split = fullyQualifiedType.split(fullyQualifiedType.contains(".") ? "\\." : " ");
             simpleName = split[split.length - 1];
             simpleName = simpleName.substring(0, simpleName.length() - 1);
@@ -502,7 +507,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         classState = new ClassState(classNode);
 
         Set<NodeWrapper> previousTypeDecUses = typeDecUses;
-        typeDecUses = new HashSet<NodeWrapper>();
+        typeDecUses = new HashSet<>();
 
         Symbol outerMostClass = ((JCClassDecl) classTree).sym.outermostClass();
 
@@ -528,8 +533,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
                     isInAccessibleContext && classNode.getProperty("accessLevel").toString().contentEquals("public");
         }
 
-        // scan(classTree.getTypeParameters(), Pair.createPair(classNode,
-        // RelationTypes.HAS_CLASS_TYPEPARAMETERS));
         for (int i = 0; i < classTree.getTypeParameters().size(); i++)
             scan(classTree.getTypeParameters().get(i), Pair.createPair(
                     new PartialRelationWithProperties<RelationTypes>(classNode, RelationTypes.HAS_CLASS_TYPEPARAMETERS,
@@ -556,13 +559,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         if (lastStaticConsVisited != null)
             for (NodeWrapper staticAttr : staticAttrs)
                 callsFromVarDecToConstructor(staticAttr, lastStaticConsVisited);
-        // this.isInAInnerClass = previousIsInner;
         lastStaticConsVisited = prevStaticCons;
-        // this.fullNamePrecedent = previusPrecedent;
-        // pdgUtils.endVisitClass();
         classState = previousClassState;
         typeDecUses = previousTypeDecUses;
         currentTypeDecSymbol = previousClassSymbol;
+        isInAccessibleContext = prevIsInAccesibleContext;
+
         return null;
 
     }
