@@ -40,6 +40,8 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
                             manager.getNotDeclaredTypesFrom(programID, userID), (Object o) -> {
                         if (o instanceof ClassSymbol) {
                             ClassSymbol cs = (ClassSymbol) o;
+                            if (cs.sourcefile == null && cs.classfile == null)
+                                return new ExternalNotDefinedTypeKey(cs.fullname.toString());
                             String fileName = cs.sourcefile == null ? cs.classfile.getName() : cs.sourcefile.getName();
                             return new ExternalTypeDefKey(fileName, cs.getSimpleName().toString());
 
