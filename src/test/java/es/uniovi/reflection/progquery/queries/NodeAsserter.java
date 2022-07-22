@@ -1,5 +1,6 @@
 package es.uniovi.reflection.progquery.queries;
 import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
+import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 
 import es.uniovi.reflection.progquery.node_wrappers.RelationshipWrapper;
@@ -27,7 +28,7 @@ public class NodeAsserter {
         Assert.assertTrue(false);
        }
 
-    public static NodeWrapper assertJustOne(List<NodeWrapper> nodes){
+    public static Neo4jLazyNode assertJustOne(List<Neo4jLazyNode> nodes){
         assertEquals(nodes.size(),1);
         return nodes.get(0);
     }

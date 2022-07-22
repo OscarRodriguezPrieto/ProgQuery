@@ -40,8 +40,13 @@ public class NotPersistentLazyInsertion implements InsertionStrategy {
 
 
     @Override
-    public NEO4JManager getManager() {
+    public NEO4JManager getNewManager() {
         return new EmptyManager();
+    }
+
+    @Override
+    public void newMultiModuleProject() {
+
     }
 
 }

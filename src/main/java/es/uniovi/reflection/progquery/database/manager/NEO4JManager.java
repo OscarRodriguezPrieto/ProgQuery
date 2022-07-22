@@ -5,7 +5,6 @@ import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import es.uniovi.reflection.progquery.utils.types.ExternalNotDefinedTypeKey;
 import es.uniovi.reflection.progquery.utils.types.ExternalTypeDefKey;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 

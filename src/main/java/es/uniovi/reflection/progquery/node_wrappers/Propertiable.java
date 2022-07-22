@@ -9,7 +9,6 @@ public interface Propertiable {
 	}
 
 	default void setProperty(String name, String value) {
-		// setProp(name, WrapperUtils.stringToNeo4jQueryString(value));
 		setProp(name, value);
 	}
 

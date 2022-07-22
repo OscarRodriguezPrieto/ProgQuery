@@ -9,14 +9,22 @@ import org.neo4j.driver.Record;
 import org.neo4j.driver.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class NEO4JServerManager implements NEO4JManager {
     public static final String NEO4J_PROTOCOL = "neo4j://";
-    public static final String NEO4J_DEFAULT_DB = "neo4j";
 
-    private final Driver driver;
+    private static Driver driver;
     private Session session;
+
+    public static void startDriver(String address, String user, String password){
+        Config config = Config.builder().withLogging(Logging.none()).build();
+        driver = GraphDatabase.driver(NEO4J_PROTOCOL + address, AuthTokens.basic(user, password), config);
+    }
+    public static void closeDriver(){
+        driver.close();
+    }
 
 
     @Override
@@ -66,24 +74,23 @@ public class NEO4JServerManager implements NEO4JManager {
                 .create(new Neo4jLazyNode(record.get(TYPE_ID).asLong()),
                         new ExternalNotDefinedTypeKey(record.get(TYPE_NAME).asString())));
     }
-    public NEO4JServerManager(String address, String user, String password) {
-        this(address, user, password, NEO4JServerManager.NEO4J_DEFAULT_DB);
-    }
 
-    public NEO4JServerManager(String address, String user, String password, String db_name) {
-        Config config = Config.builder().withLogging(Logging.none()).build();
-        driver = GraphDatabase.driver(NEO4J_PROTOCOL + address, AuthTokens.basic(user, password), config);
+    public NEO4JServerManager(String db_name) {
         session = driver.session(SessionConfig.forDatabase(db_name));
     }
 
-    private List<Record> executeQuery(String query) {
+    public List<Record> executeQuery(String query) {
         return session.writeTransaction(tx -> tx.run(query).list());
     }
-
+    public List<Record> executeQuery(String query, Map<String, Object> params) {
+        return session.run(query, params).list();
+    }
+    public Session getSession() {
+        return session;
+    }
 
     @Override
     public void close() {
         session.close();
-        driver.close();
     }
 }

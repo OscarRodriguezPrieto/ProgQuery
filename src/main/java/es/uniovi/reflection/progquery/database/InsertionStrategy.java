@@ -16,6 +16,7 @@ public interface InsertionStrategy {
 	void startAnalysis();
 	void endAnalysis();
 
-	NEO4JManager getManager();
+	NEO4JManager getNewManager();
 
+	void newMultiModuleProject();
 }

@@ -65,10 +65,7 @@ public class EmbeddedInsertion implements InsertionStrategy {
 
     @Override
     public void startAnalysis() {
-
         currentTransaction = gDBService.beginTx();
-
-        //TODO LOG System.out.printf("OPEN TRANS %s FORM EMBDEDDED INSERTION\n", currentTransaction.toString());
     }
 
     @Override
@@ -81,8 +78,13 @@ public class EmbeddedInsertion implements InsertionStrategy {
     }
 
     @Override
-    public NEO4JManager getManager() {
+    public NEO4JManager getNewManager() {
         return new EmbeddedManager(currentTransaction);
+    }
+
+    @Override
+    public void newMultiModuleProject() {
+
     }
 
 }

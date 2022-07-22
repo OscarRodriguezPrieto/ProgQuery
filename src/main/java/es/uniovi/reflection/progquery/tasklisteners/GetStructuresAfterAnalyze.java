@@ -30,7 +30,6 @@ import es.uniovi.reflection.progquery.visitors.PDGProcessing;
 
 import javax.tools.JavaFileObject;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GetStructuresAfterAnalyze implements TaskListener {
@@ -41,11 +40,6 @@ public class GetStructuresAfterAnalyze implements TaskListener {
     // private Set<CompilationUnitTree> unitsInTheSameFile = new
     // HashSet<CompilationUnitTree>();
     private boolean started = false;
-    //	private boolean firstClass = true;
-
-    //	private int counter = 0;
-
-    // private Transaction transaction;
     private Pair<PartialRelation<RelationTypes>, Object> argument;
 
 
@@ -60,16 +54,16 @@ public class GetStructuresAfterAnalyze implements TaskListener {
     //TYPE_NODE AND NOT AST_TYPE AND isDeclared:false
     public GetStructuresAfterAnalyze(JavacTask task, String programID, String userID) {
         this.task = task;
-        // this.graphDb = graphDb;
         DatabaseFachade.CURRENT_INSERTION_STRATEGY.startAnalysis();
         if (MERGING_ALLOWED) {
             NodeWrapper retrievedProgram;
-            try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getManager()) {
+            try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getNewManager()) {
                 retrievedProgram = manager.getProgramFromDB(programID, userID);
             }
             if (retrievedProgram != null) {
                 MultiModuleDefinitionCache.initExternalCache(programID,userID);
                 PackageInfo.setCurrentProgram(retrievedProgram);
+                DatabaseFachade.CURRENT_INSERTION_STRATEGY.newMultiModuleProject();
                 return;
             }
 
@@ -92,41 +86,18 @@ public class GetStructuresAfterAnalyze implements TaskListener {
             classCounter.put(cuTree.getSourceFile(), cuTree.getTypeDecls().size());
         else if (arg0.getKind() == Kind.ANALYZE) {
 
-            //			System.out.println("FINISHING SCANNING CU " + cuTree.getSourceFile().getName() + " WITH "
-            //					+ cuTree.getTypeDecls().size() + " TYPEDECS");
-            //			System.out.println(arg0.getClass());
-            //			System.out.println(arg0.getTypeElement());
-            //			System.out.println(arg0.getTypeElement().toString());
-            //			String[] tydcSplit = arg0.getTypeElement().toString().split("\\.");
-            //			System.out.println(tydcSplit+" "+tydcSplit.length);
             started = true;
             int currentTypeCounter = classCounter.get(cuTree.getSourceFile());
-            //            if (cuTree.getSourceFile().toString().contains
-            //            ("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects
-            //            \\test_projects\\javassist\\src\\main\\javassist\\tools\\rmi\\StubGenerator.java")) {
-            //            System.out.println("ACTUAL CU:"+cuTree.getSourceFile());
-            //            System.out.println("N counter:" + currentTypeCounter);
-            //                System.out.println("N typedecs:" + cuTree.getTypeDecls().size());
-
-            //            }
             if (cuTree.getTypeDecls().size() == 0)
-                //				System.out.println("SCANNING CU " + cuTree.getSourceFile().getName() + " WITH 0
-                //				TYPEDECS");
                 firstScanIfNoTypeDecls(cuTree);
             else {
-
-                //				System.out.println("SCANNING CU " + cuTree.getSourceFile().getName() + " WITH "
-                //						+ cuTree.getTypeDecls().size() + " TYPEDECS");
-
                 boolean firstClass = classCounter.get(cuTree.getSourceFile()) == cuTree.getTypeDecls().size();
                 int nextTypeDecIndex = 0;
                 if (cuTree.getTypeDecls().size() > 1) {
 
                     String[] tydcSplit = arg0.getTypeElement().toString().split("\\.");
-                    //					System.out.println(tydcSplit+" "+tydcSplit.length);
                     String simpleTypeName =
                             tydcSplit.length > 0 ? tydcSplit[tydcSplit.length - 1] : arg0.getTypeElement().toString();
-                    //					System.out.println("JAVAC CURRENT SPLITTED TYPE NAME:" + simpleTypeName);
                     boolean found = false;
                     for (int i = 0; i < cuTree.getTypeDecls().size(); i++) {
                         if (cuTree.getTypeDecls().get(i) instanceof JCTree.JCSkip) {
@@ -139,8 +110,6 @@ public class GetStructuresAfterAnalyze implements TaskListener {
                             }
                             continue;
                         }
-                        //						System.out.println(((ClassTree) cuTree.getTypeDecls().get(i))
-                        //						.getSimpleName());
                         if (((ClassTree) cuTree.getTypeDecls().get(i)).getSimpleName().contentEquals(simpleTypeName)) {
                             nextTypeDecIndex = i;
                             found = true;
@@ -198,44 +167,23 @@ public class GetStructuresAfterAnalyze implements TaskListener {
     }
 
     private void firstScan(CompilationUnitTree cu, Tree typeDeclaration) {
-        //    System.out.println("FIRST SCAN!");
-
         JavacInfo.setJavacInfo(new JavacInfo(cu, task));
-        //		System.out.println("AFTER SETTING JAVAC INFOf");
-
         String fileName = cu.getSourceFile().getName();
-        // transaction = DatabaseFachade.beginTx();
-
-        // InsertionStrategy.CURRENT_INSERTION_STRATEGY.startAnalysis();
-
         NodeWrapper compilationUnitNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(cu, NodeTypes.COMPILATION_UNIT);
         addPackageInfo(((JCCompilationUnit) cu).packge, compilationUnitNode);
-        //System.out.println(fileName);
         compilationUnitNode.setProperty("fileName", fileName);
 
         argument = Pair.createPair(compilationUnitNode, null);
-        //	System.out.println("BEFORE SCAN TYPEDEC\n"+u);
         if (typeDeclaration instanceof ModuleTree)
             return;
         scan((ClassTree) typeDeclaration, true, cu);
-        //		System.out.println("AFTER SCAN TYPEDEC");
 
     }
 
     private void scan(ClassTree typeDeclaration, boolean first, CompilationUnitTree cu) {
-        // if (DEBUG) {
-        //		System.out.println("-*-*-*-*-*-*-* NEW TYPE DECLARATION AND VISITOR-*-*-*-*-*-*-*");
-        //		System.out.println("CU:\t" + cu.getSourceFile().getName());
-        // System.out.println("Final State:\n");
-        //
-        //		System.out.println("TYPE_DEC:\t" + ((JCClassDecl) typeDeclaration).sym);
-        // }
-        DefinitionCache.ast = ast;
-        //        System.out.println("SCANING "+typeDeclaration.getSimpleName());
-        //        System.out.println(cu.getSourceFile());
-        //        System.out.println(typeDeclaration);
 
+        DefinitionCache.ast = ast;
         new ASTTypesVisitor(typeDeclaration, first, pdgUtils, ast, argument.getFirst().getStartingNode())
                 .scan(cu, argument);
     }
@@ -280,45 +228,26 @@ public class GetStructuresAfterAnalyze implements TaskListener {
     }
 
     private void createStoredPackageDeps() {
-
-        // Transaction transaction = DatabaseFachade.beginTx();
         PackageInfo.PACKAGE_INFO.createStoredPackageDeps();
-        // transaction.success();
-        // transaction.close();
 
     }
 
     private void createAllParamsToMethodsPDGRels() {
-
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.createAllParamsToMethodsPDGRels();
-        // transaction.success();
-        // transaction.close();
     }
 
     private void initializationAnalysis() {
-
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.doInitializationAnalysis();
-        // transaction.success();
-        // transaction.close();
     }
 
     private void interproceduralPDGAnalysis() {
 
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.doInterproceduralPDGAnalysis();
-        // transaction.success();
-        // transaction.close();
-
         createAllParamsToMethodsPDGRels();
     }
 
     private void dynamicMethodCallAnalysis() {
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.doDynamicMethodCallAnalysis();
-        // transaction.success();
-        // transaction.close();
     }
 
     public void shutdownDatabase() {

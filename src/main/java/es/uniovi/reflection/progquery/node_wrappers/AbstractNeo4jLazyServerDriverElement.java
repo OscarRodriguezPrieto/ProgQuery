@@ -7,7 +7,7 @@ import java.util.Set;
 
 abstract class AbstractNeo4jLazyServerDriverElement implements Propertiable {
 
-	Map<String, Object> properties = new HashMap<String, Object>();
+	Map<String, Object> properties = new HashMap<>();
 
 	public AbstractNeo4jLazyServerDriverElement(Object... props) {
 		for (int i = 0; i < props.length; i = i + 2)
@@ -16,8 +16,6 @@ abstract class AbstractNeo4jLazyServerDriverElement implements Propertiable {
 
 	public void setProp(String name, Object value) {
 		properties.put(name, value);
-//		if(value.toString().contentEquals("examples.util.EnumExample:valueOf"))
-//			throw new IllegalStateException();
 	}
 
 	public boolean hasProperty(String name) {
@@ -30,7 +28,6 @@ abstract class AbstractNeo4jLazyServerDriverElement implements Propertiable {
 	}
 
 	public Set<Entry<String, Object>> getAllProperties() {
-		// TODO Auto-generated method stub
 		return properties.entrySet();
 	}
 

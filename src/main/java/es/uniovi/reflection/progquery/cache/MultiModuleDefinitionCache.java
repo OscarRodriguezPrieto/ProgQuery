@@ -34,7 +34,7 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
 
 
     public static void initExternalCache(String programID, String userID) {
-        try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getManager()) {
+        try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getNewManager()) {
             DefinitionCache.TYPE_CACHE =
                     new MultiModuleDefinitionCache<>(manager.getDeclaredTypeDefsFrom(programID, userID),
                             manager.getNotDeclaredTypesFrom(programID, userID), (Object o) -> {
