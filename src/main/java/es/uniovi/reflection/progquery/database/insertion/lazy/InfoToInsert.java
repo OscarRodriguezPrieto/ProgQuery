@@ -80,6 +80,8 @@ public class InfoToInsert {
 
         String query = "MATCH ()-[e]-() WHERE ID(e)=$id SET ";
         Pair<String, Object[]> pair = getParamPropsForUpdate(rel.getAllProperties(), rel.getId());
+        if(pair.getSecond().length==0)
+            return null;
         return Pair.create(query + "," + pair.getFirst(), pair.getSecond());
     }
 
@@ -89,6 +91,8 @@ public class InfoToInsert {
         for (Label label : node.getLabels())
             query += ":" + label;
         Pair<String, Object[]> pair = getParamPropsForUpdate(node.getAllProperties(), node.getId());
+        if(query.length()==0 && pair.getSecond().length==0)
+            return null;
         return Pair.create(query + "," + pair.getFirst(), pair.getSecond());
     }
 

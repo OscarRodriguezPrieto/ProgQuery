@@ -10,6 +10,7 @@ import org.neo4j.driver.Session;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -68,6 +69,11 @@ public class DriverLazyInsertionService {
         return executeElementQuery(session, nodeUpdates, start, end);
     }
 
+    private static Void executeRelsUpdateQuery(Session session, List<Pair<String, Object[]>> relsUpdates, int start,
+                                               int end) {
+        return executeElementQuery(session, relsUpdates, start, end);
+    }
+
     private static <T> Void executeElementQuery(Session session, List<Pair<String, Object[]>> queries, int start,
                                                 int end) {
         return session.writeTransaction(tx -> {
@@ -82,13 +88,15 @@ public class DriverLazyInsertionService {
     public static void updateRetrievedNodesAndRels(InfoToInsert infoToInsert, final int MAX_OPERATIONS_PER_TRANSACTION,
                                                    final String DB_NAME) {
 
-        final List<Pair<String, Object[]>> updateNodeInfo = infoToInsert.getNodeQueriesUpdateInfo();
+        final List<Pair<String, Object[]>> updateNodeInfo = infoToInsert.getNodeQueriesUpdateInfo().stream().filter(q->q!=null).collect(
+                Collectors.toList());
         try (NEO4JServerManager manager = new NEO4JServerManager(DB_NAME)) {
             actionByParts(infoToInsert.retrievedNodeCache.size(), MAX_OPERATIONS_PER_TRANSACTION,
                     (start, end) -> executeNodesUpdateQuery(manager.getSession(), updateNodeInfo, start, end));
-            final List<Pair<String, Object[]>> updateRelInfo = infoToInsert.getRelQueriesUpdateInfo();
+            final List<Pair<String, Object[]>> updateRelInfo = infoToInsert.getRelQueriesUpdateInfo().stream().filter(q->q!=null).collect(
+                    Collectors.toList());;
             actionByParts(infoToInsert.retrievedRelSet.size(), MAX_OPERATIONS_PER_TRANSACTION,
-                    (start, end) -> executeNodesUpdateQuery(manager.getSession(), updateRelInfo, start, end));
+                    (start, end) -> executeRelsUpdateQuery(manager.getSession(), updateRelInfo, start, end));
         }
     }
 }

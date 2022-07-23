@@ -81,6 +81,7 @@ public class Neo4jLazyRetrievedRel extends Neo4jLazyRelationship {
         idParam.put("id2", getEndNode().getId());
         ((Neo4jDriverLazyInsertion) DatabaseFachade.CURRENT_INSERTION_STRATEGY).getManagerForRetrievedNodes()
                 .executeQuery(DELETE_REL_QUERY, idParam);
+        InfoToInsert.INFO_TO_INSERT.removeRetrievedRel(this);
 
     }
 
