@@ -3,6 +3,7 @@ package es.uniovi.reflection.progquery.database.manager;
 import es.uniovi.reflection.progquery.database.nodes.NodeCategory;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
+import es.uniovi.reflection.progquery.node_wrappers.Neo4jServerRetrievedNode;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import es.uniovi.reflection.progquery.utils.keys.external.ExternalNotDefinedTypeKey;
@@ -36,10 +37,10 @@ public class NEO4JServerManager implements NEO4JManager {
     @Override
     public NodeWrapper getProgramFromDB(String programId, String userId) {
         List<Record> programsIfAny =
-                executeQuery(String.format("MATCH (p:PROGRAM{ID:'%s',USER_ID:'%s'}) RETURN ID(p)", programId, userId));
+                executeQuery(String.format("MATCH (p:PROGRAM{ID:'%s',USER_ID:'%s'}) RETURN p", programId, userId));
         if (programsIfAny.size() == 0)
             return null;
-        return new Neo4jLazyNode(programsIfAny.get(0).get(0).asLong());
+        return new Neo4jServerRetrievedNode(programsIfAny.get(0).get(0).asNode());
     }
 
     @Override
@@ -54,7 +55,7 @@ public class NEO4JServerManager implements NEO4JManager {
                     " OPTIONAL MATCH (p:PROGRAM) -[:PROGRAM_DECLARES_PACKAGE]->(:PACKAGE) \n" +
                     "                    -[:PACKAGE_HAS_COMPILATION_UNIT]-> (cu:COMPILATION_UNIT) \n" +
                     "                    -[:HAS_TYPE_DEF|HAS_INNER_TYPE_DEF]-> (type)\n" + " WITH cu, type\n" +
-                    " RETURN  cu IS NULL, cu.fileName, %s, type.fullyQualifiedName, type.simpleName";
+                    " RETURN  cu IS NULL, cu.fileName, type, type.fullyQualifiedName, type.simpleName";
 
     static final String NON_DEFINED_TYPES_QUERY =
             "MATCH (p:PROGRAM{ID:\"%s\", USER_ID:\"%s\"}) CALL apoc.path.subgraphNodes(p, " +
@@ -66,9 +67,8 @@ public class NEO4JServerManager implements NEO4JManager {
                                                                                         String userID) {
 
         final int TYPE_ID = 2, TYPE_FULL_NAME = 3, TYPE_SIMPLE_NAME = 4, FILE_NAME = 1, NOT_CU = 0;
-        final String TYPE_ID_STR = "ID(type)";
-        return executeQuery(String.format(DEFINED_TYPES_QUERY, programID, userID, TYPE_ID_STR)).stream()
-                .map(record -> Pair.create(new Neo4jLazyNode(record.get(TYPE_ID).asLong()),
+        return executeQuery(String.format(DEFINED_TYPES_QUERY, programID, userID)).stream()
+                .map(record -> Pair.create(new Neo4jServerRetrievedNode(record.get(TYPE_ID).asNode()),
                         record.get(NOT_CU).asBoolean() ?
                                 new ExternalNotDefinedTypeKey(record.get(TYPE_FULL_NAME).asString(),
                                         NodeCategory.TYPE_DEFINITION.toString()) :
@@ -103,7 +103,7 @@ public class NEO4JServerManager implements NEO4JManager {
         return executeQuery(String.format(NON_DEFINED_TYPES_QUERY, programID, userID)).stream()
                 .map(record -> {
                     Node node = record.get(TYPE_NODE).asNode();
-                    return Pair.create(new Neo4jLazyNode(node.id()),
+                    return Pair.create(new Neo4jServerRetrievedNode(node),
                             new ExternalNotDefinedTypeKey(node.get("fullyQualifiedName").asString(),
                                     getTypeLabelFromNode(node)));
                 });

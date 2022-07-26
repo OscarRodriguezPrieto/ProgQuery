@@ -44,7 +44,7 @@ public class EmbeddedManager implements NEO4JManager {
         final String TYPE_NODE = "type", TYPE_FULL_NAME = "type.fullyQualifiedName", TYPE_SIMPLE_NAME =
                 "type.simpleName", FILE_NAME = "cu.fileName", NOT_CU = "cu IS NULL";
         return currentTransaction
-                .execute(String.format(NEO4JServerManager.DEFINED_TYPES_QUERY, programID, userID, TYPE_NODE)).stream()
+                .execute(String.format(NEO4JServerManager.DEFINED_TYPES_QUERY, programID, userID)).stream()
                 .map(record -> Pair.create(new Neo4jEmbeddedWrapperNode((Node) record.get(TYPE_NODE)),
                         (boolean) record.get(NOT_CU) ?
                                 new ExternalNotDefinedTypeKey((String) record.get(TYPE_FULL_NAME),

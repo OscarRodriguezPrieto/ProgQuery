@@ -39,6 +39,7 @@ public class Neo4jLazyNode extends AbstractNeo4jLazyServerDriverElement implemen
 
     public Neo4jLazyNode(Object... props) {
         super(props);
+        id = null;
         InfoToInsert.INFO_TO_INSERT.addNewNode(this);
     }
 
