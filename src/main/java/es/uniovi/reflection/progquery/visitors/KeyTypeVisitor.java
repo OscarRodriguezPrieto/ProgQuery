@@ -51,11 +51,13 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
 
     @Override
     public TypeKey visitExecutable(ExecutableType t, Object param) {
-        // MethodType type = (MethodType) t;
+         //MethodType type = (MethodType) t;
         List<TypeKey> params = new ArrayList<>();
         for (TypeMirror pType : t.getParameterTypes())
             params.add(pType.accept(this, null));
-        String fullName = t.toString() + " throws " + t.getThrownTypes().stream()
+        String fullName = t.toString();
+        if(t.getThrownTypes().size()>0)
+        fullName+= " throws " + t.getThrownTypes().stream()
                 .reduce("", (s, typeMirror) -> s + "," + typeMirror.toString(), (s1, s2) -> s1 + s2);
 
         return new MethodTypeKey(fullName, params,
