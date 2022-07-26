@@ -61,9 +61,9 @@ public class GetStructuresAfterAnalyze implements TaskListener {
                 retrievedProgram = manager.getProgramFromDB(programID, userID);
             }
             if (retrievedProgram != null) {
+                DatabaseFachade.CURRENT_INSERTION_STRATEGY.newMultiModuleProject();
                 MultiModuleDefinitionCache.initExternalCache(programID,userID);
                 PackageInfo.setCurrentProgram(retrievedProgram);
-                DatabaseFachade.CURRENT_INSERTION_STRATEGY.newMultiModuleProject();
                 return;
             }
 
