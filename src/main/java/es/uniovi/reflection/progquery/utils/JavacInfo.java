@@ -137,6 +137,5 @@ public class JavacInfo {
 
 	public static Type erasure(Type t) {
 		return t.tsym.erasure(currentJavacInfo.types);
-//		return currentJavacInfo.javaxTypes.erasure(t.ty);
 	}
 }

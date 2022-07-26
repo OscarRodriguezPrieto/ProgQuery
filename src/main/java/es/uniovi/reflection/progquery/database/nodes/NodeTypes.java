@@ -57,7 +57,7 @@ public enum NodeTypes implements Label {
 																																																					NodeCategory.EXPRESSION), INTERFACE_DEF(
 																																																							NodeCategory.TYPE_DEFINITION,
 																																																							NodeCategory.DEFINITION,
-																																																							NodeCategory.TYPE_NODE), INTERSECTION_TYPE, LABELED_STATEMENT(
+																																																							NodeCategory.TYPE_NODE), INTERSECTION_TYPE(NodeCategory.TYPE_NODE), LABELED_STATEMENT(
 
 																																																											NodeCategory.STATEMENT), LAMBDA_EXPRESSION(
 

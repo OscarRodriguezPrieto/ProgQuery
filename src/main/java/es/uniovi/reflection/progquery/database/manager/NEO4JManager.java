@@ -2,8 +2,8 @@ package es.uniovi.reflection.progquery.database.manager;
 
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
-import es.uniovi.reflection.progquery.utils.types.ExternalNotDefinedTypeKey;
-import es.uniovi.reflection.progquery.utils.types.ExternalTypeDefKey;
+import es.uniovi.reflection.progquery.utils.keys.external.ExternalNotDefinedTypeKey;
+import es.uniovi.reflection.progquery.utils.keys.external.ExternalTypeDefKey;
 
 import java.util.stream.Stream;
 

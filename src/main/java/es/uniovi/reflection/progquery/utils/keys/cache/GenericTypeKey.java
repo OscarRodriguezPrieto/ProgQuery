@@ -1,25 +1,27 @@
-package es.uniovi.reflection.progquery.utils.types;
+package es.uniovi.reflection.progquery.utils.keys.cache;
+
+import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 
 import java.util.List;
 
-public class GenericTypeKey {
+public class GenericTypeKey extends AbstractTypeKey{
 
-	private List<Object> typeArgs;
-	private Object parameterizedType;
+	private List<TypeKey> typeArgs;
+	private TypeKey parameterizedType;
 
-	
 
-	public GenericTypeKey(List<Object> typeArgs, Object parameterizedType) {
-		super();
+
+	public GenericTypeKey(String toString, List<TypeKey> typeArgs, TypeKey parameterizedType) {
+		super(NodeTypes.GENERIC_TYPE.toString(),toString);
 		this.typeArgs = typeArgs;
 		this.parameterizedType = parameterizedType;
 	}
 
-	public List<Object> getTypeArgs() {
+	public List<TypeKey> getTypeArgs() {
 		return typeArgs;
 	}
 
-	public Object getParameterizedType() {
+	public TypeKey getParameterizedType() {
 		return parameterizedType;
 	}
 
@@ -52,11 +54,6 @@ public class GenericTypeKey {
 		} else if (!typeArgs.equals(other.typeArgs))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "GenericTypeKey [typeArgs=" + typeArgs + ", parameterizedType=" + parameterizedType + "]";
 	}
 
 }

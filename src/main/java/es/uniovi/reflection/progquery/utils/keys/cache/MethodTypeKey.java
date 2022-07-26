@@ -1,17 +1,20 @@
-package es.uniovi.reflection.progquery.utils.types;
+package es.uniovi.reflection.progquery.utils.keys.cache;
+
+import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 
 import java.util.List;
 
-public class MethodTypeKey {
+public class MethodTypeKey extends AbstractTypeKey{
 
-	private List<Object> paramTypes;
-	private List<Object> thrownTypes;
-	private Object returnType;
-	private Object instanceType;
+	private List<TypeKey> paramTypes;
+	private List<TypeKey> thrownTypes;
+	private TypeKey returnType;
+	private TypeKey instanceType;
 	private boolean isCons;
 
-	public MethodTypeKey(List<Object> paramTypes, List<Object> thrownTypes, Object returnType, Object instanceType,
+	public MethodTypeKey(String fullSignature,List<TypeKey> paramTypes, List<TypeKey> thrownTypes, TypeKey returnType, TypeKey instanceType,
 			boolean isCons) {
+		super((isCons?"<init> ":"")+fullSignature, NodeTypes.CALLABLE_TYPE.toString());
 		this.paramTypes = paramTypes;
 		this.thrownTypes = thrownTypes;
 		this.returnType = returnType;
@@ -19,19 +22,19 @@ public class MethodTypeKey {
 		this.isCons = isCons;
 	}
 
-	public List<Object> getParamTypes() {
+	public List<TypeKey> getParamTypes() {
 		return paramTypes;
 	}
 
-	public List<Object> getThrownTypes() {
+	public List<TypeKey> getThrownTypes() {
 		return thrownTypes;
 	}
 
-	public Object getReturnType() {
+	public TypeKey getReturnType() {
 		return returnType;
 	}
 
-	public Object getInstanceType() {
+	public TypeKey getInstanceType() {
 		return instanceType;
 	}
 

@@ -1,4 +1,6 @@
-package es.uniovi.reflection.progquery.utils.types;
+package es.uniovi.reflection.progquery.utils.keys.external;
+
+import es.uniovi.reflection.progquery.database.nodes.NodeCategory;
 
 import java.util.Objects;
 
@@ -6,8 +8,9 @@ public class ExternalTypeDefKey extends ExternalNotDefinedTypeKey {
 
     private String fileName;
 
-    public ExternalTypeDefKey(String fileName, String fullyQualifiedTypeName) {
-        super(fullyQualifiedTypeName);
+    public ExternalTypeDefKey(String fileName, String simpleName) {
+        super(fileName +" : " +
+                simpleName, NodeCategory.TYPE_DEFINITION.toString());
         this.fileName = fileName;
     }
 
@@ -27,9 +30,5 @@ public class ExternalTypeDefKey extends ExternalNotDefinedTypeKey {
         return Objects.hash(fileName, fullyQualifiedTypeName);
     }
 
-    @Override
-    public String toString() {
-        return "ExternalTypeDefKey{" + "fileName='" + fileName + '\'' + ", fullyQualifiedTypeName='" +
-                fullyQualifiedTypeName + '\'' + '}';
-    }
+
 }

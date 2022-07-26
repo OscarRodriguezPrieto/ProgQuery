@@ -1,12 +1,14 @@
 package es.uniovi.reflection.progquery.cache;
 
 import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Type;
 import es.uniovi.reflection.progquery.ast.ASTAuxiliarStorage;
 import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypes;
 import es.uniovi.reflection.progquery.database.relations.TypeRelations;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.node_wrappers.RelationshipWrapper;
+import es.uniovi.reflection.progquery.utils.keys.cache.TypeKey;
 import es.uniovi.reflection.progquery.visitors.KeyTypeVisitor;
 import es.uniovi.reflection.progquery.visitors.TypeVisitor;
 import org.neo4j.graphdb.Direction;
@@ -19,7 +21,7 @@ import java.util.Set;
 public class DefinitionCache<TKEY> {
     private static final boolean DEBUG = false;
     public static ASTAuxiliarStorage ast;
-    public static DefinitionCache<Object> TYPE_CACHE;
+    public static DefinitionCache<TypeKey> TYPE_CACHE;
     public static DefinitionCache<Symbol> METHOD_DEF_CACHE;
 
     final Map<TKEY, NodeWrapper> auxNodeCache = new HashMap<>();
@@ -40,9 +42,10 @@ public class DefinitionCache<TKEY> {
     }
 
 
-    public void putClassDefinition(TKEY classSymbol, NodeWrapper classDec,
-                                   Set<NodeWrapper> typeDecNodeList, Set<NodeWrapper> typeDecsUses) {
-        NodeWrapper oldClassNode = getFromNotDefinedCache(classSymbol);
+    public void putClassDefinition(TypeMirror type, javax.lang.model.type.TypeVisitor<TKEY,Object> visitor, NodeWrapper classDec, Set<NodeWrapper> typeDecNodeList,
+                                   Set<NodeWrapper> typeDecsUses) {
+        TKEY key=type.accept(visitor,null);
+        NodeWrapper oldClassNode = getFromNotDefinedCache(key);
         if (oldClassNode != null) {
             for (RelationshipWrapper r : oldClassNode.getRelationships(Direction.OUTGOING,
                     //					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR,
@@ -56,7 +59,7 @@ public class DefinitionCache<TKEY> {
                     .forEach(usesTypeDecRel -> typeDecsUses.add(usesTypeDecRel.getEndNode()));
         }
 
-        putDefinition(classSymbol, classDec, oldClassNode);
+        putDefinition(key, classDec, oldClassNode);
     }
 
     public void putDefinition(TKEY k, NodeWrapper v) {
@@ -101,15 +104,16 @@ public class DefinitionCache<TKEY> {
     }
 
 
-    public static NodeWrapper getOrCreateType(TypeMirror type, Object key, ASTAuxiliarStorage ast) {
+    public static NodeWrapper getOrCreateType(TypeMirror type, TypeKey key, ASTAuxiliarStorage ast) {
         if (DefinitionCache.TYPE_CACHE.containsKey(key))
             return DefinitionCache.TYPE_CACHE.get(key);
         return createTypeDec(type, key, ast);
     }
 
     public static NodeWrapper getExistingType(TypeMirror type) {
-        if (DefinitionCache.TYPE_CACHE.containsKey(type))
-            return DefinitionCache.TYPE_CACHE.get(type);
+        TypeKey key = type.accept(new KeyTypeVisitor(), null);
+        if (DefinitionCache.TYPE_CACHE.containsKey(key))
+            return DefinitionCache.TYPE_CACHE.get(key);
 
         throw new IllegalArgumentException("Not Type found for " + type);
     }
@@ -119,7 +123,7 @@ public class DefinitionCache<TKEY> {
         return getOrCreateType(type, type.accept(new KeyTypeVisitor(), null), ast);
     }
 
-    private static NodeWrapper createTypeDec(TypeMirror type, Object key, ASTAuxiliarStorage ast) {
+    private static NodeWrapper createTypeDec(TypeMirror type, TypeKey key, ASTAuxiliarStorage ast) {
 
         return type.accept(new TypeVisitor(ast), key);
 

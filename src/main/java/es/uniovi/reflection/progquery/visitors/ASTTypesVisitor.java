@@ -518,7 +518,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
         GraphUtils.connectWithParent(classNode, pair, RelationTypes.HAS_TYPE_DEF);
 
-        DefinitionCache.TYPE_CACHE.putClassDefinition(currentTypeDecSymbol, classNode, ast.typeDecNodes, typeDecUses);
+        DefinitionCache.TYPE_CACHE.putClassDefinition(currentTypeDecSymbol.type,new KeyTypeVisitor(), classNode, ast.typeDecNodes, typeDecUses);
 
         TypeHierarchy.addTypeHierarchy(currentTypeDecSymbol, classNode, this, ast);
         boolean prevIsInAccesibleContext = isInAccessibleContext;
@@ -1545,7 +1545,6 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     @Override
     public ASTVisitorResult visitNewClass(NewClassTree newClassTree,
                                           Pair<PartialRelation<RelationTypes>, Object> pair) {
-        //		System.out.println(newClassTree);
         NodeWrapper newClassNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(newClassTree, NodeTypes.NEW_INSTANCE);
 
@@ -1576,7 +1575,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             }
 
             String methodName = "<init>";
-            String completeName = ((ClassSymbol) newClassConstructor.owner).getQualifiedName() + ":" + methodName;
+            String completeName = newClassConstructor.owner.getQualifiedName() + ":" + methodName;
             //	fullyQualifiedName = completeName + methodSymbol.type;
             //intentar sacar el fully con inferencia viola el sound but not complete
             constructorDef = createNonDeclaredMethodWithoutSymbol(methodName, completeName, completeName);

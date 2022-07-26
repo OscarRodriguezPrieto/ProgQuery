@@ -5,8 +5,8 @@ import es.uniovi.reflection.progquery.database.DatabaseFachade;
 import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
-import es.uniovi.reflection.progquery.utils.types.ExternalNotDefinedTypeKey;
-import es.uniovi.reflection.progquery.utils.types.ExternalTypeDefKey;
+import es.uniovi.reflection.progquery.utils.keys.external.ExternalNotDefinedTypeKey;
+import es.uniovi.reflection.progquery.utils.keys.external.ExternalTypeDefKey;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -37,22 +37,7 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
         try (NEO4JManager manager = DatabaseFachade.CURRENT_INSERTION_STRATEGY.getNewManager()) {
             DefinitionCache.TYPE_CACHE =
                     new MultiModuleDefinitionCache<>(manager.getDeclaredTypeDefsFrom(programID, userID),
-                            manager.getNotDeclaredTypesFrom(programID, userID), (Object o) -> {
-                        //ESTO SOLO SE VA A LLAMAR PARA PREGUNTAR SI ALGO ESTA EN LA EXTERNAL CACHE
-                        if (o instanceof ClassSymbol) {
-                            ClassSymbol cs = (ClassSymbol) o;
-                            if (cs.sourcefile == null && cs.classfile == null)
-                                return new ExternalNotDefinedTypeKey(cs.fullname.toString());
-                            String fileName = cs.sourcefile == null ? cs.classfile.getName() : cs.sourcefile.getName();
-                            return new ExternalTypeDefKey(fileName, cs.getSimpleName().toString());
-
-                        }
-                        return null;
-                    }, (Object o) -> {
-                        if (o instanceof ClassSymbol)
-                            return new ExternalNotDefinedTypeKey(((ClassSymbol) o).fullname.toString());
-                        return null;
-                    });
+                            manager.getNotDeclaredTypesFrom(programID, userID), typeKey->typeKey.getExternalDeclaredKey(),typeKey->typeKey.getExternalKey());
             DefinitionCache.METHOD_DEF_CACHE = new DefinitionCache<>();
         }
     }
