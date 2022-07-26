@@ -69,7 +69,7 @@ public class InfoToInsert {
     }
 
     public List<Pair<String, Object[]>> getNodeQueriesUpdateInfo() {
-        return generateQueriesFor(nodeSet, InfoToInsert::createParamQueryForNodeUpdate);
+        return generateQueriesFor(retrievedNodeCache.values(), InfoToInsert::createParamQueryForNodeUpdate);
     }
 
     public List<Pair<String, Object[]>> getRelQueriesUpdateInfo() {
