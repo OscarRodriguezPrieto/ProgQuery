@@ -41,7 +41,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 
     @Override
     public NodeWrapper visitArray(ArrayType type, TypeKey key) {
-        NodeWrapper node = createNonDeclaredTypeNode(NodeTypes.ARRAY_TYPE, type.toString());
+        NodeWrapper node = createNonDeclaredTypeNode(NodeTypes.ARRAY_TYPE, key.toString());
         putInCache(key, node);
         node.createRelationshipTo(DefinitionCache.getOrCreateType(type.getComponentType(), ast),
                 RelationTypes.TYPE_PER_ELEMENT);
@@ -87,7 +87,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
             // System.out.println(type.getOriginalType());
             // System.out.println(type.getModelType());
 
-            NodeWrapper genericType = createNonDeclaredTypeNode(NodeTypes.GENERIC_TYPE, t.toString());
+            NodeWrapper genericType = createNonDeclaredTypeNode(NodeTypes.GENERIC_TYPE, key.toString());
             genericType.addLabel(NodeCategory.TYPE_NODE);
             String rawName = t.toString().split("<")[0];
             genericType.setProperty("rawName", rawName);
@@ -185,11 +185,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     @Override
     public NodeWrapper visitExecutable(ExecutableType t, TypeKey key) {
         MethodTypeKey mtKey = (MethodTypeKey) key;
-
-        String fullName = t.toString();
-        if (t.getThrownTypes().size() > 0)
-            fullName += " throws " + t.getThrownTypes().stream()
-                    .reduce("", (s, typeMirror) -> s + "," + typeMirror.toString(), (s1, s2) -> s1 + s2);
+        String fullName = key.toString();
         NodeWrapper methodTypeNode = createNonDeclaredTypeNode(NodeTypes.CALLABLE_TYPE, fullName);
         methodTypeNode
                 .setProperty("simpleName", t.getThrownTypes().size() > 0 ? fullName.split(" throws ")[0] : fullName);
@@ -226,7 +222,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 
     @Override
     public NodeWrapper visitIntersection(IntersectionType t, TypeKey key) {
-        NodeWrapper intersType = createNonDeclaredTypeNode(NodeTypes.INTERSECTION_TYPE, t.toString());
+        NodeWrapper intersType = createNonDeclaredTypeNode(NodeTypes.INTERSECTION_TYPE, key.toString());
         putInCache(key, intersType);
         for (int i = 0; i < t.getBounds().size(); i++)
             intersType.createRelationshipTo(DefinitionCache
@@ -258,8 +254,8 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 
     @Override
     public NodeWrapper visitTypeVariable(TypeVariable t, TypeKey key) {
-        ((TypeVarKey) key).setIndex();
-        NodeWrapper typeVar = createNonDeclaredTypeNode(NodeTypes.TYPE_VARIABLE, t.toString());
+        NodeWrapper typeVar = createNonDeclaredTypeNode(NodeTypes.TYPE_VARIABLE, key.toString());
+        typeVar.setProperty("name", t.toString());
         putInCache(key, typeVar);
         if (t.getUpperBound() != null)
             typeVar.createRelationshipTo(DefinitionCache.getOrCreateType(t.getUpperBound(), ast),
@@ -274,9 +270,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 
     @Override
     public NodeWrapper visitUnion(UnionType t, TypeKey key) {
-        String fullName = t.getAlternatives().stream()
-                .reduce("", (s, typeMirror) -> s + "|" + typeMirror.toString(), (s1, s2) -> s1 + s2);
-        NodeWrapper union = createNonDeclaredTypeNode(NodeTypes.UNION_TYPE, fullName);
+        NodeWrapper union = createNonDeclaredTypeNode(NodeTypes.UNION_TYPE, key.toString());
         union.addLabel(NodeCategory.TYPE_NODE);
         union.setProperty("resultingType", t.toString());
         putInCache(key, union);
@@ -298,19 +292,19 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     public NodeWrapper visitWildcard(WildcardType t, TypeKey key) {
         // System.out.println("WILCARD KIND " + t.getKind().toString());
 
-        NodeWrapper wildcardNode = createNonDeclaredTypeNode(NodeTypes.WILDCARD_TYPE, t.toString());
+        NodeWrapper wildcardNode = createNonDeclaredTypeNode(NodeTypes.WILDCARD_TYPE, key.toString());
         wildcardNode.addLabel(NodeCategory.TYPE_NODE);
         putInCache(key, wildcardNode);
 
         if (t.getExtendsBound() != null)
-        wildcardNode.createRelationshipTo(DefinitionCache
-                .getOrCreateType(t.getExtendsBound(),
-                        ((WildcardKey) key).getExtendsBound(), ast), TypeRelations.WILDCARD_EXTENDS_BOUND);
+            wildcardNode.createRelationshipTo(
+                    DefinitionCache.getOrCreateType(t.getExtendsBound(), ((WildcardKey) key).getExtendsBound(), ast),
+                    TypeRelations.WILDCARD_EXTENDS_BOUND);
 
         if (t.getSuperBound() != null)
-        wildcardNode.createRelationshipTo(DefinitionCache
-                .getOrCreateType(t.getSuperBound() ,
-                        ((WildcardKey) key).getSuperBound(), ast), TypeRelations.WILDCARD_SUPER_BOUND);
+            wildcardNode.createRelationshipTo(
+                    DefinitionCache.getOrCreateType(t.getSuperBound(), ((WildcardKey) key).getSuperBound(), ast),
+                    TypeRelations.WILDCARD_SUPER_BOUND);
         return wildcardNode;
     }
 
