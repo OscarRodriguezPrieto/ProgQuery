@@ -31,13 +31,13 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
 
     @Override
     public TypeKey visitArray(ArrayType t, Object param) {
-        return new StringKey(t.toString(), NodeTypes.ARRAY_TYPE.toString());
+        return new ArrayTypeKey(t.getComponentType().accept(this,null));
     }
 
     @Override
     public TypeKey visitDeclared(DeclaredType t, Object param) {
         if (t.getTypeArguments().size() > 0)
-            return new GenericTypeKey(t.toString(),
+            return new GenericTypeKey(
                     t.getTypeArguments().stream().map(argT -> argT.accept(this, null)).collect(Collectors.toList()),
                     JavacInfo.erasure((Type) t).accept(this, null));
         return new ClassSymbolKey((Symbol.ClassSymbol) ((Type) t).tsym);
@@ -55,14 +55,12 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
         List<TypeKey> params = new ArrayList<>();
         for (TypeMirror pType : t.getParameterTypes())
             params.add(pType.accept(this, null));
-        String fullName = t.toString();
-        if(t.getThrownTypes().size()>0)
-        fullName+= " throws " + t.getThrownTypes().stream()
-                .reduce("", (s, typeMirror) -> s + "," + typeMirror.toString(), (s1, s2) -> s1 + s2);
 
-        return new MethodTypeKey(fullName, params,
+        return new MethodTypeKey( params,
                 t.getThrownTypes().stream().map(thrownType -> thrownType.accept(this, null))
-                        .collect(Collectors.toList()), t.getReturnType().accept(this, null),
+                        .collect(Collectors.toList()),
+                t.getTypeVariables().stream().map(typeVariable -> typeVariable.accept(this, null))
+                        .collect(Collectors.toList()),t.getReturnType().accept(this, null),
                 t.getReceiverType() == null ? null : t.getReceiverType().accept(this, null),
                 ((Type) t).tsym.isConstructor());
     }
@@ -70,7 +68,7 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
     @Override
     public TypeKey visitIntersection(IntersectionType t, Object param) {
 
-        return new CompoundTypeKey(t.toString(), true,
+        return new CompoundTypeKey( true,
                 t.getBounds().stream().map(otherType -> otherType.accept(this, null)).collect(Collectors.toList()));
     }
 
@@ -99,15 +97,12 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
 
     @Override
     public TypeKey visitTypeVariable(TypeVariable t, Object param) {
-        return new SymbolKey( NodeTypes.TYPE_VARIABLE.toString(),((TypeVar) t).tsym);
+        return new TypeVarKey( ((TypeVar) t).tsym);
     }
 
     @Override
     public TypeKey visitUnion(UnionType t, Object param) {
-
-        String fullName =
-                t.getAlternatives().stream().reduce("", (s1, type) -> s1 + "|" + type.toString(), (s1, s2) -> s1 + s2);
-        return new CompoundTypeKey(fullName, false,
+        return new CompoundTypeKey(false,
                 t.getAlternatives().stream().map(otherType -> otherType.accept(this, null))
                         .collect(Collectors.toList()));
 
@@ -121,11 +116,10 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
 
     @Override
     public TypeKey visitWildcard(WildcardType t, Object param) {
-
         return new WildcardKey(
-                (t.getSuperBound() == null ? JavacInfo.getSymtab().botType : t.getSuperBound()).accept(this, null),
-                (t.getExtendsBound() == null ? JavacInfo.getSymtab().objectType : t.getExtendsBound())
-                        .accept(this, null), t.toString());
+                t.getSuperBound() == null ? null : t.getSuperBound().accept(this, null),
+                t.getExtendsBound() == null ? null : t.getExtendsBound()
+                        .accept(this, null));
     }
 
 }

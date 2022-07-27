@@ -1,6 +1,7 @@
 package es.uniovi.reflection.progquery.utils;
 
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.tools.javac.code.Type;
 
@@ -68,6 +69,11 @@ public class GraphUtils {
 	// }
 	public static void attachTypeDirect(NodeWrapper node, ExpressionTree exp, ASTAuxiliarStorage ast) {
 		Type type = JavacInfo.getTypeDirect(exp);
+		attachType(node, type,ast);
+
+	}
+	public static void attachTypeDirect(NodeWrapper node, TypeParameterTree typeParam, ASTAuxiliarStorage ast) {
+		Type type = JavacInfo.getTypeDirect(typeParam);
 		attachType(node, type,ast);
 
 	}

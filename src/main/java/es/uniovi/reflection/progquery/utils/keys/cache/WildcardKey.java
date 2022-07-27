@@ -2,7 +2,7 @@ package es.uniovi.reflection.progquery.utils.keys.cache;
 
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 
-public class WildcardKey extends AbstractTypeKey{
+public class WildcardKey implements TypeKey {
 
     private TypeKey superBound, extendsBound;
 
@@ -14,8 +14,7 @@ public class WildcardKey extends AbstractTypeKey{
         return extendsBound;
     }
 
-    public WildcardKey(TypeKey superBound, TypeKey extendsBound,String fullName) {
-        super(fullName, NodeTypes.WILDCARD_TYPE.toString());
+    public WildcardKey(TypeKey superBound, TypeKey extendsBound) {
         this.superBound = superBound;
         this.extendsBound = extendsBound;
     }
@@ -49,5 +48,19 @@ public class WildcardKey extends AbstractTypeKey{
         } else if (!superBound.equals(other.superBound))
             return false;
         return true;
+    }
+
+    @Override
+    public String nodeType() {
+        return NodeTypes.WILDCARD_TYPE.toString();
+    }
+
+    @Override
+    public String toString() {
+        String toString = "?";
+        if (extendsBound == null && superBound == null)
+            return toString;
+        return toString +
+                (extendsBound != null ? " extends " + extendsBound : " super " + superBound);
     }
 }

@@ -2,7 +2,7 @@ package es.uniovi.reflection.progquery.utils.keys.cache;
 
 import es.uniovi.reflection.progquery.utils.keys.external.ExternalNotDefinedTypeKey;
 
-public abstract class AbstractTypeKey implements TypeKey{
+public  abstract class AbstractTypeKey implements TypeKey{
     String toString;
     private String nodeType;
 
@@ -12,8 +12,8 @@ public abstract class AbstractTypeKey implements TypeKey{
     }
 
     @Override
-    public ExternalNotDefinedTypeKey getExternalKey() {
-        return  new ExternalNotDefinedTypeKey(toString,nodeType);
+    public String nodeType() {
+        return nodeType;
     }
 
     @Override

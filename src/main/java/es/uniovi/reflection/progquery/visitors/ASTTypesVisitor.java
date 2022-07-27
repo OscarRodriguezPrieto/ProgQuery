@@ -1837,14 +1837,10 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     @Override
     public ASTVisitorResult visitTypeParameter(TypeParameterTree typeParameterTree,
                                                Pair<PartialRelation<RelationTypes>, Object> t) {
-        // System.out.println(NodeUtils.nodeToString(t.getFirst().getStartingNode()));
-        // System.out.println(typeParameterTree);
-        // System.out.println("TYPE PARAM " + typeParameterTree.toString());
-        // System.out.println(typeParameterTree.getBounds().size());
-        // System.out.println(typeParameterTree.getBounds().get(0));
         NodeWrapper typeParameterNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNodeExplicitCats(typeParameterTree, NodeTypes.TYPE_PARAM, NodeCategory.AST_NODE);
         typeParameterNode.setProperty("name", typeParameterTree.getName().toString());
+        GraphUtils.attachTypeDirect(typeParameterNode, typeParameterTree, ast);
         GraphUtils.connectWithParent(typeParameterNode, t);
         scan(typeParameterTree.getAnnotations(), Pair.createPair(typeParameterNode, RelationTypes.HAS_ANNOTATIONS));
         scan(typeParameterTree.getBounds(), Pair.createPair(typeParameterNode, RelationTypes.TYPEPARAMETER_EXTENDS));

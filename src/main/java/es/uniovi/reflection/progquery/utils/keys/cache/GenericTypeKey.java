@@ -4,15 +4,14 @@ import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 
 import java.util.List;
 
-public class GenericTypeKey extends AbstractTypeKey{
+public class GenericTypeKey implements  TypeKey{
 
 	private List<TypeKey> typeArgs;
 	private TypeKey parameterizedType;
 
 
 
-	public GenericTypeKey(String toString, List<TypeKey> typeArgs, TypeKey parameterizedType) {
-		super(NodeTypes.GENERIC_TYPE.toString(),toString);
+	public GenericTypeKey(List<TypeKey> typeArgs, TypeKey parameterizedType) {
 		this.typeArgs = typeArgs;
 		this.parameterizedType = parameterizedType;
 	}
@@ -56,4 +55,13 @@ public class GenericTypeKey extends AbstractTypeKey{
 		return true;
 	}
 
+	@Override
+	public String nodeType() {
+		return NodeTypes.GENERIC_TYPE.toString();
+	}
+
+	@Override
+	public String toString() {
+		return parameterizedType.toString()+"<"+typeArgs.stream().reduce("", (s, typeKey) -> s + "," + typeKey.toString(), (s1, s2) -> s1 + s2)+">";
+	}
 }

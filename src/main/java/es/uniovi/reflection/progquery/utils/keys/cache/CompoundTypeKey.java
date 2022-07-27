@@ -4,22 +4,19 @@ import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 
 import java.util.List;
 
-public class CompoundTypeKey extends AbstractTypeKey {
+public class CompoundTypeKey implements TypeKey {
     //
     private boolean isIntersection;
 
     private List<TypeKey> types;
-    private String toString;
 
     public List<TypeKey> getTypes() {
         return types;
     }
 
-    public CompoundTypeKey(String toString, boolean isIntersection, List<TypeKey> types) {
-        super((isIntersection ? NodeTypes.INTERSECTION_TYPE : NodeTypes.UNION_TYPE).toString(), toString);
+    public CompoundTypeKey(boolean isIntersection, List<TypeKey> types) {
         this.isIntersection = isIntersection;
         this.types = types;
-        this.toString = toString;
     }
 
     @Override
@@ -50,4 +47,14 @@ public class CompoundTypeKey extends AbstractTypeKey {
         return true;
     }
 
+    @Override
+    public String nodeType() {
+        return (isIntersection ? NodeTypes.INTERSECTION_TYPE : NodeTypes.UNION_TYPE).toString();
+    }
+
+    @Override
+    public String toString() {
+        final String separator = isIntersection ? "&" : "|";
+        return types.stream().reduce("", (s, typeKey) -> s + separator + typeKey.toString(), (s1, s2) -> s1 + s2);
+    }
 }
