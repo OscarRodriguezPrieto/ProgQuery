@@ -55,6 +55,6 @@ public class CompoundTypeKey implements TypeKey {
     @Override
     public String toString() {
         final String separator = isIntersection ? "&" : "|";
-        return types.stream().reduce("", (s, typeKey) -> s + separator + typeKey.toString(), (s1, s2) -> s1 + s2);
+        return types.stream().reduce("", (s, typeKey) -> s  + typeKey.toString(), (s1, s2) -> s1 + separator + s2);
     }
 }

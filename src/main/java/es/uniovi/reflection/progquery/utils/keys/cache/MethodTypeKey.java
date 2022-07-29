@@ -67,15 +67,15 @@ public class MethodTypeKey implements TypeKey {
         String toString = isCons ? "[init] " : "";
         if (typeVars.size() > 0)
             toString += "<" +
-                    typeVars.stream().reduce("", (s, typeKey) -> s + "," + typeKey.toString(), (s1, s2) -> s1 + s2) +
+                    typeVars.stream().reduce("", (s, typeKey) -> s + typeKey.toString(), (s1, s2) -> s1 +","+ s2) +
                     "> ";
         toString+=returnType.toString() +" (";
         toString +=
-                paramTypes.stream().reduce("", (s, typeKey) -> s + "," + typeKey.toString(), (s1, s2) -> s1 + s2) +
+                paramTypes.stream().reduce("", (s, typeKey) -> s + typeKey.toString(), (s1, s2) -> s1 +","+ s2) +
                 ")";
         if (thrownTypes.size() > 0)
             toString += " throws " + thrownTypes.stream()
-                    .reduce("", (s, typeMirror) -> s + "," + typeMirror.toString(), (s1, s2) -> s1 + s2);
+                    .reduce("", (s, typeMirror) -> s + typeMirror.toString(), (s1, s2) -> s1 +","+ s2);
         return toString;
     }
 
