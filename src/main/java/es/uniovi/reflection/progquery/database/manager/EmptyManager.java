@@ -34,4 +34,10 @@ public class EmptyManager implements NEO4JManager {
     public void close() {
 
     }
+
+    @Override
+    public Stream<Pair<String, Integer>> getTypeVarNameCount(String programID, String userID) {
+        throw new IllegalStateException("DONT NEED TO RETRIEVE EXTERNAL TYPES WITH AN EMPTY MANAGER, getProgramFromDB is alwys null");
+
+    }
 }
