@@ -255,7 +255,8 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     @Override
     public NodeWrapper visitTypeVariable(TypeVariable t, TypeKey key) {
         NodeWrapper typeVar = createNonDeclaredTypeNode(NodeTypes.TYPE_VARIABLE, key.toString());
-        typeVar.setProperty("name", t.toString());
+        final String WILCARD_NAME = "<captured wildcard>";
+        typeVar.setProperty("name", key.toString().contains(TypeVarKey.WILDCARD_CLUE) ? WILCARD_NAME : t.toString());
         putInCache(key, typeVar);
         if (t.getUpperBound() != null)
             typeVar.createRelationshipTo(DefinitionCache.getOrCreateType(t.getUpperBound(), ast),

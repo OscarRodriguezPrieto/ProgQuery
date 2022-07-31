@@ -5,6 +5,7 @@ import es.uniovi.reflection.progquery.database.DatabaseFachade;
 import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
+import es.uniovi.reflection.progquery.utils.keys.cache.TypeVarKey;
 import es.uniovi.reflection.progquery.utils.keys.external.ExternalNotDefinedTypeKey;
 import es.uniovi.reflection.progquery.utils.keys.external.ExternalTypeDefKey;
 
@@ -38,6 +39,7 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
             DefinitionCache.TYPE_CACHE =
                     new MultiModuleDefinitionCache<>(manager.getDeclaredTypeDefsFrom(programID, userID),
                             manager.getNotDeclaredTypesFrom(programID, userID), typeKey->typeKey.getExternalDeclaredKey(),typeKey->typeKey.getExternalKey());
+            TypeVarKey.initNameCount(manager.getTypeVarNameCount(programID,userID));
             DefinitionCache.METHOD_DEF_CACHE = new DefinitionCache<>();
         }
     }

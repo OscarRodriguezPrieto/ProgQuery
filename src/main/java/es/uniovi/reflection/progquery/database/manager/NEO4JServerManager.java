@@ -62,6 +62,11 @@ public class NEO4JServerManager implements NEO4JManager {
                     "{labelFilter:\">TYPE_NODE\", minLevel:0}) YIELD node WITH node as type WHERE NOT(EXISTS(type" +
                     ".isDeclared)) AND NOT type:TYPE_VARIABLE OR NOT type.isDeclared RETURN type";
 
+    static final String GET_TYPE_VAR_COUNT="\"MATCH (p:PROGRAM{ID:\\\"%s\\\", USER_ID:\\\"%s\\\"}) CALL apoc.path" +
+            ".subgraphNodes(p, \" +\n" +
+            "                    \"{labelFilter:\\\"/TYPE_VARIABLE\\\", minLevel:0}) YIELD node WITH node as t WHERE t.name<>\"<captured wildcard>\" WITH t.name" +
+            " as name, MAX(t.fullyQualifiedName) as maxName  RETURN name, CASE WHEN maxName CONTAINS \"[\" THEN " +
+            "TOINTEGER(SPLIT(SPLIT(maxName, \"[\")[1],\"]\")[0]) ELSE 0 END";
     @Override
     public Stream<Pair<NodeWrapper, ExternalNotDefinedTypeKey>> getDeclaredTypeDefsFrom(String programID,
                                                                                         String userID) {
@@ -128,5 +133,14 @@ public class NEO4JServerManager implements NEO4JManager {
     @Override
     public void close() {
         session.close();
+    }
+
+    @Override
+    public Stream<Pair<String, Integer>> getTypeVarNameCount(String programID, String userID) {
+        final int NAME=0, COUNT=1;
+        return executeQuery(String.format(GET_TYPE_VAR_COUNT, programID, userID)).stream()
+                .map(record ->
+                     Pair.create(record.get(NAME).asString(),record.get(COUNT).asInt())
+                );
     }
 }

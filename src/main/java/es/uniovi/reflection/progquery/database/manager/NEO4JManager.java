@@ -21,4 +21,6 @@ public interface NEO4JManager extends AutoCloseable {
 
     @Override
     void close();
+
+    Stream<Pair<String, Integer>> getTypeVarNameCount(String programID, String userID);
 }

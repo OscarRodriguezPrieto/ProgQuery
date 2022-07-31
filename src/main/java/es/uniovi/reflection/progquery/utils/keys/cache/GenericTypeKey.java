@@ -62,6 +62,6 @@ public class GenericTypeKey implements TypeKey {
     @Override
     public String toString() {
         return parameterizedType.toString() + "<" +
-                typeArgs.stream().reduce("", (s, typeKey) -> s + typeKey.toString(), (s1, s2) -> s1 + "," + s2) + ">";
+                typeArgs.stream().reduce("", (s, typeKey) -> s +","+ typeKey.toString(), (s1, s2) -> s1  + s2).substring(1) + ">";
     }
 }

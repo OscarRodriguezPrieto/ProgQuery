@@ -97,7 +97,7 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
 
     @Override
     public TypeKey visitTypeVariable(TypeVariable t, Object param) {
-        return new TypeVarKey( ((TypeVar) t).tsym);
+        return TypeVarKey.getKeyForTypeVar(t);
     }
 
     @Override
