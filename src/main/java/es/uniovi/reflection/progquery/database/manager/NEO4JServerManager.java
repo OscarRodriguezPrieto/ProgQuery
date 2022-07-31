@@ -66,7 +66,7 @@ public class NEO4JServerManager implements NEO4JManager {
             ".subgraphNodes(p, \" +\n" +
             "                    \"{labelFilter:\\\"/TYPE_VARIABLE\\\", minLevel:0}) YIELD node WITH node as t WHERE t.name<>\"<captured wildcard>\" WITH t.name" +
             " as name, MAX(t.fullyQualifiedName) as maxName  RETURN name, CASE WHEN maxName CONTAINS \"[\" THEN " +
-            "TOINTEGER(SPLIT(SPLIT(maxName, \"[\")[1],\"]\")[0]) ELSE 0 END";
+            "TOINTEGER(SPLIT(SPLIT(maxName, \"[\")[1],\"]\")[0]) ELSE 0 END as count";
     @Override
     public Stream<Pair<NodeWrapper, ExternalNotDefinedTypeKey>> getDeclaredTypeDefsFrom(String programID,
                                                                                         String userID) {

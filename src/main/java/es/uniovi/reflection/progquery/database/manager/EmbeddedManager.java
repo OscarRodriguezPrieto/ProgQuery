@@ -43,15 +43,15 @@ public class EmbeddedManager implements NEO4JManager {
                                                                                         String userID) {
         final String TYPE_NODE = "type", TYPE_FULL_NAME = "type.fullyQualifiedName", TYPE_SIMPLE_NAME =
                 "type.simpleName", FILE_NAME = "cu.fileName", NOT_CU = "cu IS NULL";
-        return currentTransaction
-                .execute(String.format(NEO4JServerManager.DEFINED_TYPES_QUERY, programID, userID)).stream()
-                .map(record -> Pair.create(new Neo4jEmbeddedWrapperNode((Node) record.get(TYPE_NODE)),
+        return currentTransaction.execute(String.format(NEO4JServerManager.DEFINED_TYPES_QUERY, programID, userID))
+                .stream().map(record -> Pair.create(new Neo4jEmbeddedWrapperNode((Node) record.get(TYPE_NODE)),
                         (boolean) record.get(NOT_CU) ?
                                 new ExternalNotDefinedTypeKey((String) record.get(TYPE_FULL_NAME),
                                         NodeCategory.TYPE_DEFINITION.toString()) :
                                 new ExternalTypeDefKey((String) record.get(FILE_NAME),
                                         (String) record.get(TYPE_SIMPLE_NAME))));
     }
+
     private static String getTypeLabelFromNode(Node node) {
         for (Label label : node.getLabels())
             if (!NEO4JServerManager.INVALID_NODE_TYPES.contains(label.toString()))
@@ -64,17 +64,25 @@ public class EmbeddedManager implements NEO4JManager {
                                                                                         String userID) {
         final String TYPE_NODE = "type";
 
-        return currentTransaction
-                .execute(String.format(NEO4JServerManager.NON_DEFINED_TYPES_QUERY, programID, userID))
-                .stream().map(record ->{
-                   Node node= (Node) record.get(TYPE_NODE);
-                  return  Pair.create(new Neo4jEmbeddedWrapperNode(node),
-                        new ExternalNotDefinedTypeKey((String)node.getProperty("fullyQualifiedName"), getTypeLabelFromNode(node)));
+        return currentTransaction.execute(String.format(NEO4JServerManager.NON_DEFINED_TYPES_QUERY, programID, userID))
+                .stream().map(record -> {
+                    Node node = (Node) record.get(TYPE_NODE);
+                    return Pair.create(new Neo4jEmbeddedWrapperNode(node),
+                            new ExternalNotDefinedTypeKey((String) node.getProperty("fullyQualifiedName"),
+                                    getTypeLabelFromNode(node)));
                 });
     }
 
     @Override
     public void close() {
+    }
+
+    @Override
+    public Stream<Pair<String, Integer>> getTypeVarNameCount(String programID, String userID) {
+        final String NAME = "name", COUNT = "count";
+
+        return currentTransaction.execute(String.format(NEO4JServerManager.NON_DEFINED_TYPES_QUERY, programID, userID))
+                .stream().map(record -> Pair.create((String) record.get(NAME), (Integer) record.get(COUNT)));
     }
 
 }
