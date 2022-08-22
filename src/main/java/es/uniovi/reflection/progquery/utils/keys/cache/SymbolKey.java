@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class SymbolKey extends  AbstractTypeKey{
 
-    private Symbol symbol;
+    Symbol symbol;
 
     public SymbolKey(String nodeType, Symbol symbol) {
         super(symbol.toString(),nodeType);

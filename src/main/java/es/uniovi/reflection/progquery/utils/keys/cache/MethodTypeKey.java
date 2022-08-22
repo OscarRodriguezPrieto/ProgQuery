@@ -67,7 +67,7 @@ public class MethodTypeKey implements TypeKey {
         String toString = isCons ? "[init] " : "";
         if (typeVars.size() > 0)
             toString += "<" +
-                    typeVars.stream().reduce("", (s, typeKey) -> s + typeKey.toString(), (s1, s2) -> s1 +","+ s2) +
+                    typeVars.stream().reduce("", (s, typeKey) -> s + typeKey.toString(), (s1, s2) -> s1 +","+ s2).substring(1) +
                     "> ";
         toString+=returnType.toString() +" (";
         toString +=

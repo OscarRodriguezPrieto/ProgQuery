@@ -86,7 +86,7 @@ public enum NodeTypes implements Label {
 
 																																																																																			NodeCategory.LOCAL_DEF,
 																																																																																			NodeCategory.VARIABLE_DEF,
-																																																																																			NodeCategory.DEFINITION), GENERIC_TYPE, PRIMITIVE_TYPE, RETURN_STATEMENT(
+																																																																																			NodeCategory.DEFINITION), GENERIC_TYPE, PARAMETERIZED_TYPE, PRIMITIVE_TYPE, RETURN_STATEMENT(
 
 																																																																																					NodeCategory.STATEMENT), SWITCH_STATEMENT(
 

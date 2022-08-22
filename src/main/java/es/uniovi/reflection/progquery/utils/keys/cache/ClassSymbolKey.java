@@ -8,18 +8,22 @@ import es.uniovi.reflection.progquery.utils.keys.external.ExternalTypeDefKey;
 import java.util.Objects;
 
 
-public class ClassSymbolKey extends AbstractTypeKey{
+public class ClassSymbolKey extends AbstractTypeKey {
     Symbol.ClassSymbol symbol;
 
     public ClassSymbolKey(Symbol.ClassSymbol symbol) {
-        super(symbol.fullname.toString(), NodeCategory.TYPE_DEFINITION.toString());
+        super(symbol.fullname.toString() + (symbol.getTypeParameters().size() > 0 ? "<" +
+                symbol.getTypeParameters().stream()
+                        .reduce("", (str, t) -> str + "," + t.toString(), (str1, str2) -> str1 + str2).substring(1) +
+                ">" : ""), NodeCategory.TYPE_DEFINITION.toString());
         this.symbol = symbol;
     }
+
     @Override
     public ExternalNotDefinedTypeKey getExternalDeclaredKey() {
         if (symbol.sourcefile == null)
             return super.getExternalKey();
-       return new ExternalTypeDefKey(symbol.sourcefile.getName(), symbol.getSimpleName().toString());
+        return new ExternalTypeDefKey(symbol.sourcefile.getName(), symbol.getSimpleName().toString());
 
     }
 

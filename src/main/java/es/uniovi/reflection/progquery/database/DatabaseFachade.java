@@ -100,10 +100,14 @@ public class DatabaseFachade {
 
 	private static Object[] getTypeDecProperties(ClassSymbol symbol, boolean isDeclared) {
 		Set<Modifier> modifiers = Flags.asModifierSet(symbol.flags_field);
+		String fullyQualifiedName=WrapperUtils.stringToNeo4jQueryString(symbol.getQualifiedName().toString());
+		if(symbol.getTypeParameters().size()>0)
+			fullyQualifiedName += "<" + symbol.getTypeParameters().stream()
+						.reduce("", (str, t) -> str + "," + t.toString(), (str1, str2) -> str1 + str2).substring(1) + ">";
 		return symbol.isEnum()
 				? new Object[] { "simpleName", WrapperUtils.stringToNeo4jQueryString(symbol.getSimpleName().toString()),
 						"fullyQualifiedName",
-						WrapperUtils.stringToNeo4jQueryString(symbol.getQualifiedName().toString()), "isDeclared",
+				fullyQualifiedName, "isDeclared",
 						isDeclared, "isFinal", true, "isStatic", true, "accessLevel", "public" }
 				: symbol.isInterface() ? new Object[] { "simpleName",
 						WrapperUtils.stringToNeo4jQueryString(symbol.getSimpleName().toString()), "fullyQualifiedName",

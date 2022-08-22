@@ -60,7 +60,7 @@ public class NEO4JServerManager implements NEO4JManager {
     static final String NON_DEFINED_TYPES_QUERY =
             "MATCH (p:PROGRAM{ID:\"%s\", USER_ID:\"%s\"}) CALL apoc.path.subgraphNodes(p, " +
                     "{labelFilter:\">TYPE_NODE\", minLevel:0}) YIELD node WITH node as type WHERE NOT(EXISTS(type" +
-                    ".isDeclared)) AND NOT type:TYPE_VARIABLE OR NOT type.isDeclared RETURN type";
+                    ".isDeclared)) OR NOT type.isDeclared RETURN type";
 
     static final String GET_TYPE_VAR_COUNT="\"MATCH (p:PROGRAM{ID:\\\"%s\\\", USER_ID:\\\"%s\\\"}) CALL apoc.path" +
             ".subgraphNodes(p, \" +\n" +

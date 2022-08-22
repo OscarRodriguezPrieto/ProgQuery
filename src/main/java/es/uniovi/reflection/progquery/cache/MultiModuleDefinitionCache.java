@@ -39,7 +39,7 @@ public class MultiModuleDefinitionCache<TKEY> extends DefinitionCache<TKEY> {
             DefinitionCache.TYPE_CACHE =
                     new MultiModuleDefinitionCache<>(manager.getDeclaredTypeDefsFrom(programID, userID),
                             manager.getNotDeclaredTypesFrom(programID, userID), typeKey->typeKey.getExternalDeclaredKey(),typeKey->typeKey.getExternalKey());
-            TypeVarKey.initNameCount(manager.getTypeVarNameCount(programID,userID));
+
             DefinitionCache.METHOD_DEF_CACHE = new DefinitionCache<>();
         }
     }

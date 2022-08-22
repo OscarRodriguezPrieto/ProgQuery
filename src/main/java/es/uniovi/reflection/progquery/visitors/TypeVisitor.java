@@ -1,5 +1,6 @@
 package es.uniovi.reflection.progquery.visitors;
 
+import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import com.sun.tools.javac.code.Type;
@@ -87,7 +88,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
             // System.out.println(type.getOriginalType());
             // System.out.println(type.getModelType());
 
-            NodeWrapper genericType = createNonDeclaredTypeNode(NodeTypes.GENERIC_TYPE, key.toString());
+            NodeWrapper genericType = createNonDeclaredTypeNode(NodeTypes.PARAMETERIZED_TYPE, key.toString());
             genericType.addLabel(NodeCategory.TYPE_NODE);
             String rawName = t.toString().split("<")[0];
             genericType.setProperty("rawName", rawName);
@@ -99,7 +100,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
             putInCache(key, genericType);
             // es.uniovi.reflection.progquery.ast.typeDecNodes.add(genericType);
             nonDeclaredTypeDec = DefinitionCache
-                    .getOrCreateType(JavacInfo.erasure(type), ((GenericTypeKey) key).getParameterizedType(), ast);
+                    .getOrCreateType(JavacInfo.erasure(type), ((ParameterizedTypeKey) key).getParameterizedType(), ast);
 
             genericType.createRelationshipTo(nonDeclaredTypeDec, RelationTypes.PARAMETERIZED_TYPE);
             // System.out.println("TYPE ARGUMENTS");
@@ -111,30 +112,27 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
                 // GENERIC
                 // TYPE
                 genericType.createRelationshipTo(DefinitionCache
-                                .getOrCreateType(t.getTypeArguments().get(i),
-                                        ((GenericTypeKey) key).getTypeArgs().get(i), ast),
-                        RelationTypes.GENERIC_TYPE_ARGUMENT).setProperty("argumentIndex", i + 1);
+                        .getOrCreateType(t.getTypeArguments().get(i), ((ParameterizedTypeKey) key).getTypeArgs().get(i),
+                                ast), RelationTypes.GENERIC_TYPE_ARGUMENT).setProperty("argumentIndex", i + 1);
 
         } else {
 
-            // System.out.println("NON_GENERIC");
-            // System.out.println(t);
             nonDeclaredTypeDec =
                     // t instanceof ClassType
                     // ?
                     DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredCLASSTypeDecNode(((ClassType) t),
                             type.isInterface() ? NodeTypes.INTERFACE_DEF :
-                                    type.tsym.isEnum() ? NodeTypes.ENUM_DEF : NodeTypes.CLASS_DEF)
-            // :
-            // DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredTypeDecNode(t,
-            // type.isInterface()
-            // ? NodeTypes.INTERFACE_DEF : type.tsym.isEnum() ?
-            // NodeTypes.ENUM_DEF : NodeTypes.CLASS_DEF)
-            ;
+                                    type.tsym.isEnum() ? NodeTypes.ENUM_DEF : NodeTypes.CLASS_DEF);
             putInCache(key, nonDeclaredTypeDec);
             ret = nonDeclaredTypeDec;
             ast.typeDecNodes.add(nonDeclaredTypeDec);
-
+            if (type.tsym.getTypeParameters().size() > 0) {
+                nonDeclaredTypeDec.addLabel(NodeTypes.GENERIC_TYPE);
+                type.tsym.getTypeParameters().forEach(typeParamSymbol -> nonDeclaredTypeDec.createRelationshipTo(
+                        typeParamSymbol.type.accept(this,
+                                typeParamSymbol.type.accept(new KeyForNewTypeVarVisitor(key.toString().split("<")[0]), null)),
+                        TypeRelations.HAS_TYPE_PARAMETER));
+            }
             // Solo a�adimos dependencias de clases no declaradas cuando heredan
             // o
             // implementan de otra, para el futuro se podr�an analizar los class
@@ -160,7 +158,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
                                         type.isInterface(), ast, (MethodSymbol) elementSymbol);
                             else if (elementSymbol.getKind() == ElementKind.CONSTRUCTOR)
                                 ASTTypesVisitor
-                                        .getNotDeclaredConstructorDuringTypeCreation(nonDeclaredTypeDec, elementSymbol);
+                                        .getNotDeclaredConstructorDuringTypeCreation(ast,nonDeclaredTypeDec, elementSymbol);
                         }
                     } catch (com.sun.tools.javac.code.Symbol.CompletionFailure ex) {
                         System.err.println("Failed to analyze " + elementSymbol.getKind() + " of " + t.toString() +
@@ -186,10 +184,23 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     public NodeWrapper visitExecutable(ExecutableType t, TypeKey key) {
         MethodTypeKey mtKey = (MethodTypeKey) key;
         String fullName = key.toString();
+
+
         NodeWrapper methodTypeNode = createNonDeclaredTypeNode(NodeTypes.CALLABLE_TYPE, fullName);
         methodTypeNode
                 .setProperty("simpleName", t.getThrownTypes().size() > 0 ? fullName.split(" throws ")[0] : fullName);
         putInCache(key, methodTypeNode);
+
+        if (((Type.MethodType) t).tsym.getTypeParameters().size() > 0){
+            methodTypeNode.addLabel(NodeTypes.GENERIC_TYPE);
+            int i=0;
+            for (Symbol.TypeVariableSymbol typeVarSymbol:((Type.MethodType) t).tsym.getTypeParameters())
+                methodTypeNode.createRelationshipTo(
+
+                        typeVarSymbol.type.accept(this,
+                                typeVarSymbol.type.accept(new KeyForNewTypeVarVisitor(fullName.split("<")[0]), null)),
+                                TypeRelations.HAS_TYPE_PARAMETER).setProperty("paramIndex", ++i);
+    }
 
         methodTypeNode
                 .createRelationshipTo(DefinitionCache.getOrCreateType(t.getReturnType(), mtKey.getReturnType(), ast),
@@ -200,11 +211,6 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
             methodTypeNode.createRelationshipTo(
                     DefinitionCache.getOrCreateType(t.getParameterTypes().get(i), mtKey.getParamTypes().get(i), ast),
                     TypeRelations.PARAM_TYPE).setProperty("paramIndex", ++i);
-        }
-        for (int i = 0; i < t.getTypeVariables().size(); i++) {
-            methodTypeNode.createRelationshipTo(
-                    DefinitionCache.getOrCreateType(t.getTypeVariables().get(i), mtKey.getTypeVars().get(i), ast),
-                    TypeRelations.HAS_TYPE_VARIABLE).setProperty("paramIndex", ++i);
         }
         // METER UN PUTO FOR PARA PODER REUTILIZAR LAS KEYS, POR FAVOR!!
         for (int i = 0; i < t.getThrownTypes().size(); i++)

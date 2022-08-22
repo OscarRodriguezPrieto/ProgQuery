@@ -4,7 +4,6 @@ import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.code.Type.JCPrimitiveType;
 import com.sun.tools.javac.code.Type.PackageType;
-import com.sun.tools.javac.code.Type.TypeVar;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.utils.JavacInfo;
 import es.uniovi.reflection.progquery.utils.keys.cache.*;
@@ -37,7 +36,7 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
     @Override
     public TypeKey visitDeclared(DeclaredType t, Object param) {
         if (t.getTypeArguments().size() > 0)
-            return new GenericTypeKey(
+            return new ParameterizedTypeKey(
                     t.getTypeArguments().stream().map(argT -> argT.accept(this, null)).collect(Collectors.toList()),
                     JavacInfo.erasure((Type) t).accept(this, null));
         return new ClassSymbolKey((Symbol.ClassSymbol) ((Type) t).tsym);

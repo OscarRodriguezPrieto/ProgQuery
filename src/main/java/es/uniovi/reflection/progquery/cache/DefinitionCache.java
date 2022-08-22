@@ -1,7 +1,6 @@
 package es.uniovi.reflection.progquery.cache;
 
 import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Type;
 import es.uniovi.reflection.progquery.ast.ASTAuxiliarStorage;
 import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypes;
@@ -51,7 +50,7 @@ public class DefinitionCache<TKEY> {
                     //					RelationTypes.DECLARES_METHOD, RelationTypes.DECLARES_CONSTRUCTOR,
 
                     RelationTypes.DECLARES_FIELD, TypeRelations.IS_SUBTYPE_EXTENDS,
-                    TypeRelations.IS_SUBTYPE_IMPLEMENTS))
+                    TypeRelations.IS_SUBTYPE_IMPLEMENTS, TypeRelations.HAS_TYPE_PARAMETER))
                 r.delete();
 
             typeDecNodeList.remove(oldClassNode);

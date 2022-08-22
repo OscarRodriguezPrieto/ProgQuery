@@ -4,13 +4,13 @@ import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 
 import java.util.List;
 
-public class GenericTypeKey implements TypeKey {
+public class ParameterizedTypeKey implements TypeKey {
 
     private List<TypeKey> typeArgs;
     private TypeKey parameterizedType;
 
 
-    public GenericTypeKey(List<TypeKey> typeArgs, TypeKey parameterizedType) {
+    public ParameterizedTypeKey(List<TypeKey> typeArgs, TypeKey parameterizedType) {
         this.typeArgs = typeArgs;
         this.parameterizedType = parameterizedType;
     }
@@ -40,7 +40,7 @@ public class GenericTypeKey implements TypeKey {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        GenericTypeKey other = (GenericTypeKey) obj;
+        ParameterizedTypeKey other = (ParameterizedTypeKey) obj;
         if (parameterizedType == null) {
             if (other.parameterizedType != null)
                 return false;
