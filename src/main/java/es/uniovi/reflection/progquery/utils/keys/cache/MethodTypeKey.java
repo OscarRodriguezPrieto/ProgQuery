@@ -49,12 +49,12 @@ public class MethodTypeKey implements TypeKey {
         MethodTypeKey that = (MethodTypeKey) o;
         return isCons == that.isCons && Objects.equals(paramTypes, that.paramTypes) &&
                 Objects.equals(thrownTypes, that.thrownTypes) && Objects.equals(typeVars, that.typeVars) &&
-                Objects.equals(returnType, that.returnType) && Objects.equals(instanceType, that.instanceType);
+                Objects.equals(returnType, that.returnType) ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paramTypes, thrownTypes, typeVars, returnType, instanceType, isCons);
+        return Objects.hash(paramTypes, thrownTypes, typeVars, returnType, isCons);
     }
 
     @Override
