@@ -158,7 +158,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
                                         type.isInterface(), ast, (MethodSymbol) elementSymbol);
                             else if (elementSymbol.getKind() == ElementKind.CONSTRUCTOR)
                                 ASTTypesVisitor
-                                        .getNotDeclaredConstructorDuringTypeCreation(ast,nonDeclaredTypeDec, elementSymbol);
+                                        .getNotDeclaredConstructorDuringTypeCreation(nonDeclaredTypeDec, elementSymbol,ast);
                         }
                     } catch (com.sun.tools.javac.code.Symbol.CompletionFailure ex) {
                         System.err.println("Failed to analyze " + elementSymbol.getKind() + " of " + t.toString() +
