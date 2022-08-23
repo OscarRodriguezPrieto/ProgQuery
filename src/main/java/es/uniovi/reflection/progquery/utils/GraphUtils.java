@@ -144,16 +144,19 @@ public class GraphUtils {
                                                  ASTAuxiliarStorage ast, String ownerFullName) {
         Type type = JavacInfo.getTypeDirect(typeParamTree);
         TypeKey key = type.accept(new KeyForNewTypeVarVisitor(ownerFullName), null);
-        NodeWrapper typeVarNode = type.accept(new TypeVisitor(ast), key);
+        NodeWrapper typeVarNode = DefinitionCache.TYPE_CACHE.containsKey(key) ? DefinitionCache.TYPE_CACHE.get(key) :
+                type.accept(new TypeVisitor(ast), key);
         attachTypeDirect(typeParamNode, typeVarNode, key.toString(), type.getKind().toString());
         return typeVarNode;
     }
 
-    public static void attachTypeToNewMethod(Symbol.MethodSymbol symbol, String fullyQualifiedName, ASTAuxiliarStorage ast, NodeWrapper methodNode) {
+    public static void attachTypeToNewMethod(Symbol.MethodSymbol symbol, String fullyQualifiedName,
+                                             ASTAuxiliarStorage ast, NodeWrapper methodNode) {
         Type type = symbol.type;
         TypeKey key = type.accept(new KeyForNewTypeVarVisitor(fullyQualifiedName), null);
-        NodeWrapper methodTypeNode = type.accept(new TypeVisitor(ast), key);
-        final String execKind="EXECUTABLE";
+        NodeWrapper methodTypeNode = DefinitionCache.TYPE_CACHE.containsKey(key) ? DefinitionCache.TYPE_CACHE.get(key) :
+                type.accept(new TypeVisitor(ast), key);
+        final String execKind = "EXECUTABLE";
         attachTypeDirect(methodNode, methodTypeNode, key.toString(), execKind);
     }
 }
