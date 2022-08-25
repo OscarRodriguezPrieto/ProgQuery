@@ -190,11 +190,11 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
         methodTypeNode
                 .setProperty("simpleName", t.getThrownTypes().size() > 0 ? fullName.split(" throws ")[0] : fullName);
         putInCache(key, methodTypeNode);
-
-        if (((Type.MethodType) t).tsym.getTypeParameters().size() > 0){
+        Symbol.TypeSymbol methodSymbol=t instanceof Type.MethodType? ((Type.MethodType)t).tsym : ((Type.ForAll)t).tsym;
+        if (methodSymbol.getTypeParameters().size() > 0){
             methodTypeNode.addLabel(NodeTypes.GENERIC_TYPE);
             int i=0;
-            for (Symbol.TypeVariableSymbol typeVarSymbol:((Type.MethodType) t).tsym.getTypeParameters())
+            for (Symbol.TypeVariableSymbol typeVarSymbol:methodSymbol.getTypeParameters())
                 methodTypeNode.createRelationshipTo(
 
                         typeVarSymbol.type.accept(this,
