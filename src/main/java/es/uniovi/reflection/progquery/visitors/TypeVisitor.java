@@ -129,8 +129,8 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
             if (type.tsym.getTypeParameters().size() > 0) {
                 nonDeclaredTypeDec.addLabel(NodeTypes.GENERIC_TYPE);
                 type.tsym.getTypeParameters().forEach(typeParamSymbol -> nonDeclaredTypeDec.createRelationshipTo(
-                        typeParamSymbol.type.accept(this,
-                                typeParamSymbol.type.accept(new KeyForNewTypeVarVisitor(key.toString().split("<")[0]), null)),
+                        DefinitionCache.getOrCreateType(typeParamSymbol.type, typeParamSymbol.type
+                                .accept(new KeyForNewTypeVarVisitor(key.toString().split("<")[0]), null), ast),
                         TypeRelations.HAS_TYPE_PARAMETER));
             }
             // Solo a�adimos dependencias de clases no declaradas cuando heredan
@@ -158,7 +158,8 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
                                         type.isInterface(), ast, (MethodSymbol) elementSymbol);
                             else if (elementSymbol.getKind() == ElementKind.CONSTRUCTOR)
                                 ASTTypesVisitor
-                                        .getNotDeclaredConstructorDuringTypeCreation(nonDeclaredTypeDec, elementSymbol,ast);
+                                        .getNotDeclaredConstructorDuringTypeCreation(nonDeclaredTypeDec, elementSymbol,
+                                                ast);
                         }
                     } catch (com.sun.tools.javac.code.Symbol.CompletionFailure ex) {
                         System.err.println("Failed to analyze " + elementSymbol.getKind() + " of " + t.toString() +
@@ -190,17 +191,18 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
         methodTypeNode
                 .setProperty("simpleName", t.getThrownTypes().size() > 0 ? fullName.split(" throws ")[0] : fullName);
         putInCache(key, methodTypeNode);
-        Symbol.TypeSymbol methodSymbol=t instanceof Type.MethodType? ((Type.MethodType)t).tsym : ((Type.ForAll)t).tsym;
-        if (methodSymbol.getTypeParameters().size() > 0){
+        Symbol.TypeSymbol methodSymbol =
+                t instanceof Type.MethodType ? ((Type.MethodType) t).tsym : ((Type.ForAll) t).tsym;
+        if (methodSymbol.getTypeParameters().size() > 0) {
             methodTypeNode.addLabel(NodeTypes.GENERIC_TYPE);
-            int i=0;
-            for (Symbol.TypeVariableSymbol typeVarSymbol:methodSymbol.getTypeParameters())
+            int i = 0;
+            for (Symbol.TypeVariableSymbol typeVarSymbol : methodSymbol.getTypeParameters())
                 methodTypeNode.createRelationshipTo(
 
-                        typeVarSymbol.type.accept(this,
-                                typeVarSymbol.type.accept(new KeyForNewTypeVarVisitor(fullName.split("<")[0]), null)),
-                                TypeRelations.HAS_TYPE_PARAMETER).setProperty("paramIndex", ++i);
-    }
+                       DefinitionCache.getOrCreateType(typeVarSymbol.type,
+                                typeVarSymbol.type.accept(new KeyForNewTypeVarVisitor(fullName.split("<")[0]), null),ast),
+                        TypeRelations.HAS_TYPE_PARAMETER).setProperty("paramIndex", ++i);
+        }
 
         methodTypeNode
                 .createRelationshipTo(DefinitionCache.getOrCreateType(t.getReturnType(), mtKey.getReturnType(), ast),
