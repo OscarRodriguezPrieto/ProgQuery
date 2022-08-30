@@ -15,7 +15,6 @@ import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import es.uniovi.reflection.progquery.utils.keys.cache.TypeKey;
 import es.uniovi.reflection.progquery.visitors.KeyForNewTypeVarVisitor;
-import es.uniovi.reflection.progquery.visitors.TypeVisitor;
 
 public class GraphUtils {
 
@@ -149,7 +148,7 @@ public class GraphUtils {
         return typeVarNode;
     }
 
-    public static void attachTypeToNewMethod(Symbol.MethodSymbol symbol, String fullyQualifiedName,
+  /*  public static void attachTypeToNewMethod(Symbol.MethodSymbol symbol, String fullyQualifiedName,
                                              ASTAuxiliarStorage ast, NodeWrapper methodNode) {
         Type type = symbol.type;
         TypeKey key = type.accept(new KeyForNewTypeVarVisitor(fullyQualifiedName), null);
@@ -157,4 +156,11 @@ public class GraphUtils {
         final String execKind = "EXECUTABLE";
         attachTypeDirect(methodNode, methodTypeNode, key.toString(), execKind);
     }
+
+    public static void attachMethodTypeParams(Symbol.MethodSymbol symbol, String fullyQualifiedName) {
+        symbol.getTypeParameters().forEach(typeVariableSymbol -> {
+        TypeKey key=typeVariableSymbol.type.accept(new KeyForNewTypeVarVisitor(fullyQualifiedName), null);
+        DefinitionCache.
+        });
+    }*/
 }

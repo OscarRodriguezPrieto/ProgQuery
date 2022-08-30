@@ -118,8 +118,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         modifierAccessLevelToNode(s.getModifiers(), constructorDef);
         DefinitionCache.METHOD_DEF_CACHE.put(s, constructorDef);
 
-
-        GraphUtils.attachTypeToNewMethod((MethodSymbol) s, fullyQualifiedName, ast, constructorDef);
+        //VISIT TYPE PARAMS TO PUT THEM IN CACHE INSTEAD OF THE WHOLE TYPE
+        //GraphUtils.attachTypeToNewMethod((MethodSymbol) s, fullyQualifiedName, ast, constructorDef);
         return constructorDef;
     }
 
@@ -147,7 +147,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
                 createNonDeclaredMethodDuringTypeCreation(isInterface, ast, symbol, fullyQualifiedName, methodName,
                         completeName);
         //ITS_TYPE_IS RELATION
-        GraphUtils.attachTypeToNewMethod(symbol, fullyQualifiedName.split("<")[0], ast, methodDec);
+        //GraphUtils.attachTypeToNewMethod(symbol, fullyQualifiedName.split("<")[0], ast, methodDec);
 
         // System.out.println(classNode + " DECLARES METHOD IN DURING TYPE " +
         // methodDec);
