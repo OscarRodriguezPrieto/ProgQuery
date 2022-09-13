@@ -1,8 +1,7 @@
 package es.uniovi.reflection.progquery.queries;
 
 import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
+import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.node_wrappers.Propertiable;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
@@ -14,13 +13,13 @@ import java.util.stream.Collectors;
 public class NodeFilter {
 
 
-    public static List<Neo4jLazyNode> filterByLabel(List<Neo4jLazyNode> nodes, Label label){
+    public static List<NodeWrapper> filterByLabel(List<NodeWrapper> nodes,Label label){
         return nodes.stream().filter(n->n.hasLabel(label)).collect(Collectors.toList());
     }
-    public static List<Neo4jLazyNode> filterByRel(List<Neo4jLazyNode> nodes, Direction direction, RelationTypesInterface r){
+    public static List<NodeWrapper> filterByRel(List<NodeWrapper> nodes, Direction direction, RelationTypesInterface r){
         return nodes.stream().filter(n->n.hasRelationship(r,direction)).collect(Collectors.toList());
     }
-    public static List<Neo4jLazyNode> filterByNoRel(List<Neo4jLazyNode> nodes, Direction direction, RelationTypesInterface r){
+    public static List<NodeWrapper> filterByNoRel(List<NodeWrapper> nodes, Direction direction, RelationTypesInterface r){
         return nodes.stream().filter(n->!n.hasRelationship(r,direction)).collect(Collectors.toList());
     }
     public static <T extends Propertiable> List<T> filterByProp(List<T> elements, String propName, String propVal){

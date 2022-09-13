@@ -4,10 +4,15 @@ import java.util.Set;
 
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 
-public class VisitorResultImpl extends AbstractASTResult {
+public class VisitorResultImpl implements ASTVisitorResult {
 	private boolean isInstance;
 private Set<NodeWrapper> paramsPreviouslyModifiedInCases;
 
+	public VisitorResultImpl(boolean isInstance, Set<NodeWrapper> paramsPreviouslyModifiedInCases) {
+	super();
+	this.isInstance = isInstance;
+	this.paramsPreviouslyModifiedInCases = paramsPreviouslyModifiedInCases;
+}
 	public VisitorResultImpl(boolean isInstance) {
 	super();
 	this.isInstance = isInstance;

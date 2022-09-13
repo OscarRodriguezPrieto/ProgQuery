@@ -4,7 +4,6 @@ import es.uniovi.reflection.progquery.APIBasedTest;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.database.relations.PDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypes;
-import es.uniovi.reflection.progquery.node_wrappers.Neo4jLazyNode;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.node_wrappers.Propertiable;
 import es.uniovi.reflection.progquery.queries.NodeAsserter;
@@ -25,16 +24,16 @@ public class PDGUsedByTest extends APIBasedTest {
     @Before
     public void retrieveGraph(){
         super.prepareTestDatabase();
-        List<Neo4jLazyNode> nodes=super.nodeSet;
+        List<NodeWrapper> nodes=super.nodeSet;
         attributes=NodeFilter.filterByLabel(nodes, NodeTypes.ATTR_DEF);
         identifiers=NodeFilter.filterByLabel(nodes,NodeTypes.IDENTIFIER);
         fieldAccesses=NodeFilter.filterByNoRel(NodeFilter.filterByLabel(nodes, NodeTypes.MEMBER_SELECTION), Direction.INCOMING, RelationTypes.METHODINVOCATION_METHOD_SELECT);
     }
-    List<Neo4jLazyNode> attributes, identifiers, fieldAccesses ;
-    private void assertPDGRel(String fieldName, int expLine, PDGRelationTypes pdgRel, List<Neo4jLazyNode> expressionNodes,ExpressionFilter expFilter){
+    List<NodeWrapper> attributes, identifiers, fieldAccesses ;
+    private void assertPDGRel(String fieldName, int expLine, PDGRelationTypes pdgRel, List<NodeWrapper> expressionNodes,ExpressionFilter expFilter){
 
-        Neo4jLazyNode attr=NodeAsserter.assertJustOne(NodeFilter.filterByName(attributes, fieldName));
-        Neo4jLazyNode expr=NodeAsserter.assertJustOne(expFilter.filter(expressionNodes,fieldName,expLine));
+        NodeWrapper attr=NodeAsserter.assertJustOne(NodeFilter.filterByName(attributes, fieldName));
+        NodeWrapper expr=NodeAsserter.assertJustOne(expFilter.filter(expressionNodes,fieldName,expLine));
         NodeAsserter.assertRel(attr, expr, pdgRel);
     }
 private void assertUseInMemberSel(String fieldName, int expLine){

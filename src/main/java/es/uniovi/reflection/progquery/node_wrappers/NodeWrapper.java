@@ -16,6 +16,9 @@ public interface NodeWrapper extends Propertiable{
 
 	List<RelationshipWrapper> getRelationships();
 
+	// List<RelationshipWrapper> getRelationshipsXX(RelationTypesInterface...
+	// relTypes);
+
 	RelationshipWrapper getSingleRelationship(Direction direction, RelationTypesInterface relTypes);
 
 	List<RelationshipWrapper> getRelationships(Direction direction, RelationTypesInterface... possibleRelTypes);
@@ -39,5 +42,10 @@ public interface NodeWrapper extends Propertiable{
 
 	void setId(long id);
 
+//	void removeIncomingRel(RelationshipWrapper neo4jLazyServerDriverRelationship);
+//
+//	void removeOutgoingRel(RelationshipWrapper neo4jLazyServerDriverRelationship);
+
+	// void deleteRelationship();
 
 }

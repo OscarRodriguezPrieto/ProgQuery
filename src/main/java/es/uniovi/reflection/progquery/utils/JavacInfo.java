@@ -4,7 +4,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
-import com.sun.source.tree.*;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.LineMap;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.Scope;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
@@ -40,7 +46,6 @@ public class JavacInfo {
 		types = com.sun.tools.javac.code.Types.instance(((com.sun.tools.javac.api.BasicJavacTask) task).getContext());
 		this.sourcePositions = trees.getSourcePositions();
 		symTab = Symtab.instance(((com.sun.tools.javac.api.BasicJavacTask) task).getContext());
-
 	}
 
 	public static Object[] getPosition(Tree tree) {
@@ -86,10 +91,7 @@ public class JavacInfo {
 
 		return ((JCExpression) tree).type;
 	}
-	public static Type getTypeDirect(TypeParameterTree tree) {
 
-		return ((JCTree.JCTypeParameter) tree).type;
-	}
 	public static com.sun.tools.javac.code.Type getTypeDirect(VariableTree tree) {
 
 		return ((JCVariableDecl) tree).type;
@@ -134,5 +136,6 @@ public class JavacInfo {
 
 	public static Type erasure(Type t) {
 		return t.tsym.erasure(currentJavacInfo.types);
+//		return currentJavacInfo.javaxTypes.erasure(t.ty);
 	}
 }

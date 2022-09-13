@@ -57,7 +57,7 @@ public enum NodeTypes implements Label {
 																																																					NodeCategory.EXPRESSION), INTERFACE_DEF(
 																																																							NodeCategory.TYPE_DEFINITION,
 																																																							NodeCategory.DEFINITION,
-																																																							NodeCategory.TYPE_NODE), INTERSECTION_TYPE(NodeCategory.TYPE_NODE), LABELED_STATEMENT(
+																																																							NodeCategory.TYPE_NODE), INTERSECTION_TYPE, LABELED_STATEMENT(
 
 																																																											NodeCategory.STATEMENT), LAMBDA_EXPRESSION(
 
@@ -86,7 +86,7 @@ public enum NodeTypes implements Label {
 
 																																																																																			NodeCategory.LOCAL_DEF,
 																																																																																			NodeCategory.VARIABLE_DEF,
-																																																																																			NodeCategory.DEFINITION), GENERIC_TYPE, PARAMETERIZED_TYPE, PRIMITIVE_TYPE, RETURN_STATEMENT(
+																																																																																			NodeCategory.DEFINITION), GENERIC_TYPE, PRIMITIVE_TYPE, RETURN_STATEMENT(
 
 																																																																																					NodeCategory.STATEMENT), SWITCH_STATEMENT(
 

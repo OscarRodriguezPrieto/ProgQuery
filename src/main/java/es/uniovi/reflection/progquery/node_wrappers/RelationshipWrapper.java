@@ -12,6 +12,8 @@ public interface RelationshipWrapper extends Propertiable {
 
 	NodeWrapper getEndNode();
 
+
+
 	void delete();
 
 
