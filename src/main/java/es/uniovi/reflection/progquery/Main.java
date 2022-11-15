@@ -23,6 +23,7 @@ import es.uniovi.reflection.progquery.database.DatabaseFachade;
 import es.uniovi.reflection.progquery.database.EmbeddedInsertion;
 import es.uniovi.reflection.progquery.database.Neo4jDriverLazyInsertion;
 import es.uniovi.reflection.progquery.database.NotPersistentLazyInsertion;
+import es.uniovi.reflection.progquery.database.insertion.lazy.InfoToInsert;
 import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
 import org.eclipse.collections.api.factory.map.MutableMapFactory;
 import org.eclipse.collections.api.map.MutableMap;
@@ -76,11 +77,17 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        MultiCompilationScheduler scheduler=new MultiCompilationScheduler(parameters.programId, parameters.userId);
 
-        compilerTask.addTaskListener(new GetStructuresAfterAnalyze(compilerTask, parameters.programId, parameters.userId));
-        compilerTask.call();
+        scheduler.newCompilationTask(compilerTask);
 
-        // If errors
+
+        compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
+
+        scheduler.newCompilationTask(compilerTask);
+
+        scheduler.endAnalysis();
+
         if (diagnostics.getDiagnostics().size() > 0) {
             for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
                 System.err.format("Error on [%d,%d] in %s %s\n", diagnostic.getLineNumber(), diagnostic.getColumnNumber(),

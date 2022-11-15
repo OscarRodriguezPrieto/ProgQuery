@@ -56,7 +56,6 @@ public class PDGProcessing {
 	 * HashMap<Node, Set<NodeWrapper>>(), paramsMayMutateInMethods = new
 	 * HashMap<Node, Set<NodeWrapper>>();
 	 */
-	public boolean isLastAssginmentInstanceAssign = false;
 
 	private Set<NodeWrapper> parametersPreviouslyModified, auxParamsModified, parametersMaybePrevioslyModified;
 

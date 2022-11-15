@@ -28,6 +28,9 @@ public class JavacInfo {
 
 	private static JavacInfo currentJavacInfo;
 
+	public static boolean isInitialized(){
+		return currentJavacInfo!=null;
+	}
 	public static void setJavacInfo(JavacInfo javacInfo) {
 		currentJavacInfo = javacInfo;
 	}
