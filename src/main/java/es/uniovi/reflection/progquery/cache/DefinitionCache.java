@@ -1,6 +1,5 @@
 package es.uniovi.reflection.progquery.cache;
 
-import com.sun.tools.javac.code.Symbol;
 import es.uniovi.reflection.progquery.ast.ASTAuxiliarStorage;
 import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypes;
@@ -20,7 +19,7 @@ public class DefinitionCache<TKEY> {
     private static final boolean DEBUG = false;
     public static final DefinitionCache<Object> TYPE_CACHE = new DefinitionCache<>();
 
-    public static final DefinitionCache<Symbol> METHOD_DEF_CACHE = new DefinitionCache<>();
+    public static final DefinitionCache<String> METHOD_DEF_CACHE = new DefinitionCache<>();
 
     private final Map<TKEY, NodeWrapper> auxNodeCache = new HashMap<>();
     final Map<TKEY, NodeWrapper> definitionNodeCache = new HashMap<>();

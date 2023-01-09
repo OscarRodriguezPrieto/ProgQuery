@@ -38,27 +38,6 @@ public class Main {
 
     public static void main(String[] args) {
         parseArguments(args);
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        List<File> files = listFiles(parameters.sourceFolder);
-
-        Iterable<? extends JavaFileObject> sources = fileManager.getJavaFileObjectsFromFiles(files);
-        String[] compilerOptions = new String[]
-                {
-                        "-nowarn",
-                        "-d",
-                        Paths.get(parameters.sourceFolder, "target", "classes").toAbsolutePath().toAbsolutePath().toString(),
-                        "-g",
-                        "-target",
-                        "15",
-                        "-source",
-                        "15",
-                        "-classpath",
-                        parameters.class_path,
-                };
-        JavacTaskImpl compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
 
         final String LOCAL_MODE = OptionsConfiguration.neo4j_modeNames[0];
         try {
@@ -76,24 +55,17 @@ public class Main {
             );
         } catch (IOException e) {
             e.printStackTrace();
+            final int ABNORMAL_TERMINATION= -1;
+            System.exit(ABNORMAL_TERMINATION);
         }
         MultiCompilationScheduler scheduler=new MultiCompilationScheduler(parameters.programId, parameters.userId);
 
-        scheduler.newCompilationTask(compilerTask);
+        scheduler.newCompilationTask(parameters.sourceFolder, parameters.class_path);
 
-
-        compilerTask = (JavacTaskImpl) compiler.getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
-
-        scheduler.newCompilationTask(compilerTask);
+        scheduler.newCompilationTask(parameters.sourceFolder+"Bis", "");
 
         scheduler.endAnalysis();
 
-        if (diagnostics.getDiagnostics().size() > 0) {
-            for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
-                System.err.format("Error on [%d,%d] in %s %s\n", diagnostic.getLineNumber(), diagnostic.getColumnNumber(),
-                        diagnostic.getSource(), diagnostic.getMessage(null));
-            }
-        }
         System.exit(0);
     }
 
@@ -268,19 +240,6 @@ public class Main {
         return null;
     }
 
-    public static List<File> listFiles(String path) {
-        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
-            // We want to find only regular files
-            return walk
-                    .filter(Files::isRegularFile)
-                    .filter(f -> f.getFileName().toString().endsWith(".java"))
-                    .map(f -> f.toAbsolutePath().toFile())
-                    .collect(Collectors.toList());
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<File>();
-        }
-    }
 
 }

@@ -7,15 +7,16 @@ public class MethodTypeKey {
 	private List<Object> paramTypes;
 	private List<Object> thrownTypes;
 	private Object returnType;
-	private Object instanceType;
+	private Object receiverType;
+
 	private boolean isCons;
 
-	public MethodTypeKey(List<Object> paramTypes, List<Object> thrownTypes, Object returnType, Object instanceType,
+	public MethodTypeKey(List<Object> paramTypes, List<Object> thrownTypes, Object returnType, Object receiverType,
 			boolean isCons) {
 		this.paramTypes = paramTypes;
 		this.thrownTypes = thrownTypes;
 		this.returnType = returnType;
-		this.instanceType = instanceType;
+		this.receiverType = receiverType;
 		this.isCons = isCons;
 	}
 
@@ -31,15 +32,15 @@ public class MethodTypeKey {
 		return returnType;
 	}
 
-	public Object getInstanceType() {
-		return instanceType;
+	public Object getReceiverType() {
+		return receiverType;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((instanceType == null) ? 0 : instanceType.hashCode());
+		result = prime * result + ((receiverType == null) ? 0 : receiverType.hashCode());
 		result = prime * result + (isCons ? 1231 : 1237);
 		result = prime * result + ((paramTypes == null) ? 0 : paramTypes.hashCode());
 		result = prime * result + ((returnType == null) ? 0 : returnType.hashCode());
@@ -56,10 +57,10 @@ public class MethodTypeKey {
 		if (getClass() != obj.getClass())
 			return false;
 		MethodTypeKey other = (MethodTypeKey) obj;
-		if (instanceType == null) {
-			if (other.instanceType != null)
+		if (receiverType == null) {
+			if (other.receiverType != null)
 				return false;
-		} else if (!instanceType.equals(other.instanceType))
+		} else if (!receiverType.equals(other.receiverType))
 			return false;
 		if (isCons != other.isCons)
 			return false;
