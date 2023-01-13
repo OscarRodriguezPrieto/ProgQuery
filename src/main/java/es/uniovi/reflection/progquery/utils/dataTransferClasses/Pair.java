@@ -1,7 +1,7 @@
 package es.uniovi.reflection.progquery.utils.dataTransferClasses;
 
 import es.uniovi.reflection.progquery.database.relations.PartialRelation;
-import es.uniovi.reflection.progquery.database.relations.RelationTypes;
+import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
 import es.uniovi.reflection.progquery.database.relations.SimplePartialRelation;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 
@@ -17,7 +17,7 @@ public class Pair<X, Y> {
 	
 	public static <X,Y>  Pair<X,Y> create(X x, Y y)
 	{
-		return new Pair<X, Y>(x, y);
+		return new Pair<>(x, y);
 	}
 	public X getFirst() {
 		return x;
@@ -28,16 +28,16 @@ public class Pair<X, Y> {
 	}
 
 
-	public static Pair<PartialRelation<RelationTypes>, Object> createPair(NodeWrapper node, RelationTypes r,
+	public static <T extends RelationTypesInterface> Pair<PartialRelation<T>, Object> createPair(NodeWrapper node, T r,
 			Object arg) {
-		return Pair.create(new SimplePartialRelation<RelationTypes>(node, r), arg);
+		return Pair.create(new SimplePartialRelation<>(node, r), arg);
 	}
 
-	public static Pair<PartialRelation<RelationTypes>, Object> createPair(NodeWrapper node, RelationTypes r) {
-		return Pair.create(new SimplePartialRelation<RelationTypes>(node, r), null);
+	public static <T extends RelationTypesInterface> Pair<PartialRelation<T>, Object> createPair(NodeWrapper node, T r) {
+		return Pair.create(new SimplePartialRelation<>(node, r), null);
 	}
 
-	public static Pair<PartialRelation<RelationTypes>, Object> createPair(PartialRelation<RelationTypes> rel) {
+	public static <T extends RelationTypesInterface> Pair<PartialRelation<T>, Object> createPair(PartialRelation<T> rel) {
 		return Pair.create(rel, null);
 	}
 

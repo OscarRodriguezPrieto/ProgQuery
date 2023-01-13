@@ -20,6 +20,7 @@ import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.PartialRelation;
 import es.uniovi.reflection.progquery.database.relations.RelationTypes;
+import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.typeInfo.PackageInfo;
 import es.uniovi.reflection.progquery.utils.GraphUtils;
@@ -39,7 +40,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 
     private MultiCompilationScheduler scheduler;
     private boolean started = false;
-    private Pair<PartialRelation<RelationTypes>, Object> argument;
+    private Pair<PartialRelation<RelationTypesInterface>, Object> argument;
 
 
     public GetStructuresAfterAnalyze(JavacTask task, MultiCompilationScheduler scheduler) {

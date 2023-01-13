@@ -1,11 +1,13 @@
 package es.uniovi.reflection.progquery.cache;
 
+import com.sun.tools.javac.code.Symbol;
 import es.uniovi.reflection.progquery.ast.ASTAuxiliarStorage;
 import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.RelationTypes;
 import es.uniovi.reflection.progquery.database.relations.TypeRelations;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.node_wrappers.RelationshipWrapper;
+import es.uniovi.reflection.progquery.utils.types.TypeKey;
 import es.uniovi.reflection.progquery.visitors.KeyTypeVisitor;
 import es.uniovi.reflection.progquery.visitors.TypeVisitor;
 import org.neo4j.graphdb.Direction;
@@ -17,7 +19,7 @@ import java.util.Set;
 
 public class DefinitionCache<TKEY> {
     private static final boolean DEBUG = false;
-    public static final DefinitionCache<Object> TYPE_CACHE = new DefinitionCache<>();
+    public static final DefinitionCache<TypeKey> TYPE_CACHE = new DefinitionCache<>();
 
     public static final DefinitionCache<String> METHOD_DEF_CACHE = new DefinitionCache<>();
 
@@ -36,6 +38,12 @@ public class DefinitionCache<TKEY> {
             // System.out.println("PUTTNG n=" + v.getId() + " k=" + k);
         else
             throw new IllegalArgumentException("Key " + k + " already in definition");
+    }
+
+    public static void putClassDefinition(Symbol.ClassSymbol classSymbol, NodeWrapper classDec,
+                                          Set<NodeWrapper> typeDecNodeList, Set<NodeWrapper> typeDecsUses) {
+        TYPE_CACHE.putClassDefinition(classSymbol.type.accept(new KeyTypeVisitor(), null), classDec, typeDecNodeList,
+                typeDecsUses);
     }
 
     public void putClassDefinition(TKEY classSymbol, NodeWrapper classDec, Set<NodeWrapper> typeDecNodeList,
@@ -188,7 +196,7 @@ public class DefinitionCache<TKEY> {
      * ? type.tsym : type; }
      */
 
-    public static NodeWrapper getOrCreateType(TypeMirror type, Object key, ASTAuxiliarStorage ast) {
+    public static NodeWrapper getOrCreateType(TypeMirror type, TypeKey key, ASTAuxiliarStorage ast) {
         // System.out.println(type + " inspected in es.uniovi.reflection.progquery.cache");
         // System.out.println("looking for key " + key);
         // System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.toString());
@@ -206,14 +214,14 @@ public class DefinitionCache<TKEY> {
         return createTypeDec(type, key, ast);
     }
 
-    public static NodeWrapper getExistingType(TypeMirror type) {
-        if (DefinitionCache.TYPE_CACHE.containsKey(type)) {
-
-            // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
-            return DefinitionCache.TYPE_CACHE.get(type);
-        }
-        throw new IllegalArgumentException("Not Type dounf for " + type);
-    }
+    //    public static NodeWrapper getExistingType(TypeMirror type) {
+    //        if (DefinitionCache.TYPE_CACHE.containsKey(type)) {
+    //
+    //            // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
+    //            return DefinitionCache.TYPE_CACHE.get(type);
+    //        }
+    //        throw new IllegalArgumentException("Not Type dounf for " + type);
+    //    }
 
     public static NodeWrapper getOrCreateType(TypeMirror type, ASTAuxiliarStorage ast) {
         // System.out.println("Creating type key for" + type);
@@ -229,7 +237,7 @@ public class DefinitionCache<TKEY> {
         return createTypeDec(typeSymbol, typeSymbol.accept(new KeyTypeVisitor(), null), ast);
     }
 
-    private static NodeWrapper createTypeDec(TypeMirror type, Object key, ASTAuxiliarStorage ast) {
+    private static NodeWrapper createTypeDec(TypeMirror type, TypeKey key, ASTAuxiliarStorage ast) {
         // System.out.println("Creating " + typeSymbol);
         // System.out.println("VREATING TYPE SPEC " + type);
         NodeWrapper ret = type.accept(new TypeVisitor(ast), key);

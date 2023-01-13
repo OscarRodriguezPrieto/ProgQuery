@@ -1,18 +1,20 @@
-package es.uniovi.reflection.progquery.utils.types;
+package es.uniovi.reflection.progquery.utils.types.keys;
+
+import es.uniovi.reflection.progquery.utils.types.TypeKey;
 
 import java.util.List;
 
-public class CompoundTypeKey {
+public class CompoundTypeKey implements TypeKey{
 	//
 private boolean isIntersection;
 
-	private List<Object> types;
+	private List<TypeKey> types;
 
-	public List<Object> getTypes() {
+	public List<TypeKey> getTypes() {
 		return types;
 	}
 
-	public CompoundTypeKey(boolean isIntersection, List<Object> types) {
+	public CompoundTypeKey(boolean isIntersection, List<TypeKey> types) {
 		super();
 		this.isIntersection = isIntersection;
 		this.types = types;

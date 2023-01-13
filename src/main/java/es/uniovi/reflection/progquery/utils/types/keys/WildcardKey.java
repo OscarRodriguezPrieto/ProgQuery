@@ -1,18 +1,20 @@
-package es.uniovi.reflection.progquery.utils.types;
+package es.uniovi.reflection.progquery.utils.types.keys;
 
-public class WildcardKey {
+import es.uniovi.reflection.progquery.utils.types.TypeKey;
 
-	private Object superBound, extendsBound;
+public class WildcardKey implements TypeKey {
 
-	public Object getSuperBound() {
+	private TypeKey superBound, extendsBound;
+
+	public TypeKey getSuperBound() {
 		return superBound;
 	}
 
-	public Object getExtendsBound() {
+	public TypeKey getExtendsBound() {
 		return extendsBound;
 	}
 
-	public WildcardKey(Object superBound, Object extendsBound) {
+	public WildcardKey(TypeKey superBound, TypeKey extendsBound) {
 		super();
 		this.superBound = superBound;
 		this.extendsBound = extendsBound;

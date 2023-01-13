@@ -24,6 +24,7 @@ import es.uniovi.reflection.progquery.typeInfo.PackageInfo;
 import es.uniovi.reflection.progquery.typeInfo.TypeHierarchy;
 import es.uniovi.reflection.progquery.utils.GraphUtils;
 import es.uniovi.reflection.progquery.utils.JavacInfo;
+import es.uniovi.reflection.progquery.utils.MethodNameInfo;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.*;
 import org.neo4j.graphdb.Direction;
 
@@ -37,7 +38,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialRelation<RelationTypes>, Object>> {
+public class ASTTypesVisitor
+        extends TreeScanner<ASTVisitorResult, Pair<PartialRelation<RelationTypesInterface>, Object>> {
 
     private static final boolean DEBUG = false;
     private NodeWrapper lastStaticConsVisited = null;
@@ -89,36 +91,35 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         return n2;
     }
 
-    private NodeWrapper getNotDeclaredConsFromInv(Symbol methodSymbol, String fullyQualifiedName, String completeName) {
-        NodeWrapper consDec = getNotDeclaredConstructorDecNode(methodSymbol, fullyQualifiedName, completeName);
+    private NodeWrapper getNotDeclaredConsFromInv(Symbol methodSymbol, MethodNameInfo nameInfo) {
+        NodeWrapper consDec = getNotDeclaredConstructorDecNode(methodSymbol, nameInfo);
         DefinitionCache.getOrCreateType(methodSymbol.owner.type, ast)
                 .createRelationshipTo(consDec, RelationTypes.DECLARES_CONSTRUCTOR);
         return consDec;
     }
-    public static NodeWrapper getNotDeclaredConstructorDuringTypeCreation( String fullyQualifiedName, String methodName,
-                                                                            String completeName, NodeWrapper classNode, Symbol s) {
-        NodeWrapper consDec = getNotDeclaredConstructorDecNode(s, fullyQualifiedName, completeName);
+
+    public static NodeWrapper getNotDeclaredConstructorDuringTypeCreation(MethodNameInfo nameInfo,
+                                                                          NodeWrapper classNode, Symbol s) {
+        NodeWrapper consDec = getNotDeclaredConstructorDecNode(s, nameInfo);
         classNode.createRelationshipTo(consDec, RelationTypes.DECLARES_CONSTRUCTOR);
         return consDec;
     }
+
     public static NodeWrapper getNotDeclaredConstructorDuringTypeCreation(NodeWrapper classNode, Symbol s) {
 
-        String methodName = "<init>";
-        String completeName = s.owner + ":" + methodName;
-        String fullyQualifiedName = completeName + s.type;
-        NodeWrapper consDec = getNotDeclaredConstructorDecNode(s, fullyQualifiedName, completeName);
+        MethodNameInfo nameInfo = new MethodNameInfo((MethodSymbol) s);
+        NodeWrapper consDec = getNotDeclaredConstructorDecNode(s, nameInfo);
         classNode.createRelationshipTo(consDec, RelationTypes.DECLARES_CONSTRUCTOR);
         return consDec;
     }
 
-    private static NodeWrapper getNotDeclaredConstructorDecNode(Symbol s, String fullyQualifiedName,
-                                                                String completeName) {
+    private static NodeWrapper getNotDeclaredConstructorDecNode(Symbol s, MethodNameInfo nameInfo) {
         NodeWrapper constructorDef =
                 DatabaseFachade.CURRENT_DB_FACHADE.createNodeWithoutExplicitTree(NodeTypes.CONSTRUCTOR_DEF);
         constructorDef.setProperty("isDeclared", false);
-        constructorDef.setProperty("name", "<init>");
-        constructorDef.setProperty("fullyQualifiedName", fullyQualifiedName);
-        constructorDef.setProperty("completeName", completeName);
+        constructorDef.setProperty("name", nameInfo.getSimpleName());
+        constructorDef.setProperty("fullyQualifiedName", nameInfo.getFullyQualifiedName());
+        constructorDef.setProperty("completeName", nameInfo.getCompleteName());
 
         // ClassSymbol ownerSymbol = (ClassSymbol) s.owner;
 
@@ -130,19 +131,17 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         // params declara return throws???�
         // De momento no, solo usamos el methodType
 
-        DefinitionCache.METHOD_DEF_CACHE.put(fullyQualifiedName, constructorDef);
+        DefinitionCache.METHOD_DEF_CACHE.put(nameInfo.getFullyQualifiedName(), constructorDef);
 
         return constructorDef;
     }
 
-    private NodeWrapper getNotDeclaredMethodDecNode(MethodSymbol symbol, String fullyQualifiedName, String methodName,
-                                                    String completeName) {
+    private NodeWrapper getNotDeclaredMethodDecNode(MethodSymbol symbol, MethodNameInfo nameInfo) {
 
         ClassSymbol ownerSymbol = (ClassSymbol) symbol.owner;
 
         NodeWrapper methodDec =
-                createNonDeclaredMethodDuringTypeCreation(ownerSymbol.isInterface(), ast, symbol, fullyQualifiedName,
-                        methodName, completeName);
+                createNonDeclaredMethodDuringTypeCreation(ownerSymbol.isInterface(), ast, symbol, nameInfo);
         // System.out.println(symbol.owner.type + " DECLARES METHOD FROM INV " +
         // methodDec);
         DefinitionCache.getOrCreateType(symbol.owner.type, ast)
@@ -150,11 +149,10 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         return methodDec;
     }
 
-    public static NodeWrapper createNonDeclaredMethodDuringTypeCreation(String fullyQualifiedName, String completeName, String methodName,  NodeWrapper classNode, boolean isInterface,
-                                                                        ASTAuxiliarStorage ast, MethodSymbol symbol) {
-        NodeWrapper methodDec =
-                createNonDeclaredMethodDuringTypeCreation(isInterface, ast, symbol, fullyQualifiedName, methodName,
-                        completeName);
+    public static NodeWrapper createNonDeclaredMethodDuringTypeCreation(MethodNameInfo nameInfo, NodeWrapper classNode,
+                                                                        boolean isInterface, ASTAuxiliarStorage ast,
+                                                                        MethodSymbol symbol) {
+        NodeWrapper methodDec = createNonDeclaredMethodDuringTypeCreation(isInterface, ast, symbol, nameInfo);
         classNode.createRelationshipTo(methodDec, RelationTypes.DECLARES_METHOD);
         return methodDec;
     }
@@ -162,36 +160,31 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     public static NodeWrapper createNonDeclaredMethodDuringTypeCreation(NodeWrapper classNode, boolean isInterface,
                                                                         ASTAuxiliarStorage ast, MethodSymbol symbol) {
 
-        String methodName = symbol.name.toString();
-        String completeName = symbol.owner + ":" + methodName;
-        String fullyQualifiedName = completeName + symbol.type;
+
         NodeWrapper methodDec =
-                createNonDeclaredMethodDuringTypeCreation(isInterface, ast, symbol, fullyQualifiedName, methodName,
-                        completeName);
+                createNonDeclaredMethodDuringTypeCreation(isInterface, ast, symbol, new MethodNameInfo(symbol));
         classNode.createRelationshipTo(methodDec, RelationTypes.DECLARES_METHOD);
         return methodDec;
     }
 
-    private static NodeWrapper createNonDeclaredMethodWithoutSymbol(String methodName, String completeName,
-                                                                    String fullyQualifiedName) {
+    private static NodeWrapper createNonDeclaredMethodWithoutSymbol(MethodNameInfo nameInfo) {
         NodeWrapper methodDecNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createNodeWithoutExplicitTree(NodeTypes.METHOD_DEF);
 
         methodDecNode.setProperty("isDeclared", false);
-        methodDecNode.setProperty("name", methodName);
+        methodDecNode.setProperty("name", nameInfo.getSimpleName());
         // System.out.println(fullyQualifiedName);
-        methodDecNode.setProperty("completeName", completeName);
-        methodDecNode.setProperty("fullyQualifiedName", fullyQualifiedName);
+        methodDecNode.setProperty("completeName", nameInfo.getCompleteName());
+        methodDecNode.setProperty("fullyQualifiedName", nameInfo.getFullyQualifiedName());
         return methodDecNode;
     }
 
     private static NodeWrapper createNonDeclaredMethodDuringTypeCreation(boolean isInterface, ASTAuxiliarStorage ast,
-                                                                         MethodSymbol symbol, String fullyQualifiedName,
-                                                                         String methodName, String completeName) {
+                                                                         MethodSymbol symbol, MethodNameInfo nameInfo) {
         NodeWrapper
                 // Se hacen muchas cosas y es posible que se visite la
                 // declaraci�n despu�s
-                methodDecNode = createNonDeclaredMethodWithoutSymbol(methodName, completeName, fullyQualifiedName);
+                methodDecNode = createNonDeclaredMethodWithoutSymbol(nameInfo);
 
         setMethodModifiers(Flags.asModifierSet(symbol.flags()), methodDecNode, isInterface);
 
@@ -200,13 +193,13 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         // De momento no, solo usamos el methodType
 
         ast.addAccesibleMethod(symbol, methodDecNode);
-        DefinitionCache.METHOD_DEF_CACHE.put(fullyQualifiedName, methodDecNode);
+        DefinitionCache.METHOD_DEF_CACHE.put(nameInfo.getFullyQualifiedName(), methodDecNode);
         return methodDecNode;
     }
 
     @Override
     public ASTVisitorResult visitAnnotatedType(AnnotatedTypeTree annotatedTypeTree,
-                                               Pair<PartialRelation<RelationTypes>, Object> t) {
+                                               Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper annotatedTypeNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(annotatedTypeTree, NodeTypes.ANNOTATED_TYPE);
@@ -221,7 +214,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitAnnotation(AnnotationTree annotationTree,
-                                            Pair<PartialRelation<RelationTypes>, Object> t) {
+                                            Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper annotationNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(annotationTree, NodeTypes.ANNOTATION);
@@ -236,8 +229,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
         for (int i = 0; i < annotationTree.getArguments().size(); i++)
             scan(annotationTree.getArguments().get(i), Pair.createPair(
-                    new PartialRelationWithProperties<RelationTypes>(annotationNode,
-                            RelationTypes.HAS_ANNOTATIONS_ARGUMENTS, "argumentIndex", i + 1)));
+                    new PartialRelationWithProperties<>(annotationNode, RelationTypes.HAS_ANNOTATIONS_ARGUMENTS,
+                            "argumentIndex", i + 1)));
         outsideAnnotation = prevInsideAnn;
 
         return null;
@@ -245,7 +238,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitArrayAccess(ArrayAccessTree arrayAccessTree,
-                                             Pair<PartialRelation<RelationTypes>, Object> t) {
+                                             Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper arrayAccessNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(arrayAccessTree, NodeTypes.ARRAY_ACCESS);
@@ -261,7 +254,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitArrayType(ArrayTypeTree arrayTypeTree,
-                                           Pair<PartialRelation<RelationTypes>, Object> t) {
+                                           Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         //		System.out.println("ARRAY TYPE:\n"+arrayTypeTree);
         //		System.out.println("ARRAY TYPE:\n"+arrayTypeTree.getKind());
         //		System.out.println("ARRAY TYPE:\n"+arrayTypeTree.getClass());
@@ -285,7 +278,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitAssert(AssertTree assertTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitAssert(AssertTree assertTree,
+                                        Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper assertNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(assertTree, NodeTypes.ASSERT_STATEMENT);
@@ -298,47 +292,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         return null;
     }
 
-    // private void setLabelForAssignmentXX(NodeWrapper assignNode, boolean
-    // isAssign, boolean isInstanceAssign) {
-    // // AQUI PA LAS ASIGNACIONES SE PUEDE INCLUIR EL ATRIBUTO
-    // // IS_INSTANCE_ASSIG
-    // // System.out.println(as);
-    // // System.out.println("ISISTANCE\t" + isInstanceAssign);
-    // // System.out.println("INSCONS\t" + insideConstructor);
-    // if (isInstanceAssign)
-    // if (insideConstructor)
-    // assignNode.addLabel(NodeTypes.INITIALIZATION);
-    // else {
-    // // System.out.println(tree);
-    // // System.out.println(NodeUtils.nodeToString(parent));
-    // // System.out.println(methodState);
-    // // System.out.println(methodState.instanceAssigns);
-    // methodState.instanceAssigns.put(assignNode, isAssign);
-    // }
-    // else if (isAssign)
-    // assignNode.addLabel(NodeTypes.ASSIGNMENT);
-    // // System.out.println(NodeUtils.nodeToString(assignNode));
-    //
-    // }
-    /*
-     * private boolean enclosesCurrentClass(Symbol classSymbol, ClassSymbol current)
-     * { do if (current == classSymbol || (current = current.enclClass()) ==
-     * classSymbol) return true; while (current != null && current !=
-     * current.enclClass()); /* do { System.out.println("CURR:" + current);
-     *
-     * System.out.println("CURR ENCL:" + current.enclClass());
-     * System.out.println("CURR B:" + (ClassSymbol) current.getSuperclass().tsym);
-     * if (current == classSymbol || (current = (ClassSymbol)
-     * current.getSuperclass().tsym) == classSymbol) return true; } while (current
-     * != null && current != current.enclClass()); return false;
-     *
-     * boolean isInstanceAssign =
-     * IsInstanceFieldExpression.GET_ID_VISITOR.scan(assignmentTree.getVariable( ),
-     * null); }
-     */
-
     private NodeWrapper beforeScanAnyAssign(NodeWrapper assignmentNode,
-                                            Pair<PartialRelation<RelationTypes>, Object> t) {
+                                            Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         assignmentNode.setProperty("mustBeExecuted", must);
         NodeWrapper previousAssignment = pdgUtils.lastAssignment;
@@ -359,7 +314,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     // USaR LA INFO DE LASTASSIGN EN EL METODO ADDASSIGN JEJEJEJEJ
     @Override
     public ASTVisitorResult visitAssignment(AssignmentTree assignmentTree,
-                                            Pair<PartialRelation<RelationTypes>, Object> t) {
+                                            Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper assignmentNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(assignmentTree, NodeTypes.ASSIGNMENT);
@@ -386,7 +341,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitBinary(BinaryTree binaryTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitBinary(BinaryTree binaryTree,
+                                        Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         //System.out.println(binaryTree);
         NodeWrapper binaryNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(binaryTree, NodeTypes.BINARY_OPERATION);
@@ -406,7 +362,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     private NodeWrapper lastBlockVisited;
 
     @Override
-    public ASTVisitorResult visitBlock(BlockTree blockTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitBlock(BlockTree blockTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         lastBlockVisited = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(blockTree, NodeTypes.BLOCK);
         lastBlockVisited.setProperty("isStatic", blockTree.isStatic());
         boolean isStaticInit = t.getFirst().getRelationType() == RelationTypes.HAS_STATIC_INIT;
@@ -436,7 +392,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitBreak(BreakTree breakTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitBreak(BreakTree breakTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         anyBreak = false;
         NodeWrapper breakNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(breakTree, NodeTypes.BREAK_STATEMENT);
@@ -456,7 +412,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitCase(CaseTree caseTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitCase(CaseTree caseTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper caseNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(caseTree, NodeTypes.CASE_STATEMENT);
@@ -478,7 +434,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitCatch(CatchTree catchTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitCatch(CatchTree catchTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper catchNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(catchTree, NodeTypes.CATCH_BLOCK);
         methodState.putCfgNodeInCache(catchTree, catchNode);
@@ -496,15 +452,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
 
-    public ASTVisitorResult visitClass(ClassTree classTree, Pair<PartialRelation<RelationTypes>, Object> pair) {
-        //        if (DEBUG)
-        //        System.out.println("Visitando clase " + classTree.getSimpleName());
-        //		 System.out.println(" clase " + classTree.getSimpleName() + "(" +
-        //		 classTree.getClass() + ")");
-
-        // }
-
-        //		System.out.println("CURRENT CLASS:\n"+classTree);
+    public ASTVisitorResult visitClass(ClassTree classTree,
+                                       Pair<PartialRelation<RelationTypesInterface>, Object> pair) {
 
         ClassSymbol previousClassSymbol = currentTypeDecSymbol;
         currentTypeDecSymbol = ((JCClassDecl) classTree).sym;
@@ -529,7 +478,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         classState = new ClassState(classNode);
 
         Set<NodeWrapper> previousTypeDecUses = typeDecUses;
-        typeDecUses = new HashSet<NodeWrapper>();
+        typeDecUses = new HashSet<>();
 
         Symbol outerMostClass = ((JCClassDecl) classTree).sym.outermostClass();
 
@@ -541,7 +490,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
         GraphUtils.connectWithParent(classNode, pair, RelationTypes.HAS_TYPE_DEF);
 
-        DefinitionCache.TYPE_CACHE.putClassDefinition(currentTypeDecSymbol, classNode, ast.typeDecNodes, typeDecUses);
+        DefinitionCache.putClassDefinition(currentTypeDecSymbol, classNode, ast.typeDecNodes, typeDecUses);
 
         TypeHierarchy.addTypeHierarchy(currentTypeDecSymbol, classNode, this, ast);
         boolean prevIsInAccesibleContext = isInAccessibleContext;
@@ -556,12 +505,13 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
                     isInAccessibleContext && classNode.getProperty("accessLevel").toString().contentEquals("public");
         }
 
-        // scan(classTree.getTypeParameters(), Pair.createPair(classNode,
-        // RelationTypes.HAS_CLASS_TYPEPARAMETERS));
-        for (int i = 0; i < classTree.getTypeParameters().size(); i++)
+        int i = 0;
+        for (; i < classTree.getTypeParameters().size(); i++)
             scan(classTree.getTypeParameters().get(i), Pair.createPair(
-                    new PartialRelationWithProperties<RelationTypes>(classNode, RelationTypes.HAS_CLASS_TYPEPARAMETERS,
-                            "paramIndex", i + 1)));
+                    new PartialRelationWithProperties<>(classNode, RelationTypes.HAS_CLASS_TYPEPARAMETERS, "paramIndex",
+                            i + 1)));
+        if (i > 0)
+            classNode.addLabel(NodeTypes.GENERIC_TYPE);
         scan(classTree.getExtendsClause(), Pair.createPair(classNode, RelationTypes.HAS_EXTENDS_CLAUSE));
 
         scan(classTree.getImplementsClause(), Pair.createPair(classNode, RelationTypes.HAS_IMPLEMENTS_CLAUSE));
@@ -591,6 +541,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         classState = previousClassState;
         typeDecUses = previousTypeDecUses;
         currentTypeDecSymbol = previousClassSymbol;
+        isInAccessibleContext = prevIsInAccesibleContext;
         return null;
 
     }
@@ -605,27 +556,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitCompilationUnit(CompilationUnitTree compilationUnitTree,
-                                                 Pair<PartialRelation<RelationTypes>, Object> pair) {
-        // DEFAULT
-
-        // String fileName =
-        // compilationUnitTree.getSourceFile().getName().toString();
-        //        if (
-        //                compilationUnitTree.getSourceFile().toString().contains
-        //                ("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects
-        //                \\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\io\\ReadOptions.java")
-        //                        ||
-        //                        compilationUnitTree.getSourceFile().toString().contains
-        //                        ("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise
-        //                        \\git_projects\\test_projects\\javassist\\src\\main\\javassist\\tools\\rmi
-        //                        \\StubGenerator.java")) {
-        //        System.out.println("CU:\n" + compilationUnitTree.getSourceFile().getName().toString());
-        //            System.out.println(compilationUnitTree);
-        //        }
-        //		 if("C:\\Users\\Oskar\\Desktop\\investigacion\\post-doc\\pq_server_enterprise\\git_projects
-        //		 \\test_projects\\tablesaw\\core\\src\\main\\java\\tech\\tablesaw\\index\\ShortIndex.java"
-        //		 .contentEquals(compilationUnitTree.getSourceFile().getName().toString()))
-        //  throw new IllegalStateException("NOOO");
+                                                 Pair<PartialRelation<RelationTypesInterface>, Object> pair) {
         if (first) {
             currentCU.setProperty("packageName", ((JCCompilationUnit) compilationUnitTree).packge.toString());
             scan(compilationUnitTree.getPackageAnnotations(), pair);
@@ -643,7 +574,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitCompoundAssignment(CompoundAssignmentTree compoundAssignmentTree,
-                                                    Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                    Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper assignmentNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNode(compoundAssignmentTree, NodeTypes.COMPOUND_ASSIGNMENT);
         assignmentNode.setProperty("operator", compoundAssignmentTree.getKind().toString());
@@ -665,7 +596,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitConditionalExpression(ConditionalExpressionTree conditionalTree,
-                                                       Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                       Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper conditionalExprNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNode(conditionalTree, NodeTypes.CONDITIONAL_EXPRESSION);
@@ -689,7 +620,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitContinue(ContinueTree continueTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitContinue(ContinueTree continueTree,
+                                          Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper continueNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(continueTree, NodeTypes.CONTINUE_STATEMENT);
@@ -709,7 +641,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitDoWhileLoop(DoWhileLoopTree doWhileLoopTree,
-                                             Pair<PartialRelation<RelationTypes>, Object> t) {
+                                             Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper doWhileLoopNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(doWhileLoopTree, NodeTypes.DO_WHILE_LOOP);
@@ -737,7 +669,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitEmptyStatement(EmptyStatementTree emptyStatementTree,
-                                                Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper emptyStatementNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(emptyStatementTree, NodeTypes.EMPTY_STATEMENT);
@@ -749,7 +681,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitEnhancedForLoop(EnhancedForLoopTree enhancedForLoopTree,
-                                                 Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                 Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper enhancedForLoopNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(enhancedForLoopTree, NodeTypes.FOR_EACH_LOOP);
         GraphUtils.connectWithParent(enhancedForLoopNode, t);
@@ -768,7 +700,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitErroneous(ErroneousTree erroneousTree,
-                                           Pair<PartialRelation<RelationTypes>, Object> t) {
+                                           Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper erroneousNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(erroneousTree, NodeTypes.ERRONEOUS_NODE);
         attachTypeDirect(erroneousNode, erroneousTree);
@@ -779,7 +711,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitExpressionStatement(ExpressionStatementTree expressionStatementTree,
-                                                     Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                     Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper expressionStatementNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNode(expressionStatementTree, NodeTypes.EXPRESSION_STATEMENT);
@@ -799,7 +731,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitForLoop(ForLoopTree forLoopTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitForLoop(ForLoopTree forLoopTree,
+                                         Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         //		System.out.println(forLoopTree);
 
         NodeWrapper forLoopNode =
@@ -827,7 +760,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitIdentifier(IdentifierTree identifierTree,
-                                            Pair<PartialRelation<RelationTypes>, Object> t) {
+                                            Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         // System.out.println(identifierTree);
         NodeWrapper identifierNode;
@@ -860,7 +793,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitIf(IfTree ifTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitIf(IfTree ifTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper ifNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(ifTree, NodeTypes.IF_STATEMENT);
         GraphUtils.connectWithParent(ifNode, t);
@@ -883,7 +816,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitImport(ImportTree importTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitImport(ImportTree importTree,
+                                        Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper importNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(importTree, NodeTypes.IMPORT);
         importNode.setProperty("qualifiedIdentifier", importTree.getQualifiedIdentifier().toString());
@@ -897,7 +831,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitInstanceOf(InstanceOfTree instanceOfTree,
-                                            Pair<PartialRelation<RelationTypes>, Object> t) {
+                                            Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         //		System.out.println(instanceOfTree);
         NodeWrapper instanceOfNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(instanceOfTree, NodeTypes.INSTANCE_OF);
@@ -916,7 +850,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitIntersectionType(IntersectionTypeTree intersectionTypeTree,
-                                                  Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                  Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         // System.out.println(intersectionTypeTree);
         NodeWrapper intersectionTypeNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNodeExplicitCats(intersectionTypeTree, NodeTypes.INTERSECTION_TYPE,
@@ -932,7 +866,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitLabeledStatement(LabeledStatementTree labeledStatementTree,
-                                                  Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                  Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper labeledStatementNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNode(labeledStatementTree, NodeTypes.LABELED_STATEMENT);
@@ -949,7 +883,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree,
-                                                  Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                  Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper lambdaExpressionNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNode(lambdaExpressionTree, NodeTypes.LAMBDA_EXPRESSION);
@@ -972,7 +906,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         //DEBERIAMOS PROCESAR PRIMERO LOS PARAMETROS??
         for (int i = 0; i < lambdaExpressionTree.getParameters().size(); i++)
             scan(lambdaExpressionTree.getParameters().get(i), Pair.createPair(
-                    new PartialRelationWithProperties<RelationTypes>(lambdaExpressionNode,
+                    new PartialRelationWithProperties<>(lambdaExpressionNode,
                             RelationTypes.LAMBDA_EXPRESSION_PARAMETERS, "paramIndex", i + 1)));
         // scan(lambdaExpressionTree.getParameters(),
         // Pair.createPair(lambdaExpressionNode,
@@ -997,7 +931,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitLiteral(LiteralTree literalTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitLiteral(LiteralTree literalTree,
+                                         Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper literalNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(literalTree, NodeTypes.LITERAL);
         literalNode.setProperty("typetag", literalTree.getKind().toString());
@@ -1013,7 +948,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitMemberReference(MemberReferenceTree memberReferenceTree,
-                                                 Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                 Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper memberReferenceNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(memberReferenceTree, NodeTypes.MEMBER_REFERENCE);
         memberReferenceNode.setProperty("mode", memberReferenceTree.getMode().name());
@@ -1030,7 +965,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         if (memberReferenceTree.getTypeArguments() != null)
             for (int i = 0; i < memberReferenceTree.getTypeArguments().size(); i++)
                 scan(memberReferenceTree.getTypeArguments().get(i), Pair.createPair(
-                        new PartialRelationWithProperties<RelationTypes>(memberReferenceNode,
+                        new PartialRelationWithProperties<>(memberReferenceNode,
                                 RelationTypes.MEMBER_REFERENCE_TYPE_ARGUMENTS, "argumentIndex", i + 1)));
         return null;
     }
@@ -1041,7 +976,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitMemberSelect(MemberSelectTree memberSelectTree,
-                                              Pair<PartialRelation<RelationTypes>, Object> t) {
+                                              Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         // System.out.println(memberSelectTree);
         // System.out.println(memberSelectTree);
 
@@ -1154,12 +1089,12 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         addToTypeDependencies(newTypeDec, symbol.packge());
     }
 
-    private void addExistingClassIdentifier(Symbol symbol) {
-
-        NodeWrapper newTypeDec = DefinitionCache.getExistingType(symbol.type);
-        addToTypeDependencies(newTypeDec, symbol.packge());
-
-    }
+//    private void addExistingClassIdentifier(Symbol symbol) {
+//
+//        NodeWrapper newTypeDec = DefinitionCache.getExistingType(symbol.type);
+//        addToTypeDependencies(newTypeDec, symbol.packge());
+//
+//    }
 
     public void addToTypeDependencies(NodeWrapper newTypeDec, Symbol newPackageSymbol) {
         addToTypeDependencies(classState.currentClassDec, newTypeDec, newPackageSymbol, typeDecUses,
@@ -1190,7 +1125,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitMethod(MethodTree methodTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitMethod(MethodTree methodTree,
+                                        Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         if (DEBUG) {
             System.out.println("\tVisiting method declaration " + methodTree.getName());
@@ -1303,13 +1239,13 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         // RelationTypes.CALLABLE_HAS_TYPEPARAMETERS));
         for (int i = 0; i < methodTree.getTypeParameters().size(); i++)
             scan(methodTree.getTypeParameters().get(i), Pair.createPair(
-                    new PartialRelationWithProperties<RelationTypes>(methodNode,
-                            RelationTypes.CALLABLE_HAS_TYPEPARAMETERS, "paramIndex", i + 1)));
+                    new PartialRelationWithProperties<>(methodNode, RelationTypes.CALLABLE_HAS_TYPEPARAMETERS,
+                            "paramIndex", i + 1)));
         int nParams = 0;
         for (nParams = 0; nParams < methodTree.getParameters().size(); nParams++)
             scan(methodTree.getParameters().get(nParams), Pair.createPair(
-                    new PartialRelationWithProperties<RelationTypes>(methodNode, RelationTypes.CALLABLE_HAS_PARAMETER,
-                            "paramIndex", nParams + 1)));
+                    new PartialRelationWithProperties<>(methodNode, RelationTypes.CALLABLE_HAS_PARAMETER, "paramIndex",
+                            nParams + 1)));
 
         methodTree.getThrows().forEach((throwsTree) -> {
             TypeMirror type = ((JCExpression) throwsTree).type;
@@ -1353,7 +1289,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitMethodInvocation(MethodInvocationTree methodInvocationTree,
-                                                  Pair<PartialRelation<RelationTypes>, Object> pair) {
+                                                  Pair<PartialRelation<RelationTypesInterface>, Object> pair) {
         NodeWrapper methodInvocationNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNode(methodInvocationTree, NodeTypes.METHOD_INVOCATION);
         //		Le dejo de tipo error type?=> Habria que ver todos los eror type anteriores....
@@ -1387,7 +1323,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             String completeName = GEN_CLASS + ":" + methodName;
             //	fullyQualifiedName = completeName + methodSymbol.type;
             //intentar sacar el fully con inferencia viola el sound but not complete
-            decNode = createNonDeclaredMethodWithoutSymbol(methodName, completeName, completeName);
+            decNode = createNonDeclaredMethodWithoutSymbol(new MethodNameInfo(methodName, completeName, completeName));
             //3) cache no aplica=> no puede ser constructor.... así que solo aplica a CreateGeneratedMethod
 
             //4) Podría ser común CALLS, HAS_REF,, REFERS_TO
@@ -1415,19 +1351,18 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             //
             //                    (MethodSymbol) symbol;
 
-            String methodName = methodSymbol.name.toString();
-            String completeName = methodSymbol.owner + ":" + methodName;
-            String fullyQualifiedName = completeName + methodSymbol.type;
+
             if (methodInvocationTree.getMethodSelect() instanceof IdentifierTree)
                 addClassIdentifier(methodSymbol.owner);
 
             if (methodSymbol.getThrownTypes().size() > 0)
                 currentMethodInvocations.add(methodSymbol);
 
-            decNode = DefinitionCache.METHOD_DEF_CACHE.containsKey(fullyQualifiedName) ? DefinitionCache.METHOD_DEF_CACHE.get(fullyQualifiedName) :
-                    methodSymbol.isConstructor() ?
-                            getNotDeclaredConsFromInv(methodSymbol, fullyQualifiedName, completeName) :
-                            getNotDeclaredMethodDecNode(methodSymbol, fullyQualifiedName, methodName, completeName);
+            MethodNameInfo nameInfo = new MethodNameInfo(methodSymbol);
+            decNode = DefinitionCache.METHOD_DEF_CACHE.containsKey(nameInfo.getFullyQualifiedName()) ?
+                    DefinitionCache.METHOD_DEF_CACHE.get(nameInfo.getFullyQualifiedName()) :
+                    methodSymbol.isConstructor() ? getNotDeclaredConsFromInv(methodSymbol, nameInfo) :
+                            getNotDeclaredMethodDecNode(methodSymbol, nameInfo);
 
             //Es trustuble en el sentido de que no tenemos herencia aqui ... no sabemos nada del metodo llamado
             ast.checkIfTrustableInvocation(methodInvocationTree, methodSymbol, methodInvocationNode);
@@ -1456,8 +1391,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
                             RelationTypes.METHODINVOCATION_TYPE_ARGUMENTS, "argumentIndex", i + 1)));
         for (int i = 0; i < methodInvocationTree.getArguments().size(); i++)
             scan(methodInvocationTree.getArguments().get(i), Pair.createPair(
-                    new PartialRelationWithProperties<>(methodInvocationNode,
-                            RelationTypes.METHODINVOCATION_ARGUMENTS, "argumentIndex", i + 1)));
+                    new PartialRelationWithProperties<>(methodInvocationNode, RelationTypes.METHODINVOCATION_ARGUMENTS,
+                            "argumentIndex", i + 1)));
 
         return null;
     }
@@ -1523,7 +1458,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     private void visitAnonymousClassModifiers(ModifiersTree modifiersTree, NodeWrapper classNode) {
 
-        Pair<PartialRelation<RelationTypes>, Object> n = Pair.createPair(classNode, RelationTypes.HAS_ANNOTATIONS);
+        Pair<PartialRelation<RelationTypesInterface>, Object> n =
+                Pair.createPair(classNode, RelationTypes.HAS_ANNOTATIONS);
         scan(modifiersTree.getAnnotations(), n);
         classNode.setProperty("isStatic", false);
         classNode.setProperty("isAbstract", false);
@@ -1541,7 +1477,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitModifiers(ModifiersTree modifiersTree,
-                                           Pair<PartialRelation<RelationTypes>, Object> t) {
+                                           Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper parent = t.getFirst().getStartingNode();
         Set<Modifier> modifiers = modifiersTree.getFlags();
         // Pair<PartialRelation<RelationTypes>, Object> n = ;
@@ -1588,7 +1524,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitNewArray(NewArrayTree newArrayTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitNewArray(NewArrayTree newArrayTree,
+                                          Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper newArrayNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(newArrayTree, NodeTypes.NEW_ARRAY);
@@ -1604,7 +1541,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     // OJO FALTA REVISAR
     @Override
     public ASTVisitorResult visitNewClass(NewClassTree newClassTree,
-                                          Pair<PartialRelation<RelationTypes>, Object> pair) {
+                                          Pair<PartialRelation<RelationTypesInterface>, Object> pair) {
         //		System.out.println(newClassTree);
         NodeWrapper newClassNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(newClassTree, NodeTypes.NEW_INSTANCE);
@@ -1623,8 +1560,9 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         Symbol newClassConstructor = ((JCNewClass) newClassTree).constructor;
         NodeWrapper constructorDef = null;
         if (newClassConstructor instanceof ClassSymbol && type instanceof ErrorType &&
-                ((ClassSymbol) newClassConstructor).sourcefile == null &&
-                ((ClassSymbol) newClassConstructor).getTypeParameters().size() == 0) {
+                ((ClassSymbol) newClassConstructor).sourcefile == null
+            //&& ((ClassSymbol) newClassConstructor).getTypeParameters().size() == 0
+        ) {
 
             NodeWrapper generatedCLassNode =
                     TypeVisitor.generatedClassType((ClassSymbol) newClassConstructor.owner, ast);
@@ -1639,19 +1577,18 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
             String completeName = ((ClassSymbol) newClassConstructor.owner).getQualifiedName() + ":" + methodName;
             //	fullyQualifiedName = completeName + methodSymbol.type;
             //intentar sacar el fully con inferencia viola el sound but not complete
-            constructorDef = createNonDeclaredMethodWithoutSymbol(methodName, completeName, completeName);
+            constructorDef =
+                    createNonDeclaredMethodWithoutSymbol(new MethodNameInfo(methodName, completeName, completeName));
             generatedCLassNode.createRelationshipTo(constructorDef, RelationTypes.DECLARES_CONSTRUCTOR);
 
 
         } else {
             addClassIdentifier(type);
             MethodSymbol consSymbol = (MethodSymbol) newClassConstructor;
-            String consType = consSymbol.type.toString();
-            String completeName = consSymbol.owner.toString() + ":<init>";
-            String fullyQualifiedName = completeName + consType.substring(0, consType.length() - 4);
-            constructorDef = DefinitionCache.METHOD_DEF_CACHE.get(fullyQualifiedName);
+            MethodNameInfo nameInfo = new MethodNameInfo(consSymbol);
+            constructorDef = DefinitionCache.METHOD_DEF_CACHE.get(nameInfo.getFullyQualifiedName());
             if (constructorDef == null)
-                constructorDef = getNotDeclaredConsFromInv(consSymbol, fullyQualifiedName, completeName);
+                constructorDef = getNotDeclaredConsFromInv(consSymbol, nameInfo);
 
 
             if (consSymbol.getThrownTypes().size() > 0)
@@ -1676,11 +1613,11 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         // RelationTypes.NEW_CLASS_TYPE_ARGUMENTS));
         for (int i = 0; i < newClassTree.getTypeArguments().size(); i++)
             scan(newClassTree.getTypeArguments().get(i), Pair.createPair(
-                    new PartialRelationWithProperties<RelationTypes>(newClassNode,
-                            RelationTypes.NEW_CLASS_TYPE_ARGUMENTS, "argumentIndex", i + 1)));
+                    new PartialRelationWithProperties<>(newClassNode, RelationTypes.NEW_CLASS_TYPE_ARGUMENTS,
+                            "argumentIndex", i + 1)));
         for (int i = 0; i < newClassTree.getArguments().size(); i++)
             scan(newClassTree.getArguments().get(i), Pair.createPair(
-                    new PartialRelationWithProperties<RelationTypes>(newClassNode, RelationTypes.NEW_CLASS_ARGUMENTS,
+                    new PartialRelationWithProperties<>(newClassNode, RelationTypes.NEW_CLASS_ARGUMENTS,
                             "argumentIndex", i + 1)));
 
 
@@ -1702,19 +1639,19 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitOther(Tree arg0, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitOther(Tree arg0, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         throw new IllegalArgumentException(
                 "[EXCEPTION] Tree not included in the visitor: " + arg0.getClass() + "\n" + arg0);
     }
 
     @Override
     public ASTVisitorResult visitParameterizedType(ParameterizedTypeTree parameterizedTypeTree,
-                                                   Pair<PartialRelation<RelationTypes>, Object> t) {
+                                                   Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         //		System.out.println("PARAMETERIZED TYPE:\t" + parameterizedTypeTree);
         // System.out.println(parameterizedTypeTree);
         NodeWrapper parameterizedNode = DatabaseFachade.CURRENT_DB_FACHADE
-                .createSkeletonNodeExplicitCats(parameterizedTypeTree, NodeTypes.GENERIC_TYPE, NodeCategory.AST_TYPE,
-                        NodeCategory.AST_NODE);
+                .createSkeletonNodeExplicitCats(parameterizedTypeTree, NodeTypes.PARAMETERIZED_TYPE,
+                        NodeCategory.AST_TYPE, NodeCategory.AST_NODE);
         GraphUtils.connectWithParent(parameterizedNode, t);
 
         //		System.out.println("PARAMETERIZED . GETTYPE " + parameterizedTypeTree.getType());
@@ -1722,14 +1659,15 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
         //		System.out.println(((JCTree)parameterizedTypeTree.getType()).type);
         //		System.out.println(((JCTree)parameterizedTypeTree.getType()).type.getClass());
 
-        scan(parameterizedTypeTree.getType(), Pair.createPair(parameterizedNode, RelationTypes.PARAMETERIZED_TYPE));
+        scan(parameterizedTypeTree.getType(), Pair.createPair(parameterizedNode, RelationTypes.PARAMETERIZES_AST_TYPE));
         //		addClassIdentifier(JavacInfo.getTypeMirror(parameterizedTypeTree.getType()));
         addClassIdentifier(((JCTree) parameterizedTypeTree.getType()).type);
         for (int i = 0; i < parameterizedTypeTree.getTypeArguments().size(); i++) {
             Tree typeArg = parameterizedTypeTree.getTypeArguments().get(i);
             addClassIdentifier(((JCTree) typeArg).type);
-            scan(typeArg, Pair.createPair(new PartialRelationWithProperties<RelationTypes>(parameterizedNode,
-                    RelationTypes.GENERIC_TYPE_ARGUMENT, "argumentIndex", i + 1)));
+            scan(typeArg, Pair.createPair(
+                    new PartialRelationWithProperties<>(parameterizedNode, RelationTypes.AST_TYPE_ARGUMENT,
+                            "argumentIndex", i + 1)));
         }
 
         // TODO INSTEAD of L<> to denote it is parameterized, use the visitor to
@@ -1743,7 +1681,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitParenthesized(ParenthesizedTree parenthesizedTree,
-                                               Pair<PartialRelation<RelationTypes>, Object> t) {
+                                               Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         // Esto no deber�a entrar por aqu�, porque los par�ntesis no deben
         // preservarse, o s�, y soy yo el que los tiene que obviar //Si los dejo
         // puedo detectar fallos de cuando sobran par�ntesis, no s� si sale
@@ -1760,7 +1698,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitPrimitiveType(PrimitiveTypeTree primitiveTypeTree,
-                                               Pair<PartialRelation<RelationTypes>, Object> t) {
+                                               Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper primitiveTypeNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNodeExplicitCats(primitiveTypeTree, NodeTypes.PRIMITIVE_TYPE, NodeCategory.AST_TYPE,
                         NodeCategory.AST_NODE);
@@ -1775,7 +1713,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitReturn(ReturnTree returnTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitReturn(ReturnTree returnTree,
+                                        Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper returnNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(returnTree, NodeTypes.RETURN_STATEMENT);
@@ -1792,7 +1731,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitSwitch(SwitchTree switchTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitSwitch(SwitchTree switchTree,
+                                        Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper switchNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(switchTree, NodeTypes.SWITCH_STATEMENT);
         GraphUtils.connectWithParent(switchNode, t);
@@ -1823,7 +1763,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitSynchronized(SynchronizedTree synchronizedTree,
-                                              Pair<PartialRelation<RelationTypes>, Object> t) {
+                                              Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper synchronizedNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(synchronizedTree, NodeTypes.SYNCHRONIZED_BLOCK);
         GraphUtils.connectWithParent(synchronizedNode, t);
@@ -1835,7 +1775,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitThrow(ThrowTree throwTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitThrow(ThrowTree throwTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper throwNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(throwTree, NodeTypes.THROW_STATEMENT);
@@ -1848,7 +1788,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitTry(TryTree tryTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitTry(TryTree tryTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         //        System.out.println(tryTree);
         NodeWrapper tryNode = DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(tryTree, NodeTypes.TRY_STATEMENT);
@@ -1880,7 +1820,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitTypeCast(TypeCastTree typeCastTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitTypeCast(TypeCastTree typeCastTree,
+                                          Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper typeCastNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(typeCastTree, NodeTypes.TYPE_CAST);
@@ -1897,7 +1838,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitTypeParameter(TypeParameterTree typeParameterTree,
-                                               Pair<PartialRelation<RelationTypes>, Object> t) {
+                                               Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         // System.out.println(NodeUtils.nodeToString(t.getFirst().getStartingNode()));
         // System.out.println(typeParameterTree);
         // System.out.println("TYPE PARAM " + typeParameterTree.toString());
@@ -1914,7 +1855,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitUnary(UnaryTree unaryTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitUnary(UnaryTree unaryTree, Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper unaryNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(unaryTree, NodeTypes.UNARY_OPERATION);
@@ -1942,7 +1883,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitUnionType(UnionTypeTree unionTypeTree,
-                                           Pair<PartialRelation<RelationTypes>, Object> t) {
+                                           Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         NodeWrapper unionTypeNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNodeExplicitCats(unionTypeTree, NodeTypes.UNION_TYPE, NodeCategory.AST_TYPE,
                         NodeCategory.AST_NODE);
@@ -1971,7 +1912,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitVariable(VariableTree variableTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitVariable(VariableTree variableTree,
+                                          Pair<PartialRelation<RelationTypesInterface>, Object> t) {
         /*
          *
          * 1� buscar los scans en este metodo u otros que llame, init o algo as� 2�
@@ -2041,7 +1983,7 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
 
     @Override
     public ASTVisitorResult visitWhileLoop(WhileLoopTree whileLoopTree,
-                                           Pair<PartialRelation<RelationTypes>, Object> t) {
+                                           Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper whileLoopNode =
                 DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(whileLoopTree, NodeTypes.WHILE_LOOP);
@@ -2062,7 +2004,8 @@ public class ASTTypesVisitor extends TreeScanner<ASTVisitorResult, Pair<PartialR
     }
 
     @Override
-    public ASTVisitorResult visitWildcard(WildcardTree wildcardTree, Pair<PartialRelation<RelationTypes>, Object> t) {
+    public ASTVisitorResult visitWildcard(WildcardTree wildcardTree,
+                                          Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 
         NodeWrapper wildcardNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNodeExplicitCats(wildcardTree, NodeTypes.WILDCARD_TYPE, NodeCategory.AST_TYPE,

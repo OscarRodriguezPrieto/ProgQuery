@@ -14,15 +14,17 @@ import es.uniovi.reflection.progquery.database.relations.TypeRelations;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
 import es.uniovi.reflection.progquery.typeInfo.TypeHierarchy;
 import es.uniovi.reflection.progquery.utils.JavacInfo;
-import es.uniovi.reflection.progquery.utils.types.CompoundTypeKey;
-import es.uniovi.reflection.progquery.utils.types.GenericTypeKey;
-import es.uniovi.reflection.progquery.utils.types.MethodTypeKey;
-import es.uniovi.reflection.progquery.utils.types.WildcardKey;
+import es.uniovi.reflection.progquery.utils.MethodNameInfo;
+import es.uniovi.reflection.progquery.utils.types.TypeKey;
+import es.uniovi.reflection.progquery.utils.types.keys.*;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrapper, Object> {
+public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrapper, TypeKey> {
     private ASTAuxiliarStorage ast;
 
     // private Set<>
@@ -37,30 +39,32 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     }
 
     @Override
-    public NodeWrapper visit(TypeMirror t, Object key) {
+    public NodeWrapper visit(TypeMirror t, TypeKey key) {
         // TODO Auto-generated method stub
         throw new IllegalStateException(t.getClass().toString());
     }
 
     @Override
-    public NodeWrapper visitArray(ArrayType type, Object key) {
+    public NodeWrapper visitArray(ArrayType type, TypeKey key) {
         NodeWrapper node = DatabaseFachade.CURRENT_DB_FACHADE
                 .createNonDeclaredTypeDecNodeExplicitCats(type, NodeTypes.ARRAY_TYPE, NodeCategory.TYPE_NODE);
         putInCache(key, node);
-        node.createRelationshipTo(DefinitionCache.getOrCreateType(type.getComponentType(), ast),
+        node.createRelationshipTo(
+                DefinitionCache.getOrCreateType(type.getComponentType(), ((ArrayTypeKey) key).getTypeOf(), ast),
                 RelationTypes.TYPE_PER_ELEMENT);
         return node;
     }
 
     public static NodeWrapper generatedClassType(ClassSymbol classSymbol, ASTAuxiliarStorage ast) {
-        if (DefinitionCache.TYPE_CACHE.containsKey(classSymbol.toString()))
-            return DefinitionCache.TYPE_CACHE.get(classSymbol.toString());
+        TypeDefinitionKey typeDefKey = new TypeDefinitionKey(classSymbol);
+        if (DefinitionCache.TYPE_CACHE.containsKey(typeDefKey))
+            return DefinitionCache.TYPE_CACHE.get(typeDefKey);
 
         NodeWrapper generatedTypeDec =
                 DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredCLASSTypeDecNode(classSymbol, NodeTypes.CLASS_DEF);
         //Para la caché usamos el nombre del simbolo, porque no sabemos si el simbolo será el mismo de una ejecución
         // a otra
-        putInCache(classSymbol.toString(), generatedTypeDec);
+        putInCache(typeDefKey, generatedTypeDec);
         ast.typeDecNodes.add(generatedTypeDec);
         //De la herecia no sabemos nada, superclass none
         //	TypeHierarchy.addTypeHierarchy((ClassSymbol) ((Type.ClassType) t).tsym, nonDeclaredTypeDec, null, ast);
@@ -69,72 +73,47 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
 
     // private static final Set<Symbol> nonDeclaredTypeSymbols=new HashSet<>();
     @Override
-    public NodeWrapper visitDeclared(DeclaredType t, Object key) {
+    public NodeWrapper visitDeclared(DeclaredType t, TypeKey declaredTypeKey) {
         Type type = ((Type) t);
-        //		System.out.println("Visiting type DECLARED " + t);
-        // t.getTypeArguments().forEach(System.out::println);
-        // System.out.println("VISITING DECLARED " + t);
-        final NodeWrapper nonDeclaredTypeDec;
-        NodeWrapper ret = null;
-        // System.out.println(t.getClass());
-        // System.out.println(t instanceof ClassType);
-        if (t.getTypeArguments().size() > 0) {
-            // System.out.println("GENERIC");
-            // System.out.println(type.tsym.type);
-            // System.out.println(((ClassType) t).tsym.asType());
-            //
-            // System.out.println(type.tsym.erasure_field);
-            //
-            // System.out.println(JavacInfo.erasure(type));
-            // System.out.println(type.tsym.completer);
-            // System.out.println("BASE TYPE " + type.baseType());
-            //
-            // System.out.println(type.getOriginalType());
-            // System.out.println(type.getModelType());
+        //        		System.out.println("Visiting type DECLARED " + t+"\n with type args:\n");
+        //         t.getTypeArguments().forEach(System.out::println);
+        NodeWrapper declaredType;
+        TypeRelations typeArgRel = TypeRelations.GENERIC_TYPE_PARAM;
+        String typeArgPropertyName = "paramIndex";
+        List<TypeKey> typeArgkeys;
+        if (declaredTypeKey instanceof ParameterizedTypeKey) {
+            //            System.out.println(type.tsym.type);
+            //             System.out.println(((ClassType) t).tsym.asType());
+            //             System.out.println(type.tsym.erasure_field);
+            //             System.out.println(JavacInfo.erasure(type));
+            typeArgRel = TypeRelations.TYPE_ARGUMENT;
+            typeArgPropertyName = "argumentIndex";
+            typeArgkeys = ((ParameterizedTypeKey) declaredTypeKey).getTypeArgs();
+            declaredType = DatabaseFachade.CURRENT_DB_FACHADE
+                    .createNonDeclaredTypeDecNodeExplicitCats(t, NodeTypes.PARAMETERIZED_TYPE, NodeCategory.TYPE_NODE);
+            putInCache(declaredTypeKey, declaredType);
 
-            NodeWrapper genericType = DatabaseFachade.CURRENT_DB_FACHADE
-                    .createNonDeclaredTypeDecNodeExplicitCats(t, NodeTypes.GENERIC_TYPE, NodeCategory.TYPE_NODE);
-            ret = genericType;
-            // putInCache(((GenericTypeKey) key).getParameterizedType(),
-            // nonDeclaredTypeDec);
-            putInCache(key, genericType);
-            // es.uniovi.reflection.progquery.ast.typeDecNodes.add(genericType);
-            nonDeclaredTypeDec = DefinitionCache
-                    .getOrCreateType(JavacInfo.erasure(type), ((GenericTypeKey) key).getParameterizedType(), ast);
+            final NodeWrapper genericType = DefinitionCache
+                    .getOrCreateType(type.tsym.type, ((ParameterizedTypeKey) declaredTypeKey).getGenericType(), ast);
 
-            genericType.createRelationshipTo(nonDeclaredTypeDec, RelationTypes.PARAMETERIZED_TYPE);
-            // System.out.println("TYPE ARGUMENTS");
-            for (int i = 0; i < t.getTypeArguments().size(); i++)// CON EL FOR
-                // PODEMOS
-                // REUTILIZAR
-                // LAS KEYS
-                // DEL
-                // GENERIC
-                // TYPE
-                genericType.createRelationshipTo(DefinitionCache
-                                .getOrCreateType(t.getTypeArguments().get(i),
-                                        ((GenericTypeKey) key).getTypeArgs().get(i), ast),
-                        RelationTypes.GENERIC_TYPE_ARGUMENT).setProperty("argumentIndex", i + 1);
+            declaredType.createRelationshipTo(genericType, TypeRelations.PARAMETERIZES_TYPE);
 
         } else {
 
-            // System.out.println("NON_GENERIC");
-            // System.out.println(t);
-            nonDeclaredTypeDec =
+            typeArgkeys = t.getTypeArguments().stream()
+                    .map(typeParam -> new TypeVariableKey((TypeVariable) typeParam, declaredTypeKey))
+                    .collect(Collectors.toList());
+            declaredType =
                     // t instanceof ClassType
                     // ?
                     DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredCLASSTypeDecNode(((ClassType) t),
                             type.isInterface() ? NodeTypes.INTERFACE_DEF :
-                                    type.tsym.isEnum() ? NodeTypes.ENUM_DEF : NodeTypes.CLASS_DEF)
-            // :
-            // DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredTypeDecNode(t,
-            // type.isInterface()
-            // ? NodeTypes.INTERFACE_DEF : type.tsym.isEnum() ?
-            // NodeTypes.ENUM_DEF : NodeTypes.CLASS_DEF)
-            ;
-            putInCache(key, nonDeclaredTypeDec);
-            ret = nonDeclaredTypeDec;
-            ast.typeDecNodes.add(nonDeclaredTypeDec);
+                                    type.tsym.isEnum() ? NodeTypes.ENUM_DEF : NodeTypes.CLASS_DEF);
+
+            if (t.getTypeArguments().size() > 0)
+                declaredType.addLabel(NodeTypes.GENERIC_TYPE);
+            putInCache(declaredTypeKey, declaredType);
+            ast.typeDecNodes.add(declaredType);
 
             // Solo a�adimos dependencias de clases no declaradas cuando heredan
             // o
@@ -145,7 +124,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
             // no
             // crear dos veces la misma relaci�n, se podr�a reutilizar el m�todo
             // est�tico de ASTTypesVisitor addToTypeDependencies
-            TypeHierarchy.addTypeHierarchy((ClassSymbol) ((Type.ClassType) t).tsym, nonDeclaredTypeDec, null, ast);
+            TypeHierarchy.addTypeHierarchy((ClassSymbol) ((Type.ClassType) t).tsym, declaredType, null, ast);
             //			System.out.println("FINISEHD TYPE HIER FOR " + t);
             //			System.out.println("ENCLOSED ELEMENTS");
             (type.tsym).getEnclosedElements().forEach(elementSymbol -> {
@@ -154,27 +133,22 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
                 if (elementSymbol.getKind() != ElementKind.FIELD) {
                     // System.out.println("TYPE" + e.type);
                     try {
-                        boolean isMethod = true;
-                        if (elementSymbol.getKind() != ElementKind.METHOD)
-                            if (elementSymbol.getKind() == ElementKind.CONSTRUCTOR)
-                                isMethod = false;
-                            else
-                                return;
+                        if (elementSymbol.getKind() != ElementKind.METHOD &&
+                                elementSymbol.getKind() != ElementKind.CONSTRUCTOR
+                            //                        && elementSymbol.getKind() != ElementKind.STATIC_INIT &&
+                            //                        elementSymbol.getKind() != ElementKind.INSTANCE_INIT
+                        )
+                            return;
 
-                        String methodName = isMethod ? elementSymbol.name.toString() : "<init>";
-                        String completeName = elementSymbol.owner + ":" + methodName;
-                        String fullyQualifiedName = completeName + elementSymbol.type;
+                        MethodNameInfo nameInfo = new MethodNameInfo((MethodSymbol) elementSymbol);
 
-                        if (!DefinitionCache.METHOD_DEF_CACHE.containsKey(fullyQualifiedName))
-                            if (isMethod)
-                                ASTTypesVisitor
-                                        .createNonDeclaredMethodDuringTypeCreation(fullyQualifiedName, completeName,
-                                                methodName, nonDeclaredTypeDec, type.isInterface(), ast,
-                                                (MethodSymbol) elementSymbol);
+                        if (!DefinitionCache.METHOD_DEF_CACHE.containsKey(nameInfo.getFullyQualifiedName()))
+                            if (elementSymbol.getKind() == ElementKind.METHOD)
+                                ASTTypesVisitor.createNonDeclaredMethodDuringTypeCreation(nameInfo, declaredType,
+                                        type.isInterface(), ast, (MethodSymbol) elementSymbol);
                             else
-                                ASTTypesVisitor
-                                        .getNotDeclaredConstructorDuringTypeCreation(fullyQualifiedName, completeName,
-                                                methodName, nonDeclaredTypeDec, elementSymbol);
+                                ASTTypesVisitor.getNotDeclaredConstructorDuringTypeCreation(nameInfo, declaredType,
+                                        elementSymbol);
 
                     } catch (com.sun.tools.javac.code.Symbol.CompletionFailure ex) {
                         // System.out.println("CACHED RUNTIME");
@@ -188,19 +162,24 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
             });
         }
 
-        // System.out.println("RETURNING declared");
-        return ret;
+        for (int i = 0; i < t.getTypeArguments().size(); i++)// CON EL FOR
+            declaredType.createRelationshipTo(
+                    DefinitionCache.getOrCreateType(t.getTypeArguments().get(i), typeArgkeys.get(i), ast),
+                    typeArgRel).setProperty(typeArgPropertyName, i + 1);
+
+
+        return declaredType;
     }
 
     @Override
-    public NodeWrapper visitError(ErrorType t, Object key) {
+    public NodeWrapper visitError(ErrorType t, TypeKey key) {
         return putInCache(key,
                 DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredTypeDecNode(t, NodeTypes.ERROR_TYPE));
 
     }
 
     @Override
-    public NodeWrapper visitExecutable(ExecutableType t, Object key) {
+    public NodeWrapper visitExecutable(ExecutableType t, TypeKey key) {
         MethodTypeKey mtKey = (MethodTypeKey) key;
 
         NodeWrapper methodTypeNode =
@@ -211,7 +190,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
                 .createRelationshipTo(DefinitionCache.getOrCreateType(t.getReturnType(), mtKey.getReturnType(), ast),
                         TypeRelations.RETURN_TYPE);
         int i = 0;
-        for (Object pKey : mtKey.getParamTypes()) {
+        for (TypeKey pKey : mtKey.getParamTypes()) {
             methodTypeNode
                     .createRelationshipTo(DefinitionCache.getOrCreateType(t.getParameterTypes().get(i), pKey, ast),
                             TypeRelations.PARAM_TYPE).setProperty("paramIndex", ++i);
@@ -225,13 +204,14 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
         if (mtKey.getReceiverType() != null)
             // MIRAR SI RECEIVER TYPE ES IGUAL A INSTANCE ARG TYPE PROBAR A
             // SACAR POR PANTALLA COSITAS...
-            methodTypeNode.createRelationshipTo(DefinitionCache.getOrCreateType(t.getReceiverType(), ast),
+            methodTypeNode.createRelationshipTo(
+                    DefinitionCache.getOrCreateType(t.getReceiverType(), mtKey.getReceiverType(), ast),
                     TypeRelations.INSTANCE_ARG_TYPE);
         return methodTypeNode;
     }
 
     @Override
-    public NodeWrapper visitIntersection(IntersectionType t, Object key) {
+    public NodeWrapper visitIntersection(IntersectionType t, TypeKey key) {
         NodeWrapper intersType = DatabaseFachade.CURRENT_DB_FACHADE
                 .createNonDeclaredTypeDecNodeExplicitCats(t, NodeTypes.INTERSECTION_TYPE, NodeCategory.TYPE_NODE);
         putInCache(key, intersType);
@@ -248,25 +228,25 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     }
 
     @Override
-    public NodeWrapper visitNoType(NoType t, Object key) {
+    public NodeWrapper visitNoType(NoType t, TypeKey key) {
         return putInCache(key, DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredTypeDecNode(t,
                 t.getKind() == TypeKind.VOID ? NodeTypes.VOID_TYPE : NodeTypes.PACKAGE_TYPE));
 
     }
 
     @Override
-    public NodeWrapper visitNull(NullType t, Object key) {
+    public NodeWrapper visitNull(NullType t, TypeKey key) {
         return putInCache(key, DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredTypeDecNode(t, NodeTypes.NULL_TYPE));
     }
 
     @Override
-    public NodeWrapper visitPrimitive(PrimitiveType t, Object key) {
+    public NodeWrapper visitPrimitive(PrimitiveType t, TypeKey key) {
         return putInCache(key, DatabaseFachade.CURRENT_DB_FACHADE
                 .createNonDeclaredTypeDecNodeExplicitCats(t, NodeTypes.PRIMITIVE_TYPE, NodeCategory.TYPE_NODE));
     }
 
     @Override
-    public NodeWrapper visitTypeVariable(TypeVariable t, Object key) {
+    public NodeWrapper visitTypeVariable(TypeVariable t, TypeKey key) {
         NodeWrapper typeVar =
                 DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredTypeDecNode(t, NodeTypes.TYPE_VARIABLE);
         putInCache(key, typeVar);
@@ -290,7 +270,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     }
 
     @Override
-    public NodeWrapper visitUnion(UnionType t, Object key) {
+    public NodeWrapper visitUnion(UnionType t, TypeKey key) {
         NodeWrapper union = DatabaseFachade.CURRENT_DB_FACHADE
                 .createNonDeclaredTypeDecNodeExplicitCats(t, NodeTypes.UNION_TYPE, NodeCategory.TYPE_NODE);
         putInCache(key, union);
@@ -304,13 +284,13 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
     }
 
     @Override
-    public NodeWrapper visitUnknown(TypeMirror t, Object key) {
+    public NodeWrapper visitUnknown(TypeMirror t, TypeKey key) {
         return putInCache(key,
                 DatabaseFachade.CURRENT_DB_FACHADE.createNonDeclaredTypeDecNode(t, NodeTypes.UNKNOWN_TYPE));
     }
 
     @Override
-    public NodeWrapper visitWildcard(WildcardType t, Object key) {
+    public NodeWrapper visitWildcard(WildcardType t, TypeKey key) {
         // System.out.println("WILCARD KIND " + t.getKind().toString());
 
         NodeWrapper wildcardNode = DatabaseFachade.CURRENT_DB_FACHADE
@@ -326,7 +306,7 @@ public class TypeVisitor implements javax.lang.model.type.TypeVisitor<NodeWrappe
         return wildcardNode;
     }
 
-    private static NodeWrapper putInCache(Object key, NodeWrapper typeNode) {
+    private static NodeWrapper putInCache(TypeKey key, NodeWrapper typeNode) {
         DefinitionCache.TYPE_CACHE.put(key, typeNode);
         return typeNode;
     }

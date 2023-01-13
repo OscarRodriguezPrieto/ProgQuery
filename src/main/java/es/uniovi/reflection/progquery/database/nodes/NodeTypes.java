@@ -86,7 +86,7 @@ public enum NodeTypes implements Label {
 
 																																																																																			NodeCategory.LOCAL_DEF,
 																																																																																			NodeCategory.VARIABLE_DEF,
-																																																																																			NodeCategory.DEFINITION), GENERIC_TYPE, PRIMITIVE_TYPE, RETURN_STATEMENT(
+																																																																																			NodeCategory.DEFINITION), GENERIC_TYPE, PARAMETERIZED_TYPE, PRIMITIVE_TYPE, RETURN_STATEMENT(
 
 																																																																																					NodeCategory.STATEMENT), SWITCH_STATEMENT(
 
@@ -119,7 +119,7 @@ public enum NodeTypes implements Label {
 
 	, INITIALIZATION(NodeCategory.PDG_NODE), CFG_NORMAL_END(NodeCategory.CFG_NODE), CFG_ENTRY(NodeCategory.CFG_NODE), CFG_EXCEPTIONAL_END(NodeCategory.CFG_NODE), CFG_LAST_STATEMENT_IN_FINALLY(NodeCategory.CFG_NODE), PROGRAM(NodeCategory.PACKAGE_NODE);
 
-	private NodeTypes(NodeCategory... hypernyms) {
+	NodeTypes(NodeCategory... hypernyms) {
 		this();
 		for (NodeCategory cat : hypernyms) {
 			if (cat == NodeCategory.STATEMENT || cat == NodeCategory.EXPRESSION || cat == NodeCategory.AST_TYPE
@@ -130,7 +130,7 @@ public enum NodeTypes implements Label {
 		}
 	}
 
-	private NodeTypes() {
+	NodeTypes() {
 		hypernyms = new ArrayList<NodeCategory>();
 		hypernyms.add(NodeCategory.PQ_NODE);
 	}
