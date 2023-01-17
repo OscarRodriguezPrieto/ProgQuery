@@ -859,7 +859,7 @@ public class ASTTypesVisitor
         GraphUtils.connectWithParent(intersectionTypeNode, t);
 
         scan(intersectionTypeTree.getBounds(),
-                Pair.createPair(intersectionTypeNode, RelationTypes.INTERSECTION_COMPOSED_OF));
+                Pair.createPair(intersectionTypeNode, RelationTypes.AST_INTERSECTION_OF));
 
         return null;
     }
@@ -1089,12 +1089,12 @@ public class ASTTypesVisitor
         addToTypeDependencies(newTypeDec, symbol.packge());
     }
 
-//    private void addExistingClassIdentifier(Symbol symbol) {
-//
-//        NodeWrapper newTypeDec = DefinitionCache.getExistingType(symbol.type);
-//        addToTypeDependencies(newTypeDec, symbol.packge());
-//
-//    }
+    //    private void addExistingClassIdentifier(Symbol symbol) {
+    //
+    //        NodeWrapper newTypeDec = DefinitionCache.getExistingType(symbol.type);
+    //        addToTypeDependencies(newTypeDec, symbol.packge());
+    //
+    //    }
 
     public void addToTypeDependencies(NodeWrapper newTypeDec, Symbol newPackageSymbol) {
         addToTypeDependencies(classState.currentClassDec, newTypeDec, newPackageSymbol, typeDecUses,
@@ -1143,9 +1143,9 @@ public class ASTTypesVisitor
         MethodSymbol methodSymbol = ((JCMethodDecl) methodTree).sym;
 
         // System.out.println(methodSymbol.isConstructor());
-        String name = methodTree.getName().toString(), completeName = methodSymbol.owner + ":" + name,
-                fullyQualifiedName = completeName + methodSymbol.type;
-
+        //        String name = methodTree.getName().toString(), completeName = methodSymbol.owner + ":" + name,
+        //                fullyQualifiedName = completeName + methodSymbol.type;
+        MethodNameInfo nameInfo = new MethodNameInfo(methodSymbol);
 
         //        System.out.println("METHOD:\t" + fullyQualifiedName);
         //        System.out.println(methodTree);
@@ -1169,18 +1169,18 @@ public class ASTTypesVisitor
             rel = RelationTypes.DECLARES_METHOD;
         }
 
-        if (DefinitionCache.METHOD_DEF_CACHE.containsKey(fullyQualifiedName)) {
+        if (DefinitionCache.METHOD_DEF_CACHE.containsKey(nameInfo.getFullyQualifiedName())) {
             ast.deleteAccesibleMethod(methodSymbol);
             //            System.out.println(fullyQualifiedName + " DECLARED METHOD PUT");
             // For methods that are invoked in this class, after the removal of the
             // non-declared edges of the class and before the visit of the method
-            DefinitionCache.METHOD_DEF_CACHE.putDefinition(fullyQualifiedName, methodNode);
+            DefinitionCache.METHOD_DEF_CACHE.putDefinition(nameInfo.getFullyQualifiedName(), methodNode);
 
             if (!methodNode.hasRelationship(rel, Direction.INCOMING))
                 GraphUtils.connectWithParent(methodNode, t, rel);
         } else {
             //            System.out.println(fullyQualifiedName + " DECLARED METHOD PUT--- no prev found");
-            DefinitionCache.METHOD_DEF_CACHE.putDefinition(fullyQualifiedName, methodNode);
+            DefinitionCache.METHOD_DEF_CACHE.putDefinition(nameInfo.getFullyQualifiedName(), methodNode);
             GraphUtils.connectWithParent(methodNode, t, rel);
         }
 
@@ -1211,9 +1211,9 @@ public class ASTTypesVisitor
         //		System.out.println("NEW STATE for \n"+methodTree);
         pdgUtils.visitNewMethod();
         ast.newMethodDeclaration(methodState);
-        methodNode.setProperty("name", name);
-        methodNode.setProperty("fullyQualifiedName", fullyQualifiedName);
-        methodNode.setProperty("completeName", completeName);
+        methodNode.setProperty("name", nameInfo.getSimpleName());
+        methodNode.setProperty("fullyQualifiedName", nameInfo.getFullyQualifiedName());
+        methodNode.setProperty("completeName", nameInfo.getCompleteName());
         methodNode.setProperty("isDeclared", true);
         methodNode.setProperty("isVarArgs", methodSymbol.isVarArgs());
 
@@ -1839,17 +1839,15 @@ public class ASTTypesVisitor
     @Override
     public ASTVisitorResult visitTypeParameter(TypeParameterTree typeParameterTree,
                                                Pair<PartialRelation<RelationTypesInterface>, Object> t) {
-        // System.out.println(NodeUtils.nodeToString(t.getFirst().getStartingNode()));
-        // System.out.println(typeParameterTree);
-        // System.out.println("TYPE PARAM " + typeParameterTree.toString());
-        // System.out.println(typeParameterTree.getBounds().size());
-        // System.out.println(typeParameterTree.getBounds().get(0));
         NodeWrapper typeParameterNode = DatabaseFachade.CURRENT_DB_FACHADE
                 .createSkeletonNodeExplicitCats(typeParameterTree, NodeTypes.TYPE_PARAM, NodeCategory.AST_NODE);
         typeParameterNode.setProperty("name", typeParameterTree.getName().toString());
         GraphUtils.connectWithParent(typeParameterNode, t);
         scan(typeParameterTree.getAnnotations(), Pair.createPair(typeParameterNode, RelationTypes.HAS_ANNOTATIONS));
         scan(typeParameterTree.getBounds(), Pair.createPair(typeParameterNode, RelationTypes.TYPEPARAMETER_EXTENDS));
+//        NodeWrapper typeNode =
+//                GraphUtils.attachType(typeParameterNode, ((JCTypeParameter) typeParameterTree).type, ast);
+//        typeNode.setProperty("isDeclared", true);
 
         return null;
     }
@@ -1893,7 +1891,7 @@ public class ASTTypesVisitor
         // System.out.println(unionTypeTree.getTypeAlternatives().get(unionTypeTree.getTypeAlternatives().size()
         // - 1));
 
-        scan(unionTypeTree.getTypeAlternatives(), Pair.createPair(unionTypeNode, RelationTypes.UNION_TYPE_ALTERNATIVE));
+        scan(unionTypeTree.getTypeAlternatives(), Pair.createPair(unionTypeNode, RelationTypes.AST_UNION_ALTERNATIVE));
         // IGUAL SOBRA... porque lo tengo a null pa to los tipos y funciona
         return null;
 

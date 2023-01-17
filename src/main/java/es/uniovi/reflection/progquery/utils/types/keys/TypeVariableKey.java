@@ -40,4 +40,9 @@ public class TypeVariableKey implements TypeKey {
     public int hashCode() {
         return Objects.hash(name, ownerKey);
     }
+
+    @Override
+    public String toString() {
+        return ownerKey + ":" + name ;
+    }
 }

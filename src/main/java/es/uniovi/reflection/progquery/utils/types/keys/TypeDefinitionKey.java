@@ -29,4 +29,9 @@ public class TypeDefinitionKey implements TypeKey {
     public int hashCode() {
         return Objects.hash(packageName, typeName);
     }
+
+    @Override
+    public String toString() {
+        return  packageName + "." + typeName ;
+    }
 }
