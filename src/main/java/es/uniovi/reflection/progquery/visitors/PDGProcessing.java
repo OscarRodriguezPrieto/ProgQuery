@@ -375,14 +375,14 @@ public class PDGProcessing {
 		if (dec == null)
 
 			toDoListForSymbol.add(decNode -> createRelsAndMutationAnalysis(concrete, decNode, rel, isIdent,
-					currentMethodState, toDoListForSymbol, currentClassDec, isAttr, isThis, isInstanceRel, isStatic));
+					currentMethodState, currentClassDec, isAttr, isThis, isInstanceRel, isStatic));
 		else
-			createRelsAndMutationAnalysis(concrete, dec, rel, isIdent, currentMethodState, toDoListForSymbol,
+			createRelsAndMutationAnalysis(concrete, dec, rel, isIdent, currentMethodState,
 					currentClassDec, isAttr, isThis, isInstanceRel, isStatic);
 	}
 
 	private void createRelsAndMutationAnalysis(NodeWrapper concrete, NodeWrapper dec, PDGRelationTypes rel,
-			boolean isIdent, MethodState currentMethodState, List<Consumer<NodeWrapper>> toDoListForSymbol,
+			boolean isIdent, MethodState currentMethodState,
 			NodeWrapper currentClassDec, boolean isAttr, boolean isThis, boolean isOwnAccess, boolean isStatic) {
 		mutationAnalysis(concrete, dec, rel, isIdent, currentMethodState, currentClassDec, isOwnAccess, isAttr, isThis,
 				isStatic);

@@ -6,13 +6,12 @@ import es.uniovi.reflection.progquery.utils.types.TypeKey;
 import java.util.Objects;
 
 public class TypeDefinitionKey implements TypeKey {
-    private String packageName, typeName;
+    private String ownerName, typeName;
 
-    public TypeDefinitionKey(Symbol symbol){
+    public TypeDefinitionKey(Symbol symbol) {
         Symbol.ClassSymbol classSymbol = (Symbol.ClassSymbol) symbol;
-        packageName = classSymbol.packge().fullname.toString();
+        ownerName = classSymbol.owner.toString();
         typeName = classSymbol.name.toString();
-
     }
 
     @Override
@@ -22,16 +21,16 @@ public class TypeDefinitionKey implements TypeKey {
         if (o == null || getClass() != o.getClass())
             return false;
         TypeDefinitionKey that = (TypeDefinitionKey) o;
-        return Objects.equals(packageName, that.packageName) && Objects.equals(typeName, that.typeName);
+        return Objects.equals(ownerName, that.ownerName) && Objects.equals(typeName, that.typeName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(packageName, typeName);
+        return Objects.hash(ownerName, typeName);
     }
 
     @Override
     public String toString() {
-        return  packageName + "." + typeName ;
+        return ownerName + "." + typeName;
     }
 }

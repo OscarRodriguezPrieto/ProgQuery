@@ -42,16 +42,16 @@ public class PackageInfo {
 	}
 
 	public NodeWrapper getPackageNode(Symbol packageSymbol) {
-		return packageCache.get(packageSymbol.name.toString());
+		return packageCache.get(packageSymbol.toString());
 	}
 	private NodeWrapper addPackage(Symbol s, boolean isDeclared) {
 		NodeWrapper packageNode = DatabaseFachade.CURRENT_DB_FACHADE.createNodeWithoutExplicitTree(NodeTypes.PACKAGE);
 		// packageSet.put(s, packageNode);
 		if (isDeclared) {
-			packageCache.putDefinition(s.name.toString(), packageNode);
+			packageCache.putDefinition(s.toString(), packageNode);
 			currentProgram.createRelationshipTo(packageNode, CDGRelationTypes.PROGRAM_DECLARES_PACKAGE);
 		} else
-			packageCache.put(s.name.toString(), packageNode);
+			packageCache.put(s.toString(), packageNode);
 		packageNode.setProperty("name", s.toString());
 		packageNode.setProperty("isDeclared", isDeclared);
 		return packageNode;
@@ -59,7 +59,7 @@ public class PackageInfo {
 
 	public NodeWrapper putDeclaredPackage(Symbol packageSymbol) {
 
-		if (packageCache.containsDef(packageSymbol.name.toString()))
+		if (packageCache.containsDef(packageSymbol.toString()))
 			return getPackageNode(packageSymbol);
 		else {
 			// si esta en la es.uniovi.reflection.progquery.cache no declarada
@@ -67,7 +67,7 @@ public class PackageInfo {
 			if (packageNode != null) {
 				packageNode.setProperty("isDeclared", true);
 				currentProgram.createRelationshipTo(packageNode, CDGRelationTypes.PROGRAM_DECLARES_PACKAGE);
-				packageCache.putDefinition(packageSymbol.name.toString(), packageNode);
+				packageCache.putDefinition(packageSymbol.toString(), packageNode);
 			} else
 				packageNode = addPackage(packageSymbol, true);
 			return packageNode;
@@ -97,12 +97,12 @@ public class PackageInfo {
 
 	public void createStoredPackageDeps() {
 		for (Pair<Symbol, Symbol> packageDep : dependenciesSet) {
-			NodeWrapper dependencyPack = packageCache.get(packageDep.getSecond().name.toString());
+			NodeWrapper dependencyPack = packageCache.get(packageDep.getSecond().toString());
 			if ((Boolean) dependencyPack.getProperty("isDeclared"))
-				packageCache.get(packageDep.getFirst().name.toString()).createRelationshipTo(dependencyPack,
+				packageCache.get(packageDep.getFirst().toString()).createRelationshipTo(dependencyPack,
 						CDGRelationTypes.DEPENDS_ON_PACKAGE);
 			else
-				packageCache.get(packageDep.getFirst().name.toString()).createRelationshipTo(dependencyPack,
+				packageCache.get(packageDep.getFirst().toString()).createRelationshipTo(dependencyPack,
 						CDGRelationTypes.DEPENDS_ON_NON_DECLARED_PACKAGE);
 
 		}

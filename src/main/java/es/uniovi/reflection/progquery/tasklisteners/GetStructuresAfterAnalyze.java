@@ -12,10 +12,7 @@ import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import es.uniovi.reflection.progquery.MultiCompilationScheduler;
-import es.uniovi.reflection.progquery.ast.ASTAuxiliarStorage;
-import es.uniovi.reflection.progquery.cache.DefinitionCache;
 import es.uniovi.reflection.progquery.database.DatabaseFachade;
-import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
 import es.uniovi.reflection.progquery.database.relations.CDGRelationTypes;
 import es.uniovi.reflection.progquery.database.relations.PartialRelation;
@@ -27,9 +24,9 @@ import es.uniovi.reflection.progquery.utils.GraphUtils;
 import es.uniovi.reflection.progquery.utils.JavacInfo;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import es.uniovi.reflection.progquery.visitors.ASTTypesVisitor;
-import es.uniovi.reflection.progquery.visitors.PDGProcessing;
 
 import javax.tools.JavaFileObject;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +42,7 @@ public class GetStructuresAfterAnalyze implements TaskListener {
 
     public GetStructuresAfterAnalyze(JavacTask task, MultiCompilationScheduler scheduler) {
         this.task = task;
-        this.scheduler=scheduler;
+        this.scheduler = scheduler;
 
     }
 
@@ -204,9 +201,11 @@ public class GetStructuresAfterAnalyze implements TaskListener {
         //        System.out.println("SCANING "+typeDeclaration.getSimpleName());
         //        System.out.println(cu.getSourceFile());
         //        System.out.println(typeDeclaration);
+//        System.out.println(cu.getClass());
+//        System.out.println(cu instanceof Serializable);
 
-        new ASTTypesVisitor(typeDeclaration, first, scheduler.getPdgUtils(), scheduler.getAst(), argument.getFirst().getStartingNode())
-                .scan(cu, argument);
+        new ASTTypesVisitor(typeDeclaration, first, scheduler.getPdgUtils(), scheduler.getAst(),
+                argument.getFirst().getStartingNode()).scan(cu, argument);
     }
 
     @Override
@@ -217,7 +216,9 @@ public class GetStructuresAfterAnalyze implements TaskListener {
                     (arg0.getSourceFile() == null ? "" : arg0.getSourceFile().getName()) + " ) " + arg0.getKind());
         if (arg0.getKind() == Kind.GENERATE && started)
             if (classCounter.size() == 0) {
-               //HERE WE USUALLY SHUTED DOWN DATABASE
+                //For multi-pom, in the future, this should be called by the server once all the compilation tasks
+                // were done
+//                scheduler.endAnalysis();  o lo hace el plugin o lo hace el Main, aquí no más
                 started = false;
             }
 

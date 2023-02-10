@@ -58,7 +58,7 @@ public class ParameterizedTypeKey implements TypeKey{
 
 	@Override
 	public String toString() {
-		return "GenericTypeKey [typeArgs=" + typeArgs + ", parameterizedType=" + genericType + "]";
+		return "ParameterizedTypeKey [typeArgs=" + typeArgs + ", parameterizedType=" + genericType + "]";
 	}
 
 }

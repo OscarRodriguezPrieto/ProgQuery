@@ -201,47 +201,40 @@ public class DefinitionCache<TKEY> {
         // System.out.println("looking for key " + key);
         // System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.toString());
         // System.out.println(DefinitionCache.CLASS_TYPE_CACHE.auxNodeCache.size());
-        if (DefinitionCache.TYPE_CACHE.containsKey(key)) {
+        if (DefinitionCache.TYPE_CACHE.containsKey(key))
+                // DefinitionCache.CLASS_TYPE_CACHE.get(key).getLabels().forEach(System.out::print);
+                // System.out.println();
+                // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
+                return DefinitionCache.TYPE_CACHE.get(key);
 
-            // System.out.println("RECOVERED FROM KEY " + key + "\n\t FROM " +
-            // type);
-            // DefinitionCache.CLASS_TYPE_CACHE.get(key).getLabels().forEach(System.out::print);
-            // System.out.println();
-            // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
-            return DefinitionCache.TYPE_CACHE.get(key);
+            return createTypeDec(type, key, ast);
         }
-        // System.out.println("CREATING NEW TYPE " + type);
-        return createTypeDec(type, key, ast);
+
+        //    public static NodeWrapper getExistingType(TypeMirror type) {
+        //        if (DefinitionCache.TYPE_CACHE.containsKey(type)) {
+        //
+        //            // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
+        //            return DefinitionCache.TYPE_CACHE.get(type);
+        //        }
+        //        throw new IllegalArgumentException("Not Type dounf for " + type);
+        //    }
+
+        public static NodeWrapper getOrCreateType (TypeMirror type, ASTAuxiliarStorage ast){
+            return getOrCreateType(type, type.accept(new KeyTypeVisitor(), null), ast);
+        }
+
+        public static NodeWrapper createTypeDec (TypeMirror typeSymbol, ASTAuxiliarStorage ast){
+            // System.out.println("Creating type key for" + typeSymbol);
+            // System.out.println("KEY WAS:\t" + typeSymbol.accept(new
+            // KeyTypeVisitor(), null));
+            return createTypeDec(typeSymbol, typeSymbol.accept(new KeyTypeVisitor(), null), ast);
+        }
+
+        private static NodeWrapper createTypeDec (TypeMirror type, TypeKey key, ASTAuxiliarStorage ast){
+            // System.out.println("Creating " + typeSymbol);
+            // System.out.println("VREATING TYPE SPEC " + type);
+            NodeWrapper ret = type.accept(new TypeVisitor(ast), key);
+
+            return ret;
+        }
     }
-
-    //    public static NodeWrapper getExistingType(TypeMirror type) {
-    //        if (DefinitionCache.TYPE_CACHE.containsKey(type)) {
-    //
-    //            // System.out.println(type + " already in es.uniovi.reflection.progquery.cache");
-    //            return DefinitionCache.TYPE_CACHE.get(type);
-    //        }
-    //        throw new IllegalArgumentException("Not Type dounf for " + type);
-    //    }
-
-    public static NodeWrapper getOrCreateType(TypeMirror type, ASTAuxiliarStorage ast) {
-        // System.out.println("Creating type key for" + type);
-        // System.out.println("KEY WAS:\t" + type.accept(new KeyTypeVisitor(),
-        // null));
-        return getOrCreateType(type, type.accept(new KeyTypeVisitor(), null), ast);
-    }
-
-    public static NodeWrapper createTypeDec(TypeMirror typeSymbol, ASTAuxiliarStorage ast) {
-        // System.out.println("Creating type key for" + typeSymbol);
-        // System.out.println("KEY WAS:\t" + typeSymbol.accept(new
-        // KeyTypeVisitor(), null));
-        return createTypeDec(typeSymbol, typeSymbol.accept(new KeyTypeVisitor(), null), ast);
-    }
-
-    private static NodeWrapper createTypeDec(TypeMirror type, TypeKey key, ASTAuxiliarStorage ast) {
-        // System.out.println("Creating " + typeSymbol);
-        // System.out.println("VREATING TYPE SPEC " + type);
-        NodeWrapper ret = type.accept(new TypeVisitor(ast), key);
-
-        return ret;
-    }
-}

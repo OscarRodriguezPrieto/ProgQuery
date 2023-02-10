@@ -85,6 +85,10 @@ public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
 
         if (t.getKind() == TypeKind.PACKAGE)
             return new PackageTypeKey(t);
+
+        if (t.getKind() == TypeKind.NONE)
+            return NoneTypeKey.NONE_TYPE_KEY;
+
         throw new IllegalStateException(t.getClass().toString());
     }
 
