@@ -1,9 +1,6 @@
 package es.uniovi.reflection.progquery;
 
-import es.uniovi.reflection.progquery.database.DatabaseFachade;
-import es.uniovi.reflection.progquery.database.EmbeddedInsertion;
-import es.uniovi.reflection.progquery.database.Neo4jDriverLazyInsertion;
-import es.uniovi.reflection.progquery.database.NotPersistentLazyInsertion;
+import es.uniovi.reflection.progquery.database.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -1380,6 +1377,19 @@ public class Main {
         return new MultiCompilationScheduler(programId, userId);
     }
 
+    public static MultiCompilationScheduler startServerInsertion(String neo4jHost, String neo4jPort, String neo4jUser,
+                                                                 String neo4jPass, String database, String maxOps,
+                                                                 String programId, String userId) {
+        return startInsertion(OptionsConfiguration.DEFAULT_NEO4J_MODE, neo4jHost, neo4jPort, neo4jUser, neo4jPass,
+                database, maxOps, programId, userId, null);
+    }
+
+    public static MultiCompilationScheduler startLocalInsertion(String database, String programId, String userId,
+                                                                String dbFolder) {
+        String LOCAL_MODE = OptionsConfiguration.neo4j_modeNames[0];
+        return startInsertion(LOCAL_MODE, null, null, null, null,
+                database, null, programId, userId, dbFolder);
+    }
 
     private static void parseArguments(String[] args) {
         setDefaultParameters();
