@@ -20,84 +20,22 @@ public class GraphUtils {
 		pair.getFirst().createRelationship(child);
 	}
 	public static <T extends RelationTypesInterface> void connectWithParent(NodeWrapper child,
-			NodeWrapper parent, RelationTypes r) {
+			NodeWrapper parent, T r) {
 		parent.createRelationshipTo(child,r);
 	}
 	// This method does not take into account the previous relationship
 	public static <T extends RelationTypesInterface> void connectWithParent(NodeWrapper child,
-			Pair<PartialRelation<T>, Object> pair, RelationTypes r) {
+			Pair<PartialRelation<T>, Object> pair, T r) {
 
 		pair.getFirst().getStartingNode().createRelationshipTo(child, r);
 	}
 
-	// public static TypeMirror attachTyperrrr(Tree tree, NodeWrapper node,
-	// TreePath
-	// path) {
-	//
-	// TypeMirror fullyQualifiedType = JavacInfo.getTypeMirror(tree, path);
-	//
-	// if (fullyQualifiedType != null) {
-	// node.setProperty("actualType", fullyQualifiedType.toString());
-	//
-	// TypeKind typeKind = fullyQualifiedType.getKind();
-	// if (typeKind != null)
-	// node.setProperty("typeKind", typeKind.toString());
-	// }
-	// return fullyQualifiedType;
-	// }
-	//
-	// public static TypeMirror attachTyperrr(Tree tree, NodeWrapper node) {
-	// TypeMirror fullyQualifiedType = JavacInfo.getTypeMirror(tree);
-	//
-	// if (fullyQualifiedType != null) {
-	// node.setProperty("actualType", fullyQualifiedType.toString());
-	//
-	// TypeKind typeKind = fullyQualifiedType.getKind();
-	// if (typeKind != null)
-	// node.setProperty("typeKind", typeKind.toString());
-	// }
-	//
-	// return fullyQualifiedType;
-	// }
 
-	// public static void attachTypeDirect(NodeWrapper node, Type type, String
-	// actualType, String typeKind) {
-	//
-	// // OJO AL RETURNTYPE
-	// // CACHE GET OR CREATE TYPEDEC -->ACTUALTYPE
-	// }
 	public static void attachTypeDirect(NodeWrapper node, ExpressionTree exp, ASTAuxiliarStorage ast) {
 		Type type = JavacInfo.getTypeDirect(exp);
-		// if (type != null) {
 		attachType(node, type,ast);
-		// } else {
-		// System.out.println("exp: " + exp.toString());
-		// System.out.println(attachType(exp, node, JavacInfo.getPath(exp)));
-		//
-		// }
-	}
-/*
-	public static void attachTypeDirectIdent(NodeWrapper node, IdentifierTree exp) {
-		Type type = JavacInfo.getTypeDirect(exp);
-
-		if (type.getKind() == TypeKind.EXECUTABLE)
-			attachType(node, type);
-
-		else
-			// if (type != null) {
-			attachType(node, type);
 	}
 
-	public static void attachTypeDirectMemberSel(NodeWrapper node, MemberSelectTree exp) {
-		Type type = JavacInfo.getTypeDirect(exp);
-
-		if (type.getKind() == TypeKind.EXECUTABLE)
-			attachType(node, type);
-
-		else
-			// if (type != null) {
-			attachType(node, type);
-	}*/
 
 	public static void attachTypeDirect(NodeWrapper node, VariableTree varDec, ASTAuxiliarStorage ast) {
 		Type type = JavacInfo.getTypeDirect(varDec);
@@ -111,10 +49,8 @@ public class GraphUtils {
 		attachTypeDirect(node, DefinitionCache.getOrCreateType(type), type.toString(), type.getKind().toString());
 	}*/
 
-	public static void attachType(NodeWrapper node, Type type, ASTAuxiliarStorage ast) {
-//System.out.println(type);
-//System.out.println(NodeUtils.nodeToString(node));
-		attachTypeDirect(node, type, type.toString(), type.getKind().toString(),ast);
+	public static NodeWrapper attachType(NodeWrapper node, Type type, ASTAuxiliarStorage ast) {
+		return attachTypeDirect(node, type, type.toString(), type.getKind().toString(),ast);
 	}
 
 	public static void attachTypeDirect(NodeWrapper node, ExpressionTree exp, String actualType, String typeKind, ASTAuxiliarStorage ast) {
@@ -122,9 +58,10 @@ public class GraphUtils {
 		attachTypeDirect(node, JavacInfo.getTypeDirect(exp), actualType, typeKind,ast);
 	}
 
-	private static void attachTypeDirect(NodeWrapper node, Type type, String actualType, String typeKind, ASTAuxiliarStorage ast) {
-//		System.out.println("Type "+type);
-		attachTypeDirect(node, DefinitionCache.getOrCreateType(type,ast), actualType, typeKind);
+	private static NodeWrapper attachTypeDirect(NodeWrapper node, Type type, String actualType, String typeKind, ASTAuxiliarStorage ast) {
+		NodeWrapper typeNode=DefinitionCache.getOrCreateType(type,ast);
+		attachTypeDirect(node, typeNode, actualType, typeKind);
+		return typeNode;
 	}
 
 	private static void attachTypeDirect(NodeWrapper node, NodeWrapper endNode, String actualType, String typeKind) {

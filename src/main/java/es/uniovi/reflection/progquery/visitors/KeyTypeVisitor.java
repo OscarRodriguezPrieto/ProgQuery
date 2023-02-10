@@ -1,147 +1,137 @@
 package es.uniovi.reflection.progquery.visitors;
 
+import com.sun.tools.javac.code.Type;
+import com.sun.tools.javac.code.Type.TypeVar;
+import es.uniovi.reflection.progquery.utils.JavacInfo;
+import es.uniovi.reflection.progquery.utils.types.TypeKey;
+import es.uniovi.reflection.progquery.utils.types.keys.*;
+
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.type.TypeVisitor;
+import javax.lang.model.type.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.IntersectionType;
-import javax.lang.model.type.NoType;
-import javax.lang.model.type.NullType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.type.TypeVisitor;
-import javax.lang.model.type.UnionType;
-import javax.lang.model.type.WildcardType;
+public class KeyTypeVisitor implements TypeVisitor<TypeKey, Object> {
 
-import com.sun.tools.javac.code.Type;
-import com.sun.tools.javac.code.Type.JCPrimitiveType;
-import com.sun.tools.javac.code.Type.PackageType;
-import com.sun.tools.javac.code.Type.TypeVar;
+    @Override
+    public TypeKey visit(TypeMirror t) {
+        // TODO Auto-generated method stub
+        throw new IllegalStateException(t.getClass().toString());
+    }
 
-import es.uniovi.reflection.progquery.utils.types.CompoundTypeKey;
-import es.uniovi.reflection.progquery.utils.types.GenericTypeKey;
-import es.uniovi.reflection.progquery.utils.types.MethodTypeKey;
-import es.uniovi.reflection.progquery.utils.types.WildcardKey;
-import es.uniovi.reflection.progquery.utils.JavacInfo;
+    @Override
+    public TypeKey visit(TypeMirror t, Object param) {
+        // TODO Auto-generated method stub
+        throw new IllegalStateException(t.getClass().toString());
+    }
 
-public class KeyTypeVisitor implements TypeVisitor<Object, Object> {
+    @Override
+    public TypeKey visitArray(ArrayType t, Object param) {
+        TypeKey of = t.getComponentType().accept(this, null);
+        return new ArrayTypeKey(of);
+    }
 
-	@Override
-	public Object visit(TypeMirror t) {
-		// TODO Auto-generated method stub
-		throw new IllegalStateException(t.getClass().toString());
-	}
+    @Override
+    public TypeKey visitDeclared(DeclaredType declaredType, Object param) {
+//        System.out.println("DECLARED..." + declaredType);
+//        System.out.println("TYPE INSIDE..." + ((Type) declaredType).tsym.type);
+//        System.out.println("CONDITION..." + (declaredType.getTypeArguments().stream()
+//                .filter(argType -> argType instanceof TypeVar &&
+//                        ((TypeVar) argType).tsym.owner.type.equals(declaredType)).count() > 0));
 
-	@Override
-	public Object visit(TypeMirror t, Object param) {
-		// TODO Auto-generated method stub
-		throw new IllegalStateException(t.getClass().toString());
-	}
+        if (declaredType.getTypeArguments().stream().filter(argType -> !(argType instanceof TypeVar) ||
+                !((TypeVar) argType).tsym.owner.type.equals(declaredType)).count() > 0)
+            return new ParameterizedTypeKey(
+                    declaredType.getTypeArguments().stream().map(argT -> argT.accept(this, null))
+                            .collect(Collectors.toList()), ((Type) declaredType).tsym.type.accept(this, null));
+        else
+            return new TypeDefinitionKey(((Type) declaredType).tsym);
+    }
 
-	@Override
-	public Object visitArray(ArrayType t, Object param) {
-		// System.out.println(t);
-		// System.out.println(((Type)t).tsym);
-		return t.toString();
-	}
+    @Override
+    public TypeKey visitError(ErrorType t, Object param) {
+        return ErrorTypeKey.ERROR_TYPE_KEY;
+    }
 
-	@Override
-	public Object visitDeclared(DeclaredType t, Object param) {
-		if (t.getTypeArguments().size() > 0)
-			return new GenericTypeKey(
-					t.getTypeArguments().stream().map(argT -> argT.accept(this, null)).collect(Collectors.toList()),
-					((Type) t).tsym);
-		return ((Type) t).tsym;
-	}
+    @Override
+    public TypeKey visitExecutable(ExecutableType t, Object param) {
+        // MethodType type = (MethodType) t;
+        List<TypeKey> params = new ArrayList<>();
+        for (TypeMirror pType : t.getParameterTypes())
+            params.add(pType.accept(this, null));
 
-	@Override
-	public Object visitError(ErrorType t, Object param) {
-		final String key = "%%%%%ERROR_TYPE%%%%%";
-		return key;
-	}
+        return new MethodTypeKey(params, t.getThrownTypes().stream().map(thrownType -> thrownType.accept(this, null))
+                .collect(Collectors.toList()),
+                t.getTypeVariables().stream().map(typeVar -> typeVar.accept(this, null)).collect(Collectors.toList()),
+                t.getReturnType().accept(this, null),
+                t.getReceiverType() == null ? null : t.getReceiverType().accept(this, null),
+                ((Type) t).tsym.isConstructor());
+    }
 
-	@Override
-	public Object visitExecutable(ExecutableType t, Object param) {
-		// MethodType type = (MethodType) t;
-		List<Object> params = new ArrayList<Object>();
-		for (TypeMirror pType : t.getParameterTypes())
-			params.add(pType.accept(this, null));
+    @Override
+    public TypeKey visitIntersection(IntersectionType t, Object param) {
 
-		return new MethodTypeKey(params,
-				t.getThrownTypes().stream().map(thrownType -> thrownType.accept(this, null))
-						.collect(Collectors.toList()),
-				t.getReturnType().accept(this, null),
-				t.getReceiverType() == null ? null : t.getReceiverType().accept(this, null),
-				((Type) t).tsym.isConstructor());
-	}
+        return new CompoundTypeKey(true,
+                t.getBounds().stream().map(otherType -> otherType.accept(this, null)).collect(Collectors.toList()));
+    }
 
-	@Override
-	public Object visitIntersection(IntersectionType t, Object param) {
+    @Override
+    public TypeKey visitNoType(NoType t, Object param) {
+        // TODO Auto-generated method stub
+        if (t.getKind() == TypeKind.VOID)
+            return VoidTypeKey.VOID_TYPE_KEY;
 
-		return new CompoundTypeKey(true,
-				t.getBounds().stream().map(otherType -> otherType.accept(this, null)).collect(Collectors.toList()));
-	}
+        if (t.getKind() == TypeKind.PACKAGE)
+            return new PackageTypeKey(t);
 
-	@Override
-	public Object visitNoType(NoType t, Object param) {
-		// TODO Auto-generated method stub
-		if (t.getKind() == TypeKind.VOID) {
-			final String voidKey = "%%%%%VOID_TYPE%%%%%";
-			return voidKey;
-		}
-		if (t.getKind() == TypeKind.PACKAGE)
-			return ((PackageType) t).tsym;
-		throw new IllegalStateException(t.getClass().toString());
-	}
+        if (t.getKind() == TypeKind.NONE)
+            return NoneTypeKey.NONE_TYPE_KEY;
 
-	@Override
-	public Object visitNull(NullType t, Object param) {
-		final String key = "%%%%%NULL_TYPE%%%%%";
-		return key;
-	}
+        throw new IllegalStateException(t.getClass().toString());
+    }
 
-	@Override
-	public Object visitPrimitive(PrimitiveType t, Object param) {
-		return ((JCPrimitiveType) t).tsym;
-	}
+    @Override
+    public TypeKey visitNull(NullType t, Object param) {
+        return NullTypeKey.NULL_TYPE_KEY;
+    }
 
-	@Override
-	public Object visitTypeVariable(TypeVariable t, Object param) {
-		// System.out.println("GENERATING KEY FOR TYPE VARIABLE ");
-		// System.out.println(((TypeVar) t).tsym);
-		// System.out.println(((TypeVar) t).tsym.getClass());
-		return ((TypeVar) t).tsym;
-	}
+    @Override
+    public TypeKey visitPrimitive(PrimitiveType t, Object param) {
+        return new PrimitiveTypeKey(t);
+    }
 
-	@Override
-	public Object visitUnion(UnionType t, Object param) {
-		return new CompoundTypeKey(false, t.getAlternatives().stream().map(otherType -> otherType.accept(this, null))
-				.collect(Collectors.toList()));
+    @Override
+    public TypeKey visitTypeVariable(TypeVariable t, Object param) {
+        ElementKind ownerKind = ((TypeVar) t).tsym.owner.getKind();
+        return ownerKind == ElementKind.METHOD || ownerKind == ElementKind.CONSTRUCTOR ||
+                ownerKind == ElementKind.STATIC_INIT || ownerKind == ElementKind.INSTANCE_INIT ?
+                new TypeVariableKey(t) : new TypeVariableKey(t, ((TypeVar) t).tsym.owner.type.accept(this, null));
+    }
 
-	}
+    @Override
+    public TypeKey visitUnion(UnionType t, Object param) {
+        return new CompoundTypeKey(false, t.getAlternatives().stream().map(otherType -> otherType.accept(this, null))
+                .collect(Collectors.toList()));
 
-	@Override
-	public Object visitUnknown(TypeMirror t, Object param) {
-		final String key = "%%%%%UNKNOWN_TYPE%%%%%";
-		return key;
-	}
+    }
 
-	@Override
-	public Object visitWildcard(WildcardType t, Object param) {
-		// System.out.println(t);
-		// System.out.println(t.getSuperBound());
-		// System.out.println(t.getExtendsBound());
-		// System.out.println(JavacInfo.getSymtab().botType);
-		return new WildcardKey(
-				(t.getSuperBound() == null ? JavacInfo.getSymtab().botType : t.getSuperBound()).accept(this, null),
-				(t.getExtendsBound() == null ? JavacInfo.getSymtab().objectType : t.getExtendsBound()).accept(this,
-						null));
-	}
+    @Override
+    public TypeKey visitUnknown(TypeMirror t, Object param) {
+        return UnknownTypeKey.UNKNOWN_TYPE_KEY;
+    }
+
+    @Override
+    public TypeKey visitWildcard(WildcardType t, Object param) {
+        // System.out.println(t);
+        // System.out.println(t.getSuperBound());
+        // System.out.println(t.getExtendsBound());
+        // System.out.println(JavacInfo.getSymtab().botType);
+        return new WildcardKey(
+                (t.getSuperBound() == null ? JavacInfo.getSymtab().botType : t.getSuperBound()).accept(this, null),
+                (t.getExtendsBound() == null ? JavacInfo.getSymtab().objectType : t.getExtendsBound())
+                        .accept(this, null));
+    }
 
 }

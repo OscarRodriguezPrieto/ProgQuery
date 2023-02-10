@@ -40,7 +40,6 @@ import es.uniovi.reflection.progquery.pdg.GetDeclarationFromExpression;
 import es.uniovi.reflection.progquery.pdg.InterproceduralPDG;
 
 public class ASTAuxiliarStorage {
-	private static final String OBJECT_CLASS_NAME = "java.lang.Object";
 
 	// public static List<EnhancedForLoopTree> enhancedForLoopList = new
 	// ArrayList<EnhancedForLoopTree>();

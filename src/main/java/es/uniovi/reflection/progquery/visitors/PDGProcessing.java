@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 
+import es.uniovi.reflection.progquery.database.relations.RelationTypesInterface;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.MethodState;
 import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
 import org.neo4j.graphdb.Direction;
@@ -56,7 +57,6 @@ public class PDGProcessing {
 	 * HashMap<Node, Set<NodeWrapper>>(), paramsMayMutateInMethods = new
 	 * HashMap<Node, Set<NodeWrapper>>();
 	 */
-	public boolean isLastAssginmentInstanceAssign = false;
 
 	private Set<NodeWrapper> parametersPreviouslyModified, auxParamsModified, parametersMaybePrevioslyModified;
 
@@ -144,12 +144,12 @@ public class PDGProcessing {
 		definitionTable.put(s, n);
 	}
 
-	public static Object getLefAssignmentArg(Pair<PartialRelation<RelationTypes>, Object> t) {
+	public static Object getLefAssignmentArg(Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 		// System.out.println("ARG:\n" + t.getSecond());
 		return t.getSecond() == MODIFIED ? MODIFIED : USED_AND_MOD;
 	}
 
-	public static Object modifiedToStateModified(Pair<PartialRelation<RelationTypes>, Object> t) {
+	public static Object modifiedToStateModified(Pair<PartialRelation<RelationTypesInterface>, Object> t) {
 		return toModify.get(t.getSecond());
 	}
 
@@ -375,14 +375,14 @@ public class PDGProcessing {
 		if (dec == null)
 
 			toDoListForSymbol.add(decNode -> createRelsAndMutationAnalysis(concrete, decNode, rel, isIdent,
-					currentMethodState, toDoListForSymbol, currentClassDec, isAttr, isThis, isInstanceRel, isStatic));
+					currentMethodState, currentClassDec, isAttr, isThis, isInstanceRel, isStatic));
 		else
-			createRelsAndMutationAnalysis(concrete, dec, rel, isIdent, currentMethodState, toDoListForSymbol,
+			createRelsAndMutationAnalysis(concrete, dec, rel, isIdent, currentMethodState,
 					currentClassDec, isAttr, isThis, isInstanceRel, isStatic);
 	}
 
 	private void createRelsAndMutationAnalysis(NodeWrapper concrete, NodeWrapper dec, PDGRelationTypes rel,
-			boolean isIdent, MethodState currentMethodState, List<Consumer<NodeWrapper>> toDoListForSymbol,
+			boolean isIdent, MethodState currentMethodState,
 			NodeWrapper currentClassDec, boolean isAttr, boolean isThis, boolean isOwnAccess, boolean isStatic) {
 		mutationAnalysis(concrete, dec, rel, isIdent, currentMethodState, currentClassDec, isOwnAccess, isAttr, isThis,
 				isStatic);
@@ -428,7 +428,7 @@ public class PDGProcessing {
 	}
 
 	public boolean relationOnIdentifier(IdentifierTree identifierTree, NodeWrapper identifierNode,
-			Pair<PartialRelation<RelationTypes>, Object> t, NodeWrapper currentClassDec, MethodState methodState) {
+			Pair<PartialRelation<RelationTypesInterface>, Object> t, NodeWrapper currentClassDec, MethodState methodState) {
 		Symbol identSymbol = ((JCIdent) identifierTree).sym;
 
 		if (identSymbol.getKind() == ElementKind.METHOD || identSymbol.getKind() == ElementKind.CONSTRUCTOR
@@ -503,7 +503,7 @@ public class PDGProcessing {
 	}
 
 	public void relationOnFieldAccess(MemberSelectTree memberSelectTree, NodeWrapper memberSelectNode,
-			Pair<PartialRelation<RelationTypes>, Object> t, MethodState methodState, NodeWrapper currentClassDec,
+			Pair<PartialRelation<RelationTypesInterface>, Object> t, MethodState methodState, NodeWrapper currentClassDec,
 			boolean isInstance) {
 //		System.out.println("FIELD ACCESS :\n" + memberSelectTree + "IS_INSTANCE:" + isInstance);
 		// This takes into account the case of Class.this inside of a inner
