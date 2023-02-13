@@ -55,6 +55,8 @@ public class MultiCompilationScheduler {
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
         List<File> files = listFiles(sourcePath);
         Iterable<? extends JavaFileObject> sources = fileManager.getJavaFileObjectsFromFiles(files);
+        if(!sources.iterator().hasNext())
+            return ;
         String[] compilerOptions = new String[]{"-nowarn", "-d",
                 Paths.get(sourcePath, "target", "classes").toAbsolutePath().toAbsolutePath().toString(), "-g",
                 "-target", "15", "-source", "15", "-classpath", classPath,};
