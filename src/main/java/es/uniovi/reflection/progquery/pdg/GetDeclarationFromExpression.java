@@ -1,23 +1,20 @@
 package es.uniovi.reflection.progquery.pdg;
 
-import java.lang.reflect.Array;
+import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
+import es.uniovi.reflection.progquery.database.relations.CGRelationTypes;
+import es.uniovi.reflection.progquery.database.relations.PDGRelationTypes;
+import es.uniovi.reflection.progquery.database.relations.RelationTypes;
+import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
+import es.uniovi.reflection.progquery.node_wrappers.RelationshipWrapper;
+import es.uniovi.reflection.progquery.utils.dataTransferClasses.MethodInfo;
+import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
+import org.neo4j.graphdb.Direction;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import es.uniovi.reflection.progquery.database.nodes.NodeUtils;
-import es.uniovi.reflection.progquery.database.relations.CGRelationTypes;
-import es.uniovi.reflection.progquery.utils.dataTransferClasses.MethodInfo;
-import es.uniovi.reflection.progquery.utils.dataTransferClasses.Pair;
-import org.neo4j.graphdb.Direction;
-
-import es.uniovi.reflection.progquery.database.nodes.NodeTypes;
-import es.uniovi.reflection.progquery.database.relations.PDGRelationTypes;
-import es.uniovi.reflection.progquery.database.relations.RelationTypes;
-import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
-import es.uniovi.reflection.progquery.node_wrappers.RelationshipWrapper;
 
 public class GetDeclarationFromExpression {
 	static enum IsInstance {
@@ -48,17 +45,16 @@ public class GetDeclarationFromExpression {
 
 	private Pair<List<PDGMutatedDecInfoInMethod>, Boolean> scan(NodeWrapper n) {
 
-		return n.hasLabel(NodeTypes.IDENTIFIER) ? scanIdentifier(n)
-				: n.hasLabel(NodeTypes.MEMBER_SELECTION) ? scanMemberSel(n)
-						: n.hasLabel(NodeTypes.METHOD_INVOCATION) ? scanMethodInvocation(n)
-								: n.hasLabel(NodeTypes.ASSIGNMENT) ? scanAPart(n, RelationTypes.ASSIGNMENT_LHS)
-										: n.hasLabel(NodeTypes.ARRAY_ACCESS)
-												? scanAPart(n, RelationTypes.ARRAYACCESS_EXPR)
-												: n.hasLabel(NodeTypes.TYPE_CAST)
-														? scanAPart(n, RelationTypes.CAST_ENCLOSES)
-														: n.hasLabel(NodeTypes.CONDITIONAL_EXPRESSION)
-																? scanConditionalExpression(n)
-																: unknownScan(n);
+		return n.hasLabel(NodeTypes.IDENTIFIER) ? scanIdentifier(n) :
+				n.hasLabel(NodeTypes.MEMBER_SELECTION) ? scanMemberSel(n) :
+						n.hasLabel(NodeTypes.METHOD_INVOCATION) ? scanMethodInvocation(n) :
+								n.hasLabel(NodeTypes.ASSIGNMENT) ? scanAPart(n, RelationTypes.ASSIGNMENT_LHS) :
+										n.hasLabel(NodeTypes.ARRAY_ACCESS) ?
+												scanAPart(n, RelationTypes.ARRAYACCESS_EXPR) :
+												n.hasLabel(NodeTypes.TYPE_CAST) ?
+														scanAPart(n, RelationTypes.CAST_ENCLOSES) :
+														n.hasLabel(NodeTypes.CONDITIONAL_EXPRESSION) ?
+																scanConditionalExpression(n) : unknownScan(n);
 
 	}
 
@@ -71,7 +67,7 @@ public class GetDeclarationFromExpression {
 	}
 
 	private NodeWrapper getDecFromExp(NodeWrapper identOrMemberSel
-	// , boolean isIdent
+									  // , boolean isIdent
 	) {
 		// System.out.println("IDENT_OR_MEMBERSEL :\n" +
 		// NodeUtils.nodeToString(identOrMemberSel));
@@ -115,18 +111,16 @@ public class GetDeclarationFromExpression {
 		// LA DECLARACI�N QUE PRIMERO SE A�ADE ES LA DEL OUTER MOST LEFT , AS�
 		// QUE decToTheLEft.get(0) nos lo va a dar
 		// System.out.println(NodeUtils.nodeToString(memberSel));
-		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> defsToTheLeft = scanAPart(memberSel,
-				RelationTypes.MEMBER_SELECT_EXPR);
+		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> defsToTheLeft =
+				scanAPart(memberSel, RelationTypes.MEMBER_SELECT_EXPR);
 		NodeWrapper dec = getDecFromExp(memberSel);
 		if (dec != null)
-			defsToTheLeft.getFirst()
-					.add(new PDGMutatedDecInfoInMethod(defsToTheLeft.getSecond(),
-							defsToTheLeft.getFirst().size() > 0
-									? defsToTheLeft.getFirst().get(0).isOuterMostImplicitThisOrP
-									: IsInstance.NO
-							// SI No hay, entonces es que se encontr� una clase (static
-							// member access), luego no es de instancia
-							, dec));
+			defsToTheLeft.getFirst().add(new PDGMutatedDecInfoInMethod(defsToTheLeft.getSecond(),
+					defsToTheLeft.getFirst().size() > 0 ? defsToTheLeft.getFirst().get(0).isOuterMostImplicitThisOrP :
+							IsInstance.NO
+					// SI No hay, entonces es que se encontr� una clase (static
+					// member access), luego no es de instancia
+					, dec));
 
 		// MISMO ISMAY, IS_INSTANCE QUE SU HIJO, PERO HAY QUE A�ADIRLE LA
 		// DECLARACI�N A LA LISTA
@@ -146,15 +140,15 @@ public class GetDeclarationFromExpression {
 		// NodeUtils.nodeToString(identifier));
 		NodeWrapper dec = getDecFromExp(identifier);
 		// System.out.println(dec);
-//		if(identifier.getProperty("name").toString().contentEquals("super"))
-//		{
-//			System.out.println("SUPER DEC");
-//			System.out.println(dec);
-//		}if(identifier.getProperty("name").toString().contentEquals("this"))
-//		{
-//			System.out.println("THIS DEC");
-//			System.out.println(dec);
-//		}
+		//		if(identifier.getProperty("name").toString().contentEquals("super"))
+		//		{
+		//			System.out.println("SUPER DEC");
+		//			System.out.println(dec);
+		//		}if(identifier.getProperty("name").toString().contentEquals("this"))
+		//		{
+		//			System.out.println("THIS DEC");
+		//			System.out.println(dec);
+		//		}
 
 		if (dec != null) {
 			List<PDGMutatedDecInfoInMethod> identInfo = new ArrayList<>();
@@ -162,12 +156,10 @@ public class GetDeclarationFromExpression {
 
 			identInfo.add(new PDGMutatedDecInfoInMethod(false,
 					dec.hasLabel(NodeTypes.ATTR_DEF) && !(Boolean) dec.getProperty("isStatic") ||
-					// instance method
+							// instance method
 							dec.hasLabel(NodeTypes.THIS_REF)
 
-									? IsInstance.YES
-									: IsInstance.NO,
-					dec));
+							? IsInstance.YES : IsInstance.NO, dec));
 			// System.out.println("RETURNING " +
 			// identInfo.get(0).isOuterMostImplicitThisOrP);
 			return Pair.create(identInfo, false);
@@ -185,10 +177,11 @@ public class GetDeclarationFromExpression {
 
 	public Pair<List<PDGMutatedDecInfoInMethod>, Boolean> scanConditionalExpression(NodeWrapper conditionalExpr) {
 		List<PDGMutatedDecInfoInMethod> ret = new ArrayList<>();
-		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> retThen = scan(conditionalExpr
-				.getSingleRelationship(Direction.OUTGOING, RelationTypes.CONDITIONAL_EXPR_THEN).getEndNode()),
-				retElse = scan(conditionalExpr
-						.getSingleRelationship(Direction.OUTGOING, RelationTypes.CONDITIONAL_EXPR_ELSE).getEndNode());
+		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> retThen =
+				scan(conditionalExpr.getSingleRelationship(Direction.OUTGOING, RelationTypes.CONDITIONAL_EXPR_THEN)
+						.getEndNode()), retElse =
+				scan(conditionalExpr.getSingleRelationship(Direction.OUTGOING, RelationTypes.CONDITIONAL_EXPR_ELSE)
+						.getEndNode());
 		ret.addAll(convertMustToMay(retElse));
 		ret.addAll(convertMustToMay(retThen));
 
@@ -205,14 +198,12 @@ public class GetDeclarationFromExpression {
 	}
 
 	private List<PDGMutatedDecInfoInMethod> convertMustToMay(Pair<List<PDGMutatedDecInfoInMethod>, Boolean> previous) {
-		return previous.getFirst().stream()
-				.map(previousPdgInfo -> new PDGMutatedDecInfoInMethod(true,
-						/*
-						 * previousPdgInfo.isOuterMostImplicitThisOrP ==
-						 * IsOuterMostLeftImplicitThisOrParam.YES ?
-						 * IsOuterMostLeftImplicitThisOrParam.MAYBE :
-						 */previousPdgInfo.isOuterMostImplicitThisOrP, previousPdgInfo.dec))
-				.collect(Collectors.toList());
+		return previous.getFirst().stream().map(previousPdgInfo -> new PDGMutatedDecInfoInMethod(true,
+				/*
+				 * previousPdgInfo.isOuterMostImplicitThisOrP ==
+				 * IsOuterMostLeftImplicitThisOrParam.YES ?
+				 * IsOuterMostLeftImplicitThisOrParam.MAYBE :
+				 */previousPdgInfo.isOuterMostImplicitThisOrP, previousPdgInfo.dec)).collect(Collectors.toList());
 	}
 	/*
 	 * private Pair<List<PDGMutatedDecInfoInMethod>, IsInstanceExpression>
@@ -232,27 +223,29 @@ public class GetDeclarationFromExpression {
 
 		Map<Integer, List<PDGMutatedDecInfoInMethod>> varDecsInArguments = new HashMap<>();
 		Pair<List<PDGMutatedDecInfoInMethod>, Boolean> thisArgRet;
-		NodeWrapper calleeMethodNode = methodInvocation.getSingleRelationship( Direction.OUTGOING, CGRelationTypes.HAS_DEF).getEndNode();
+		NodeWrapper calleeMethodNode =
+				methodInvocation.getSingleRelationship(Direction.OUTGOING, CGRelationTypes.HAS_DEF).getEndNode();
+		boolean isDeclared = (Boolean) calleeMethodNode.getProperty("isDeclared");
+		//		if(callee.getProperty("isStatic")== null)
+		//			System.out.println(methodInvocation.getSingleRelationship( Direction.OUTGOING, CGRelationTypes
+		//			.HAS_DEF).getEndNode());
 
-//		if(callee.getProperty("isStatic")== null)
-//			System.out.println(methodInvocation.getSingleRelationship( Direction.OUTGOING, CGRelationTypes.HAS_DEF).getEndNode());
-
-			//CONSTRUCTOR CALLS LIKE THIS() SUPER(), OR NON STATIC CALLS REQUIRE LEFT PROCESSING (ARG 0) STATIC CALLS DOES NOT AND HAVE AN EMPTY LIST INSTED
-			thisArgRet		 = calleeMethodNode.hasLabel(NodeTypes.CONSTRUCTOR_DEF) || !(Boolean)calleeMethodNode.getProperty("isStatic")?
-					scan(methodInvocation
-					.getSingleRelationship(Direction.OUTGOING, RelationTypes.METHODINVOCATION_METHOD_SELECT).getEndNode())
-					:
-					Pair.create(new ArrayList<>(),false);
-			varDecsInArguments.put(0, thisArgRet.getFirst());
+		//CONSTRUCTOR CALLS LIKE THIS() SUPER(), OR NON STATIC CALLS REQUIRE LEFT PROCESSING (ARG 0) STATIC CALLS
+		// DOES NOT AND HAVE AN EMPTY LIST INSTED
+		thisArgRet = calleeMethodNode.hasLabel(NodeTypes.CONSTRUCTOR_DEF) ||
+				(isDeclared && !(Boolean) calleeMethodNode.getProperty("isStatic")) ? scan(methodInvocation
+				.getSingleRelationship(Direction.OUTGOING, RelationTypes.METHODINVOCATION_METHOD_SELECT).getEndNode()) :
+				Pair.create(new ArrayList<>(), false);
+		varDecsInArguments.put(0, thisArgRet.getFirst());
 
 
-		for (RelationshipWrapper argumentRel : methodInvocation.getRelationships(Direction.OUTGOING,
-				RelationTypes.METHODINVOCATION_ARGUMENTS))
+		for (RelationshipWrapper argumentRel : methodInvocation
+				.getRelationships(Direction.OUTGOING, RelationTypes.METHODINVOCATION_ARGUMENTS))
 			// System.out.println("Argument " + (int)
 			// argumentRel.getProperty("argumentIndex") + ":\n"
 			// + NodeUtils.nodeToString(argumentRel.getEndNode()));
 			varDecsInArguments.put((int) argumentRel.getProperty("argumentIndex"),
-					scan(argumentRel.getEndNode()).getFirst());
+					isDeclared ? scan(argumentRel.getEndNode()).getFirst() : new ArrayList<>());
 
 		// Aqu� faltan cosas pa sacar la declaracion
 		/*
@@ -286,15 +279,15 @@ public class GetDeclarationFromExpression {
 
 		Map<Integer, List<PDGMutatedDecInfoInMethod>> varDecsInArguments = new HashMap<>();
 		//We introduce always de ARG 0 never affecting the this object on the caller so empty list
-		varDecsInArguments.put(0,new ArrayList<>());
+		varDecsInArguments.put(0, new ArrayList<>());
 
-		for (RelationshipWrapper argumentRel : newClass.getRelationships(Direction.OUTGOING,
-				RelationTypes.NEW_CLASS_ARGUMENTS))
+		for (RelationshipWrapper argumentRel : newClass
+				.getRelationships(Direction.OUTGOING, RelationTypes.NEW_CLASS_ARGUMENTS))
 			// System.out.println("Argument " + (int)
 			// argumentRel.getProperty("argumentIndex") + ":\n"
 			// + NodeUtils.nodeToString(argumentRel.getEndNode()));
-			varDecsInArguments.put((int) argumentRel.getProperty("argumentIndex"),
-					scan(argumentRel.getEndNode()).getFirst());
+			varDecsInArguments
+					.put((int) argumentRel.getProperty("argumentIndex"), scan(argumentRel.getEndNode()).getFirst());
 
 		invocationsMayModifyVars.put(newClass, varDecsInArguments);
 		return new ArrayList<Pair<NodeWrapper, Boolean>>();

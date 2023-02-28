@@ -32,6 +32,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.ErrorType;
+import javax.lang.model.type.NullType;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -1287,6 +1288,14 @@ public class ASTTypesVisitor
         //        System.out.println(type.tsym.getClass());
     }
 
+    private boolean isDynamicallyGenerated(Symbol symbol, MethodInvocationTree methodInvocationTree) {
+        Type methodType = JavacInfo.getTypeDirect(methodInvocationTree.getMethodSelect());
+        Type invocationType = JavacInfo.getTypeDirect(methodInvocationTree);
+        return symbol instanceof ClassSymbol && (methodType == null || methodType instanceof ErrorType) &&
+                (invocationType instanceof NullType || invocationType instanceof ErrorType) &&
+                ((ClassSymbol) symbol).sourcefile == null;
+    }
+
     @Override
     public ASTVisitorResult visitMethodInvocation(MethodInvocationTree methodInvocationTree,
                                                   Pair<PartialRelation<RelationTypesInterface>, Object> pair) {
@@ -1300,11 +1309,8 @@ public class ASTTypesVisitor
 
         final String GEN_CLASES_PACKAGE = "<any>.baseDirectory.inPlace.namedCheckers.importOrganizer";
         NodeWrapper decNode = null;
-        if (symbol instanceof ClassSymbol
-                //&& ((ClassSymbol) symbol).fullname.contentEquals(GEN_CLASES_PACKAGE)
-                && JavacInfo.getTypeDirect(methodInvocationTree.getMethodSelect()) instanceof ErrorType &&
-                JavacInfo.getTypeDirect(methodInvocationTree) instanceof ErrorType &&
-                ((ClassSymbol) symbol).sourcefile == null) {
+
+        if (isDynamicallyGenerated(symbol, methodInvocationTree)) {
             //fullname=<any>.baseDirectory.inPlace.namedCheckers.importOrganizer
             //como diagnosticar cast + errortype
             //Solo name, paramnumber y poco más, no se puede sacar el owner=> Clase dinamica => No pueden tener cacheee
@@ -1345,9 +1351,12 @@ public class ASTTypesVisitor
                 return null;
 
             }
-            MethodSymbol methodSymbol =
-                    (MethodSymbol) (symbol == null ? ((JCTree.JCMethodInvocation) methodInvocationTree).type.tsym :
-                            symbol);
+            MethodSymbol methodSymbol = (MethodSymbol)
+                    //                            (symbol == null ? ((JCTree.JCMethodInvocation)
+                    //                            methodInvocationTree).type.tsym :
+                    symbol
+                    //            )
+                    ;
             //
             //                    (MethodSymbol) symbol;
 
@@ -1845,9 +1854,9 @@ public class ASTTypesVisitor
         GraphUtils.connectWithParent(typeParameterNode, t);
         scan(typeParameterTree.getAnnotations(), Pair.createPair(typeParameterNode, RelationTypes.HAS_ANNOTATIONS));
         scan(typeParameterTree.getBounds(), Pair.createPair(typeParameterNode, RelationTypes.TYPEPARAMETER_EXTENDS));
-//        NodeWrapper typeNode =
-//                GraphUtils.attachType(typeParameterNode, ((JCTypeParameter) typeParameterTree).type, ast);
-//        typeNode.setProperty("isDeclared", true);
+        //        NodeWrapper typeNode =
+        //                GraphUtils.attachType(typeParameterNode, ((JCTypeParameter) typeParameterTree).type, ast);
+        //        typeNode.setProperty("isDeclared", true);
 
         return null;
     }
