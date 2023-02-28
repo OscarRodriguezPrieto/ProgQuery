@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class MultiCompilationScheduler {
     private PDGProcessing pdgUtils = new PDGProcessing();
@@ -55,8 +56,9 @@ public class MultiCompilationScheduler {
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
         List<File> files = listFiles(sourcePath);
         Iterable<? extends JavaFileObject> sources = fileManager.getJavaFileObjectsFromFiles(files);
-        if(!sources.iterator().hasNext())
-            return ;
+        if (!sources.iterator().hasNext())
+            return;
+
         String[] compilerOptions = new String[]{"-nowarn", "-d",
                 Paths.get(sourcePath, "target", "classes").toAbsolutePath().toAbsolutePath().toString(), "-g",
                 "-target", "15", "-source", "15", "-classpath", classPath,};
@@ -70,7 +72,11 @@ public class MultiCompilationScheduler {
     public static List<File> listFiles(String path) {
         try (Stream<Path> walk = Files.walk(Paths.get(path))) {
             // We want to find only regular files
-            return walk.filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(".java"))
+            final String JAVA_FILE_CLUE = ".java";
+            final String MODULE_INFO_CLUE = "module-info.java";
+            final Path TARGET_CLASSES_PATH = Paths.get(path,"target","classes").toAbsolutePath();
+            return walk.filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(JAVA_FILE_CLUE)
+                    && !f.getFileName().endsWith(MODULE_INFO_CLUE) && !f.toAbsolutePath().startsWith(TARGET_CLASSES_PATH))
                     .map(f -> f.toAbsolutePath().toFile()).collect(Collectors.toList());
 
         } catch (IOException e) {
