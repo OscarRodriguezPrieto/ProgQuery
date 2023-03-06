@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class MultiCompilationScheduler {
     private PDGProcessing pdgUtils = new PDGProcessing();
@@ -49,7 +48,7 @@ public class MultiCompilationScheduler {
         PackageInfo.createCurrentProgram(programID, userID);
     }
 
-    public void newCompilationTask(String sourcePath, String classPath) {
+    public void newCompilationTask(String sourcePath, String classPath, Integer javacSourceV, Integer javacTargetV) {
 
         System.out.println("NEW TASK on " + sourcePath + ":");
 
@@ -61,11 +60,11 @@ public class MultiCompilationScheduler {
 
         String[] compilerOptions = new String[]{"-nowarn", "-d",
                 Paths.get(sourcePath, "target", "classes").toAbsolutePath().toAbsolutePath().toString(), "-g",
-                "-target", "15", "-source", "15", "-classpath", classPath,};
+                "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath", classPath};
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         JavacTaskImpl compilerTask = (JavacTaskImpl) compiler
                 .getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
-        newCompilationTask(compilerTask);
+        runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
     }
 
@@ -74,9 +73,9 @@ public class MultiCompilationScheduler {
             // We want to find only regular files
             final String JAVA_FILE_CLUE = ".java";
             final String MODULE_INFO_CLUE = "module-info.java";
-            final Path TARGET_CLASSES_PATH = Paths.get(path,"target","classes").toAbsolutePath();
-            return walk.filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(JAVA_FILE_CLUE)
-                    && !f.getFileName().endsWith(MODULE_INFO_CLUE) && !f.toAbsolutePath().startsWith(TARGET_CLASSES_PATH))
+            final Path TARGET_CLASSES_PATH = Paths.get(path, "target", "classes").toAbsolutePath();
+            return walk.filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(JAVA_FILE_CLUE) &&
+                    !f.getFileName().endsWith(MODULE_INFO_CLUE) && !f.toAbsolutePath().startsWith(TARGET_CLASSES_PATH))
                     .map(f -> f.toAbsolutePath().toFile()).collect(Collectors.toList());
 
         } catch (IOException e) {
@@ -90,7 +89,7 @@ public class MultiCompilationScheduler {
         compilerTask.addTaskListener(pqListener);
     }
 
-    public void newCompilationTask(JavacTask compilerTask) {
+    public void runPQCompilationTask(JavacTask compilerTask) {
         addListener(compilerTask);
         //        compilerTask.getTaskListeners().forEach(System.out::println);
 
@@ -143,36 +142,20 @@ public class MultiCompilationScheduler {
     }
 
     private void createAllParamsToMethodsPDGRels() {
-
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.createAllParamsToMethodsPDGRels();
-        // transaction.success();
-        // transaction.close();
     }
 
     private void initializationAnalysis() {
-
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.doInitializationAnalysis();
-        // transaction.success();
-        // transaction.close();
     }
 
     private void interproceduralPDGAnalysis() {
-
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.doInterproceduralPDGAnalysis();
-        // transaction.success();
-        // transaction.close();
-
         createAllParamsToMethodsPDGRels();
     }
 
     private void dynamicMethodCallAnalysis() {
-        // Transaction transaction = DatabaseFachade.beginTx();
         ast.doDynamicMethodCallAnalysis();
-        // transaction.success();
-        // transaction.close();
     }
 
     public void shutdownDatabase() {
