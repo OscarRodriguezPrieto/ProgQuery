@@ -1280,19 +1280,14 @@ public class ASTTypesVisitor
 
     }
 
-    private static void printType(ExpressionTree e) {
-        Type type = JavacInfo.getTypeDirect(e);
-
-        //        System.out.println(type.getClass());
-        //        System.out.println(type.tsym);
-        //        System.out.println(type.tsym.getClass());
+    private boolean isUnknownOrErrorType(Type type){
+        return type == null || type instanceof ErrorType || type instanceof Type.UnknownType;
     }
-
     private boolean isDynamicallyGenerated(Symbol symbol, MethodInvocationTree methodInvocationTree) {
         Type methodType = JavacInfo.getTypeDirect(methodInvocationTree.getMethodSelect());
         Type invocationType = JavacInfo.getTypeDirect(methodInvocationTree);
-        return symbol instanceof ClassSymbol && (methodType == null || methodType instanceof ErrorType) &&
-                (invocationType instanceof NullType || invocationType instanceof ErrorType) &&
+        return symbol instanceof ClassSymbol && isUnknownOrErrorType(methodType) &&
+                isUnknownOrErrorType(invocationType) &&
                 ((ClassSymbol) symbol).sourcefile == null;
     }
 
@@ -1306,8 +1301,6 @@ public class ASTTypesVisitor
         GraphUtils.connectWithParent(methodInvocationNode, pair);
 
         Symbol symbol = JavacInfo.getSymbolFromTree(methodInvocationTree.getMethodSelect());
-
-        final String GEN_CLASES_PACKAGE = "<any>.baseDirectory.inPlace.namedCheckers.importOrganizer";
         NodeWrapper decNode = null;
 
         if (isDynamicallyGenerated(symbol, methodInvocationTree)) {
@@ -1336,30 +1329,10 @@ public class ASTTypesVisitor
 
         } else {
             if (symbol == null) {
-                //                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type);
-                //                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.getClass());
-                //
-                //                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym);
-                //                System.out.println(((JCTree.JCMethodInvocation)methodInvocationTree).type.tsym
-                //                .getClass());
-                //
-                //                if(methodInvocationTree.getMethodSelect() instanceof MemberSelectTree) {
-                //                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym);
-                //                    System.out.println(((JCFieldAccess) methodInvocationTree.getMethodSelect()).sym
-                //                    .getClass());
-                //                }
                 return null;
 
             }
-            MethodSymbol methodSymbol = (MethodSymbol)
-                    //                            (symbol == null ? ((JCTree.JCMethodInvocation)
-                    //                            methodInvocationTree).type.tsym :
-                    symbol
-                    //            )
-                    ;
-            //
-            //                    (MethodSymbol) symbol;
-
+            MethodSymbol methodSymbol = (MethodSymbol) symbol;
 
             if (methodInvocationTree.getMethodSelect() instanceof IdentifierTree)
                 addClassIdentifier(methodSymbol.owner);
