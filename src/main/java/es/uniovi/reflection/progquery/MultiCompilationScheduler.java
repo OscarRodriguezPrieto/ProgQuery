@@ -7,7 +7,7 @@ import es.uniovi.reflection.progquery.database.DatabaseFachade;
 import es.uniovi.reflection.progquery.database.insertion.lazy.InfoToInsert;
 import es.uniovi.reflection.progquery.database.manager.NEO4JManager;
 import es.uniovi.reflection.progquery.node_wrappers.NodeWrapper;
-import es.uniovi.reflection.progquery.task_result.ModuleStats;
+import es.uniovi.reflection.progquery.task_result.CompilationResult;
 import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
 import es.uniovi.reflection.progquery.typeInfo.PackageInfo;
 import es.uniovi.reflection.progquery.visitors.PDGProcessing;
@@ -49,8 +49,8 @@ public class MultiCompilationScheduler {
         PackageInfo.createCurrentProgram(programID, userID);
     }
 
-    public ModuleStats newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,
-                                          Integer javacTargetV) {
+    public CompilationResult newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,
+                                                Integer javacTargetV) {
 
         System.out.println("NEW TASK on " + sourcePath + ":");
 
@@ -60,7 +60,7 @@ public class MultiCompilationScheduler {
         List<JavaFileObject> sources = new ArrayList<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
         if (sources.size() == 0)
-            return new ModuleStats();
+            return new CompilationResult();
 
         List<String> compilerOptions = Arrays.asList("-nowarn", "-d",
                 Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
@@ -73,7 +73,7 @@ public class MultiCompilationScheduler {
                 .getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
-        return new ModuleStats(sources.size(), diagnostics.getDiagnostics());
+        return new CompilationResult(sources.size(), diagnostics.getDiagnostics());
     }
 
     public static List<File> listFiles(String path) {
