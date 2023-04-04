@@ -62,12 +62,15 @@ public class MultiCompilationScheduler {
         if (sources.size() == 0)
             return new ModuleStats();
 
-        String[] compilerOptions = new String[]{"-nowarn", "-d",
-                Paths.get(sourcePath, "target", "classes").toAbsolutePath().toAbsolutePath().toString(), "-g",
-                "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath", classPath};
+        List<String> compilerOptions = Arrays.asList("-nowarn", "-d",
+                Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
+                //                "--add-exports", "jdk.javadoc/com.sun.javadoc=ALL-UNNAMED",
+                "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath", classPath);
+        if(javacSourceV >= 15 )
+            compilerOptions.add("--enable-preview");
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         JavacTaskImpl compilerTask = (JavacTaskImpl) compiler
-                .getTask(null, null, diagnostics, Arrays.asList(compilerOptions), null, sources);
+                .getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
         return new ModuleStats(sources.size(), diagnostics.getDiagnostics());
