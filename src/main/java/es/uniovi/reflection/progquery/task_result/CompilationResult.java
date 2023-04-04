@@ -55,4 +55,8 @@ public class CompilationResult {
     public boolean compilationSuccess() {
         return totalJavaFiles > 0 && compilationErrors().count() == 0;
     }
+
+    public boolean isErrorBeforeTask() {
+        return errorBeforeTask;
+    }
 }
