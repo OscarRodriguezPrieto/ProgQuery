@@ -32,6 +32,6 @@ public class ModuleStats {
     public double coverage() {
         return 1.0 - errors.stream().filter(error -> error.getKind() == Diagnostic.Kind.ERROR).count() * 1.0 / totalJavaFiles;
     }
-    
+
 
 }
