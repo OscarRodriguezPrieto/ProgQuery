@@ -60,7 +60,7 @@ public class MultiCompilationScheduler {
         List<JavaFileObject> sources = new ArrayList<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
         if (sources.size() == 0)
-            return new CompilationResult();
+            return new CompilationResult(sourcePath);
 
         List<String> compilerOptions = Arrays.asList("-nowarn", "-d",
                 Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
@@ -73,7 +73,7 @@ public class MultiCompilationScheduler {
                 .getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
-        return new CompilationResult(sources.size(), diagnostics.getDiagnostics());
+        return new CompilationResult(sourcePath, sources.size(), diagnostics.getDiagnostics());
     }
 
     public static List<File> listFiles(String path) {

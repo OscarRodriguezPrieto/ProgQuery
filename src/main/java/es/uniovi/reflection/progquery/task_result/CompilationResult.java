@@ -9,23 +9,24 @@ import java.util.stream.Stream;
 
 public class CompilationResult {
 
+    private String sourcePath;
     private boolean errorBeforeTask;
     private final int totalJavaFiles;
     private final List<Diagnostic<? extends JavaFileObject>> errors;
 
-    public CompilationResult(int totalJavaFiles, List<Diagnostic<? extends JavaFileObject>> errors) {
+    public CompilationResult(String sourcePath, int totalJavaFiles, List<Diagnostic<? extends JavaFileObject>> errors) {
+        this.sourcePath = sourcePath;
         this.totalJavaFiles = totalJavaFiles;
         this.errors = errors;
         errorBeforeTask = false;
     }
 
-    public CompilationResult() {
-        this.totalJavaFiles = 0;
-        this.errors = new ArrayList<>();
-        errorBeforeTask = false;
+    public CompilationResult(String sourcePath) {
+        this(sourcePath, false);
     }
 
-    public CompilationResult(boolean errorBeforeTask) {
+    public CompilationResult(String sourcePath, boolean errorBeforeTask) {
+        this.sourcePath = sourcePath;
         this.totalJavaFiles = 0;
         this.errors = new ArrayList<>();
         this.errorBeforeTask = errorBeforeTask;
@@ -58,5 +59,18 @@ public class CompilationResult {
 
     public boolean isErrorBeforeTask() {
         return errorBeforeTask;
+    }
+
+    public String toString(String moduleName) {
+        String previousError = isErrorBeforeTask() ? " generated an error before compilation but it was " : "";
+        long compilationErrors = compilationErrors().count();
+        if (compilationErrors == 0)
+            return String
+                    .format("Module %s with %d Java files %s compiled successfully.", moduleName, getTotalJavaFiles(),
+                            previousError);
+        previousError = isErrorBeforeTask() ? " generated an error before compilation, " : "";
+        return String
+                .format("Module %s with %d Java files %s generated %d compilation errors so it could not be compiled.",
+                        moduleName, getTotalJavaFiles(), previousError, compilationErrors);
     }
 }
