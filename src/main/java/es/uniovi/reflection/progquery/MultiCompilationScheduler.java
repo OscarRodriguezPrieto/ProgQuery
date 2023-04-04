@@ -62,10 +62,10 @@ public class MultiCompilationScheduler {
         if (sources.size() == 0)
             return new CompilationResult(sourcePath);
 
-        List<String> compilerOptions = Arrays.asList("-nowarn", "-d",
+        List<String> compilerOptions = new ArrayList<>(Arrays.asList("-nowarn", "-d",
                 Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
                 //                "--add-exports", "jdk.javadoc/com.sun.javadoc=ALL-UNNAMED",
-                "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath", classPath);
+                "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath", classPath));
         if(javacSourceV >= 15 )
             compilerOptions.add("--enable-preview");
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
