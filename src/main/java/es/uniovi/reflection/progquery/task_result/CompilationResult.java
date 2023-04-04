@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CompilationResult {
 
-    private final boolean errorBeforeTask;
+    private boolean errorBeforeTask;
     private final int totalJavaFiles;
     private final List<Diagnostic<? extends JavaFileObject>> errors;
 
@@ -41,5 +41,7 @@ public class CompilationResult {
         return 1.0 - errors.stream().filter(error -> error.getKind() == Diagnostic.Kind.ERROR).count() * 1.0 / totalJavaFiles;
     }
 
-
+    public void setErrorBeforeTask(boolean errorBeforeTask) {
+        this.errorBeforeTask = errorBeforeTask;
+    }
 }
