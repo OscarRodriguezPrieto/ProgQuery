@@ -76,7 +76,7 @@ public class MultiCompilationScheduler {
                 (JavacTaskImpl) compiler.getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
-        return new CompilationResult(sourcePath, sourceFilesCount, diagnostics.getDiagnostics());
+        return new CompilationResult(sourcePath, sourceFilesCount, diagnostics.getDiagnostics(), sources.size());
     }
 
     public CompilationResult newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,

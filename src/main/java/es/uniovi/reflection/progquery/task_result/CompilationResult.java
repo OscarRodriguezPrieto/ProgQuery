@@ -13,14 +13,16 @@ public class CompilationResult {
     private String sourcePath;
     private boolean errorBeforeTask;
     private final int totalJavaFiles;
+    private final int totalFilesToCompile;
     private final List<Diagnostic<? extends JavaFileObject>> errors;
     private int compilationTries = 0;
 
-    public CompilationResult(String sourcePath, int totalJavaFiles, List<Diagnostic<? extends JavaFileObject>> errors) {
+    public CompilationResult(String sourcePath, int totalJavaFiles, List<Diagnostic<? extends JavaFileObject>> errors, int totalFilesToCompile) {
         this.sourcePath = sourcePath;
         this.totalJavaFiles = totalJavaFiles;
         this.errors = errors;
         errorBeforeTask = false;
+        this.totalFilesToCompile = totalFilesToCompile;
     }
 
     public CompilationResult(String sourcePath) {
@@ -32,6 +34,7 @@ public class CompilationResult {
         this.totalJavaFiles = 0;
         this.errors = new ArrayList<>();
         this.errorBeforeTask = errorBeforeTask;
+        totalFilesToCompile = 0;
     }
 
     public int getTotalJavaFiles() {
@@ -85,4 +88,9 @@ public class CompilationResult {
     public void setCompilationTries(int compilationTries) {
         this.compilationTries = compilationTries;
     }
+
+    public int getTotalFilesToCompile() {
+        return totalFilesToCompile;
+    }
+
 }
