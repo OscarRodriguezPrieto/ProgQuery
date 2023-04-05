@@ -50,7 +50,7 @@ public class MultiCompilationScheduler {
     }
 
     public CompilationResult newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,
-                                                Integer javacTargetV) {
+                                                Integer javacTargetV, List<JavaFileObject> excludedSources) {
 
         System.out.println("NEW TASK on " + sourcePath + ":");
 
@@ -59,21 +59,28 @@ public class MultiCompilationScheduler {
 
         List<JavaFileObject> sources = new ArrayList<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
+        sources.removeAll(excludedSources);
         if (sources.size() == 0)
             return new CompilationResult(sourcePath);
 
-        List<String> compilerOptions = new ArrayList<>(Arrays.asList("-nowarn", "-d",
-                Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
-                //                "--add-exports", "jdk.javadoc/com.sun.javadoc=ALL-UNNAMED",
-                "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath", classPath));
-        if(javacSourceV >= 15 )
+        List<String> compilerOptions = new ArrayList<>(
+                Arrays.asList("-nowarn", "-d", Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
+                        //                "--add-exports", "jdk.javadoc/com.sun.javadoc=ALL-UNNAMED",
+                        "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath",
+                        classPath));
+        if (javacSourceV >= 15)
             compilerOptions.add("--enable-preview");
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        JavacTaskImpl compilerTask = (JavacTaskImpl) compiler
-                .getTask(null, null, diagnostics, compilerOptions, null, sources);
+        JavacTaskImpl compilerTask =
+                (JavacTaskImpl) compiler.getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
         return new CompilationResult(sourcePath, sources.size(), diagnostics.getDiagnostics());
+    }
+
+    public CompilationResult newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,
+                                                Integer javacTargetV) {
+        return newCompilationTask(sourcePath, classPath, javacSourceV, javacTargetV, new ArrayList<>());
     }
 
     public static List<File> listFiles(String path) {

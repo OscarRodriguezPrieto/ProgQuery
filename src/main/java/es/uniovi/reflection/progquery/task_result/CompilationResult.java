@@ -5,6 +5,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CompilationResult {
@@ -51,6 +52,10 @@ public class CompilationResult {
 
     public Stream<Diagnostic<? extends JavaFileObject>> compilationErrors() {
         return errors.stream().filter(error -> error.getKind() == Diagnostic.Kind.ERROR);
+    }
+
+    public List<JavaFileObject> getFilesWithErrors() {
+        return compilationErrors().map(error->error.getSource()).collect(Collectors.toList());
     }
 
     public boolean compilationSuccess() {
