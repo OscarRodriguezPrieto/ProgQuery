@@ -14,6 +14,7 @@ public class CompilationResult {
     private boolean errorBeforeTask;
     private final int totalJavaFiles;
     private final List<Diagnostic<? extends JavaFileObject>> errors;
+    private int compilationTries = 0;
 
     public CompilationResult(String sourcePath, int totalJavaFiles, List<Diagnostic<? extends JavaFileObject>> errors) {
         this.sourcePath = sourcePath;
@@ -55,7 +56,7 @@ public class CompilationResult {
     }
 
     public List<JavaFileObject> getFilesWithErrors() {
-        return compilationErrors().map(error->error.getSource()).collect(Collectors.toList());
+        return compilationErrors().map(error -> error.getSource()).collect(Collectors.toList());
     }
 
     public boolean compilationSuccess() {
@@ -67,15 +68,21 @@ public class CompilationResult {
     }
 
     public String toString(String moduleName) {
+        final String tries =
+                compilationTries > 0 ? String.format("(after %d compilation tries)", compilationTries) : "";
         String previousError = isErrorBeforeTask() ? " generated an error before compilation but it was " : "";
-        long compilationErrors = compilationErrors().count();
+        final long compilationErrors = compilationErrors().count();
         if (compilationErrors == 0)
             return String
                     .format("Module %s with %d Java files %s compiled successfully.", moduleName, getTotalJavaFiles(),
-                            previousError);
+                            previousError) + tries;
         previousError = isErrorBeforeTask() ? " generated an error before compilation, " : "";
         return String
                 .format("Module %s with %d Java files %s generated %d compilation errors so it could not be compiled.",
-                        moduleName, getTotalJavaFiles(), previousError, compilationErrors);
+                        moduleName, getTotalJavaFiles(), previousError, compilationErrors) + tries;
+    }
+
+    public void setCompilationTries(int compilationTries) {
+        this.compilationTries = compilationTries;
     }
 }

@@ -59,6 +59,7 @@ public class MultiCompilationScheduler {
 
         List<JavaFileObject> sources = new ArrayList<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
+        int sourceFilesCount = sources.size();
         sources.removeAll(excludedSources);
         if (sources.size() == 0)
             return new CompilationResult(sourcePath);
@@ -75,7 +76,7 @@ public class MultiCompilationScheduler {
                 (JavacTaskImpl) compiler.getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
-        return new CompilationResult(sourcePath, sources.size(), diagnostics.getDiagnostics());
+        return new CompilationResult(sourcePath, sourceFilesCount, diagnostics.getDiagnostics());
     }
 
     public CompilationResult newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,
