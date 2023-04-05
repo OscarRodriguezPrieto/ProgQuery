@@ -15,7 +15,7 @@ public class CompilationResult {
     private final int totalJavaFiles;
     private final int totalFilesToCompile;
     private final List<Diagnostic<? extends JavaFileObject>> errors;
-    private int compilationTries = 0;
+    private int compilationTries = 1;
 
     public CompilationResult(String sourcePath, int totalJavaFiles, List<Diagnostic<? extends JavaFileObject>> errors,
                              int totalFilesToCompile) {
@@ -72,7 +72,7 @@ public class CompilationResult {
     }
 
     public String toString(String moduleName) {
-        final String tries = compilationTries > 0 ?
+        final String tries = compilationTries > 1 ?
                 String.format("(after %d compilation tries, excluding %d files)", compilationTries,
                         totalJavaFiles - totalFilesToCompile) : "";
         String previousError = isErrorBeforeTask() ? " generated an error before compilation but it was " : "";
