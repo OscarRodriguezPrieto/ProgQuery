@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,7 +56,7 @@ public class MultiCompilationScheduler {
         System.out.println("NEW TASK on " + sourcePath + ":");
 
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
-        List<File> files = listFiles(sourcePath);
+        List<File> files = listSourceFiles(sourcePath);
 
         List<JavaFileObject> sources = new ArrayList<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
@@ -84,14 +85,18 @@ public class MultiCompilationScheduler {
         return newCompilationTask(sourcePath, classPath, javacSourceV, javacTargetV, new ArrayList<>());
     }
 
-    public static List<File> listFiles(String path) {
-        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+    public static List<File> listSourceFiles(String path) {
             // We want to find only regular files
             final String JAVA_FILE_CLUE = ".java";
             final String MODULE_INFO_CLUE = "module-info.java";
             final Path TARGET_CLASSES_PATH = Paths.get(path, "target", "classes").toAbsolutePath();
-            return walk.filter(Files::isRegularFile).filter(f -> f.getFileName().toString().endsWith(JAVA_FILE_CLUE) &&
-                    !f.getFileName().endsWith(MODULE_INFO_CLUE) && !f.toAbsolutePath().startsWith(TARGET_CLASSES_PATH))
+            return listFiles(path, f -> f.getFileName().toString().endsWith(JAVA_FILE_CLUE) &&
+                    !f.getFileName().endsWith(MODULE_INFO_CLUE) && !f.toAbsolutePath().startsWith(TARGET_CLASSES_PATH));
+
+    }
+    public static List<File> listFiles(String path, Predicate<Path> conditionToAdd) {
+        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+            return walk.filter(Files::isRegularFile).filter(conditionToAdd)
                     .map(f -> f.toAbsolutePath().toFile()).collect(Collectors.toList());
 
         } catch (IOException e) {
@@ -99,7 +104,6 @@ public class MultiCompilationScheduler {
             return new ArrayList<>();
         }
     }
-
     public void addListener(JavacTask compilerTask) {
         GetStructuresAfterAnalyze pqListener = new GetStructuresAfterAnalyze(compilerTask, this);
         compilerTask.addTaskListener(pqListener);
