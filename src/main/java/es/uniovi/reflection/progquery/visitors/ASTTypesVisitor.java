@@ -765,6 +765,13 @@ public class ASTTypesVisitor
 
         // System.out.println(identifierTree);
         NodeWrapper identifierNode;
+        if(((JCIdent) identifierTree).sym==null){
+            identifierNode =
+                    DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(identifierTree, NodeTypes.IDENTIFIER);
+            identifierNode.setProperty("name", identifierTree.getName().toString());
+            GraphUtils.connectWithParent(identifierNode, t);
+            return null;
+        }
         ElementKind idKind = ((JCIdent) identifierTree).sym.getKind();
         if (idKind == ElementKind.PACKAGE)
             identifierNode =
