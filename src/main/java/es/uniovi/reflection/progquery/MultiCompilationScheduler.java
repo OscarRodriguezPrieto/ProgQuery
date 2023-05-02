@@ -50,13 +50,15 @@ public class MultiCompilationScheduler {
         PackageInfo.createCurrentProgram(programID, userID);
     }
 
-    public CompilationResult newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,
-                                                Integer javacTargetV, List<JavaFileObject> excludedSources) {
+    public CompilationResult newCompilationTask(String sourcePath, String classPath, String javacSourceV,
+                                                String javacTargetV, List<JavaFileObject> excludedSources,
+                                                List<String> compilerArgs, String... sourceFileDirs) {
 
         System.out.println("NEW TASK on " + sourcePath + ":");
-
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
-        List<File> files = listSourceFiles(sourcePath);
+        List<File> files = new ArrayList<>();
+        for (String fileDir : sourceFileDirs)
+            files.addAll(listSourceFiles(Path.of(sourcePath, fileDir).toAbsolutePath().toString()));
 
         List<JavaFileObject> sources = new ArrayList<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
@@ -67,11 +69,10 @@ public class MultiCompilationScheduler {
 
         List<String> compilerOptions = new ArrayList<>(
                 Arrays.asList("-nowarn", "-d", Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
-                        //                "--add-exports", "jdk.javadoc/com.sun.javadoc=ALL-UNNAMED",
-                        "-target", javacTargetV.toString(), "-source", javacSourceV.toString(), "-classpath",
-                        classPath));
-        if (javacSourceV >= 15)
-            compilerOptions.add("--enable-preview");
+                        "-target", javacTargetV, "-source", javacSourceV, "-classpath", classPath));
+        compilerOptions.addAll(compilerArgs);
+        //        if (javacSourceV >= 15)
+        //            compilerOptions.add("--enable-preview");
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         JavacTaskImpl compilerTask =
                 (JavacTaskImpl) compiler.getTask(null, null, diagnostics, compilerOptions, null, sources);
@@ -80,30 +81,33 @@ public class MultiCompilationScheduler {
         return new CompilationResult(sourcePath, sourceFilesCount, diagnostics.getDiagnostics(), sources.size());
     }
 
-    public CompilationResult newCompilationTask(String sourcePath, String classPath, Integer javacSourceV,
-                                                Integer javacTargetV) {
-        return newCompilationTask(sourcePath, classPath, javacSourceV, javacTargetV, new ArrayList<>());
+    public CompilationResult newCompilationTask(String sourcePath, String classPath, String javacSourceV,
+                                                String javacTargetV) {
+        return newCompilationTask(sourcePath, classPath, javacSourceV, javacTargetV, new ArrayList<>(),
+                new ArrayList<>(), "");
     }
 
     public static List<File> listSourceFiles(String path) {
-            // We want to find only regular files
-            final String JAVA_FILE_CLUE = ".java";
-            final String MODULE_INFO_CLUE = "module-info.java";
-            final Path TARGET_CLASSES_PATH = Paths.get(path, "target", "classes").toAbsolutePath();
-            return listFiles(path, f -> f.getFileName().toString().endsWith(JAVA_FILE_CLUE) &&
-                    !f.getFileName().endsWith(MODULE_INFO_CLUE) && !f.toAbsolutePath().startsWith(TARGET_CLASSES_PATH));
+        // We want to find only regular files
+        final String JAVA_FILE_CLUE = ".java";
+        final String MODULE_INFO_CLUE = "module-info.java";
+        final Path TARGET_CLASSES_PATH = Paths.get(path, "target", "classes").toAbsolutePath();
+        return listFiles(path, f -> f.getFileName().toString().endsWith(JAVA_FILE_CLUE) &&
+                !f.getFileName().endsWith(MODULE_INFO_CLUE) && !f.toAbsolutePath().startsWith(TARGET_CLASSES_PATH));
 
     }
+
     public static List<File> listFiles(String path, Predicate<Path> conditionToAdd) {
         try (Stream<Path> walk = Files.walk(Paths.get(path))) {
-            return walk.filter(Files::isRegularFile).filter(conditionToAdd)
-                    .map(f -> f.toAbsolutePath().toFile()).collect(Collectors.toList());
+            return walk.filter(Files::isRegularFile).filter(conditionToAdd).map(f -> f.toAbsolutePath().toFile())
+                    .collect(Collectors.toList());
 
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
+
     public void addListener(JavacTask compilerTask) {
         GetStructuresAfterAnalyze pqListener = new GetStructuresAfterAnalyze(compilerTask, this);
         compilerTask.addTaskListener(pqListener);

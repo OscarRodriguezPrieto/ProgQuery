@@ -30,7 +30,7 @@ public class Main {
                         parameters.max_operations_transaction, parameters.programId, parameters.userId,
                         parameters.sourceFolder);
 
-        final int JAVAC_DEFAULT_VERSION = 15;
+        final String JAVAC_DEFAULT_VERSION = "15";
         scheduler.newCompilationTask(parameters.sourceFolder, parameters.class_path, JAVAC_DEFAULT_VERSION,
                 JAVAC_DEFAULT_VERSION);
 
