@@ -58,7 +58,7 @@ public class MultiCompilationScheduler {
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
         List<File> files = new ArrayList<>();
         for (String fileDir : sourceFileDirs)
-            files.addAll(listSourceFiles(Path.of(sourcePath, fileDir).toAbsolutePath().toString()));
+            files.addAll(listSourceFiles(fileDir));
 
         List<JavaFileObject> sources = new ArrayList<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
