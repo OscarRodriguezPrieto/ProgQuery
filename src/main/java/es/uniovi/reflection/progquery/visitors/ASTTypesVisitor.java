@@ -32,7 +32,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.ErrorType;
-import javax.lang.model.type.NullType;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -765,7 +764,7 @@ public class ASTTypesVisitor
 
         // System.out.println(identifierTree);
         NodeWrapper identifierNode;
-        if(((JCIdent) identifierTree).sym==null){
+        if (((JCIdent) identifierTree).sym == null) {
             identifierNode =
                     DatabaseFachade.CURRENT_DB_FACHADE.createSkeletonNode(identifierTree, NodeTypes.IDENTIFIER);
             identifierNode.setProperty("name", identifierTree.getName().toString());
@@ -1287,14 +1286,15 @@ public class ASTTypesVisitor
 
     }
 
-    private boolean isUnknownOrErrorType(Type type){
+    private boolean isUnknownOrErrorType(Type type) {
         return type == null || type instanceof ErrorType || type instanceof Type.UnknownType;
     }
+
     private boolean isDynamicallyGenerated(Symbol symbol, MethodInvocationTree methodInvocationTree) {
         Type methodType = JavacInfo.getTypeDirect(methodInvocationTree.getMethodSelect());
         Type invocationType = JavacInfo.getTypeDirect(methodInvocationTree);
 
-        return symbol != null && symbol instanceof ClassSymbol && isUnknownOrErrorType(methodType) &&
+        return symbol instanceof ClassSymbol && isUnknownOrErrorType(methodType) &&
                 isUnknownOrErrorType(invocationType) && ((ClassSymbol) symbol).sourcefile == null;
     }
 
@@ -1554,8 +1554,8 @@ public class ASTTypesVisitor
         //POrque no hay trustuble invocations??? TODO Checkear
         Type type = JavacInfo.getTypeDirect(newClassTree.getIdentifier());
         Symbol newClassConstructor = ((JCNewClass) newClassTree).constructor;
-        NodeWrapper constructorDef = null;
-        if (newClassConstructor instanceof ClassSymbol && type instanceof ErrorType &&
+        NodeWrapper constructorDef;
+        if (newClassConstructor instanceof ClassSymbol && isUnknownOrErrorType(type) &&
                 ((ClassSymbol) newClassConstructor).sourcefile == null
             //&& ((ClassSymbol) newClassConstructor).getTypeParameters().size() == 0
         ) {
@@ -1579,6 +1579,10 @@ public class ASTTypesVisitor
 
 
         } else {
+            if (newClassConstructor == null) {
+                System.err.println("Invocation " + newClassTree + " with no symbol, at" + currentTypeDecSymbol);
+                return null;
+            }
             addClassIdentifier(type);
             MethodSymbol consSymbol = (MethodSymbol) newClassConstructor;
             MethodNameInfo nameInfo = new MethodNameInfo(consSymbol);

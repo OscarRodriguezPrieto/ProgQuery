@@ -54,7 +54,8 @@ public class MultiCompilationScheduler {
                                                 String javacTargetV, List<JavaFileObject> excludedSources,
                                                 List<String> compilerArgs, String... sourceFileDirs) {
 
-        System.out.println("NEW TASK on " + sourcePath + ":");
+        String firstSOurceDir = sourceFileDirs[0];
+        System.out.println("NEW TASK on " + firstSOurceDir + ":");
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
         List<File> files = new ArrayList<>();
         for (String fileDir : sourceFileDirs)
@@ -65,7 +66,7 @@ public class MultiCompilationScheduler {
         int sourceFilesCount = sources.size();
         sources.removeAll(excludedSources);
         if (sources.size() == 0)
-            return new CompilationResult(sourcePath);
+            return new CompilationResult(firstSOurceDir);
 
         List<String> compilerOptions = new ArrayList<>(
                 Arrays.asList("-nowarn", "-d", Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
@@ -78,7 +79,7 @@ public class MultiCompilationScheduler {
                 (JavacTaskImpl) compiler.getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
-        return new CompilationResult(sourcePath, sourceFilesCount, diagnostics.getDiagnostics(), sources.size());
+        return new CompilationResult(firstSOurceDir, sourceFilesCount, diagnostics.getDiagnostics(), sources.size());
     }
 
     public CompilationResult newCompilationTask(String sourcePath, String classPath, String javacSourceV,
