@@ -1293,9 +1293,9 @@ public class ASTTypesVisitor
     private boolean isDynamicallyGenerated(Symbol symbol, MethodInvocationTree methodInvocationTree) {
         Type methodType = JavacInfo.getTypeDirect(methodInvocationTree.getMethodSelect());
         Type invocationType = JavacInfo.getTypeDirect(methodInvocationTree);
-        return symbol instanceof ClassSymbol && isUnknownOrErrorType(methodType) &&
-                isUnknownOrErrorType(invocationType) &&
-                ((ClassSymbol) symbol).sourcefile == null;
+
+        return symbol != null && symbol instanceof ClassSymbol && isUnknownOrErrorType(methodType) &&
+                isUnknownOrErrorType(invocationType) && ((ClassSymbol) symbol).sourcefile == null;
     }
 
     @Override
@@ -1336,8 +1336,15 @@ public class ASTTypesVisitor
 
         } else {
             if (symbol == null) {
+                System.err.println("Invocation " + methodInvocationTree + " with no symbol, at" + currentTypeDecSymbol);
                 return null;
 
+            } else if (symbol instanceof ClassSymbol && ((ClassSymbol) symbol).sourcefile == null) {
+                //HERE SOME INFO COULD BE EXTRACTED, args owner resulting type etc.
+                //It may happen with certain (super) constructor of external APIs
+                System.err.println("Invocation " + methodInvocationTree +
+                        " probably from constructor, class symbol and no source file; at" + currentTypeDecSymbol);
+                return null;
             }
             MethodSymbol methodSymbol = (MethodSymbol) symbol;
 
