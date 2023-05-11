@@ -84,4 +84,11 @@ public class CompilationResult {
         return totalFilesToCompile;
     }
 
+    public int getInsertedNodes() {
+        return insertedNodes;
+    }
+
+    public int getInsertedRels() {
+        return insertedRels;
+    }
 }
