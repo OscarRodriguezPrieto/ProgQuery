@@ -85,7 +85,7 @@ public class MultiCompilationScheduler {
                 new CompilationResult(firstSOurceDir, sourceFilesCount, diagnostics.getDiagnostics(), sources.size(),
                         InfoToInsert.INFO_TO_INSERT.getNodeSet().size() - previousNodesInserted,
                         InfoToInsert.INFO_TO_INSERT.getRelSet().size() - previousRelsInserted);
-        this.previousRelsInserted = InfoToInsert.INFO_TO_INSERT.getNodeSet().size();
+        this.previousNodesInserted = InfoToInsert.INFO_TO_INSERT.getNodeSet().size();
         this.previousRelsInserted = InfoToInsert.INFO_TO_INSERT.getRelSet().size();
         return result;
     }
