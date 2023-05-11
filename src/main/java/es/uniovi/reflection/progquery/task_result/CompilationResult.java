@@ -63,17 +63,17 @@ public class CompilationResult {
 
 
     public String toString(String moduleName) {
-        final String tries = compilationTries > 1 ?
-                String.format("(after %d compilation tries, excluding %d files)", compilationTries,
-                        totalJavaFiles - totalFilesToCompile) : "";
+        String detail = String.format("%d nodes and %d rels. inserted.", insertedNodes, insertedRels);
+        if (compilationTries > 1)
+            detail += String.format("(after %d compilation tries, excluding %d files)", compilationTries,
+                    totalJavaFiles - totalFilesToCompile);
+
         final long compilationErrors = compilationErrors().count();
         if (compilationErrors == 0)
-            return String.format("Module %s (%s) with %d Java files compiled successfully.", moduleName, sourcePath,
-                    getTotalJavaFiles()) + tries;
-        return String
-                .format("Module %s (%s) with %d Java files generated %d compilation errors so it could not be " +
-                                "compiled.",
-                        moduleName, sourcePath, getTotalJavaFiles(), compilationErrors) + tries;
+            return String.format("Module %s (%s) with %d Java files compiled successfully. ", moduleName, sourcePath,
+                    getTotalJavaFiles()) + detail;
+        return String.format("Module %s (%s) with %d Java files generated %d compilation errors so it could not be " +
+                "compiled.", moduleName, sourcePath, getTotalJavaFiles(), compilationErrors) + detail;
     }
 
     public void setCompilationTries(int compilationTries) {
