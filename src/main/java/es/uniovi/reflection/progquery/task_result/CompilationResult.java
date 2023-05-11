@@ -15,13 +15,16 @@ public class CompilationResult {
     private final int totalFilesToCompile;
     private final List<Diagnostic<? extends JavaFileObject>> errors;
     private int compilationTries = 1;
+    private final int insertedNodes, insertedRels;
 
     public CompilationResult(String sourcePath, int totalJavaFiles, List<Diagnostic<? extends JavaFileObject>> errors,
-                             int totalFilesToCompile) {
+                             int totalFilesToCompile, int insertedNodes, int insertedRels) {
         this.sourcePath = sourcePath;
         this.totalJavaFiles = totalJavaFiles;
         this.errors = errors;
         this.totalFilesToCompile = totalFilesToCompile;
+        this.insertedNodes = insertedNodes;
+        this.insertedRels = insertedRels;
     }
 
     public CompilationResult(String sourcePath) {
@@ -29,6 +32,8 @@ public class CompilationResult {
         this.totalJavaFiles = 0;
         this.errors = new ArrayList<>();
         totalFilesToCompile = 0;
+        insertedNodes = 0;
+        insertedRels = 0;
     }
 
     public int getTotalJavaFiles() {

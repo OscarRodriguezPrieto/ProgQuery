@@ -30,6 +30,7 @@ public class MultiCompilationScheduler {
     private PDGProcessing pdgUtils = new PDGProcessing();
     private ASTAuxiliarStorage ast = new ASTAuxiliarStorage();
     private JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    private int previousNodesInserted = 0, previousRelsInserted = 0;
 
     private static final boolean MERGING_ALLOWED = true;
 
@@ -79,8 +80,16 @@ public class MultiCompilationScheduler {
                 (JavacTaskImpl) compiler.getTask(null, null, diagnostics, compilerOptions, null, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
-        return new CompilationResult(firstSOurceDir, sourceFilesCount, diagnostics.getDiagnostics(), sources.size());
+
+        CompilationResult result =
+                new CompilationResult(firstSOurceDir, sourceFilesCount, diagnostics.getDiagnostics(), sources.size(),
+                        InfoToInsert.INFO_TO_INSERT.getNodeSet().size() - previousNodesInserted,
+                        InfoToInsert.INFO_TO_INSERT.getRelSet().size() - previousRelsInserted);
+        this.previousRelsInserted = InfoToInsert.INFO_TO_INSERT.getNodeSet().size();
+        this.previousRelsInserted = InfoToInsert.INFO_TO_INSERT.getRelSet().size();
+        return result;
     }
+
 
     public CompilationResult newCompilationTask(String sourcePath, String classPath, String javacSourceV,
                                                 String javacTargetV) {
