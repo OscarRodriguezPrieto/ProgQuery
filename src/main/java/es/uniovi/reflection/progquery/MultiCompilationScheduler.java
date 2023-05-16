@@ -16,6 +16,7 @@ import javax.tools.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.ClosedFileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -158,10 +159,14 @@ public class MultiCompilationScheduler {
     private void showErrors(DiagnosticCollector<JavaFileObject> diagnostics) {
         if (diagnostics.getDiagnostics().size() > 0) {
             for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
-                System.err
-                        .format("Error on [%d,%d] in %s %s\n", diagnostic.getLineNumber(), diagnostic.getColumnNumber(),
-                                diagnostic.getSource(), diagnostic.getMessage(null));
-            }
+                try {
+                    System.err.format("Error on [%d,%d] in %s %s\n", diagnostic.getLineNumber(), diagnostic.getColumnNumber(),
+                            diagnostic.getSource(), diagnostic.getMessage(null));
+                }catch(ClosedFileSystemException ex){
+                    System.err.format("Error on [no location available] in %s %s\n",
+                            diagnostic.getSource(), diagnostic.getMessage(null));
+                }
+                }
         }
     }
 
