@@ -72,7 +72,7 @@ public class MultiCompilationScheduler {
 
         List<String> compilerOptions = new ArrayList<>(
                 Arrays.asList("-nowarn", "-d", Paths.get(sourcePath, "target", "classes").toAbsolutePath().toString(),
-                        "-target", javacTargetV, "-source", javacSourceV, "-classpath", classPath));
+                        "-target", javacTargetV, "-source", javacSourceV, "-classpath", classPath, "-Xprefer:source"));
         compilerOptions.addAll(compilerArgs);
         //        if (javacSourceV >= 15)
         //            compilerOptions.add("--enable-preview");
