@@ -20,9 +20,7 @@ import java.nio.file.ClosedFileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,11 +57,11 @@ public class MultiCompilationScheduler {
         String firstSOurceDir = sourceFileDirs[0];
         System.out.println("NEW TASK on " + firstSOurceDir + ":");
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, Charset.forName("UTF-8"));
-        List<File> files = new ArrayList<>();
+        Set<File> files = new HashSet<>();
         for (String fileDir : sourceFileDirs)
             files.addAll(listSourceFiles(fileDir));
 
-        List<JavaFileObject> sources = new ArrayList<>();
+        Set<JavaFileObject> sources = new HashSet<>();
         fileManager.getJavaFileObjectsFromFiles(files).iterator().forEachRemaining(sources::add);
         int sourceFilesCount = sources.size();
         sources.removeAll(excludedSources);
@@ -79,6 +77,7 @@ public class MultiCompilationScheduler {
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         JavacTaskImpl compilerTask =
                 (JavacTaskImpl) compiler.getTask(null, null, diagnostics, compilerOptions, null, sources);
+        addListener(compilerTask, sources);
         runPQCompilationTask(compilerTask);
         showErrors(diagnostics);
 
@@ -119,15 +118,12 @@ public class MultiCompilationScheduler {
         }
     }
 
-    public void addListener(JavacTask compilerTask) {
-        GetStructuresAfterAnalyze pqListener = new GetStructuresAfterAnalyze(compilerTask, this);
+    public void addListener(JavacTask compilerTask, Set<JavaFileObject> sources) {
+        GetStructuresAfterAnalyze pqListener = new GetStructuresAfterAnalyze(compilerTask, this, sources);
         compilerTask.addTaskListener(pqListener);
     }
 
-    public void runPQCompilationTask(JavacTask compilerTask) {
-        addListener(compilerTask);
-        //        compilerTask.getTaskListeners().forEach(System.out::println);
-
+    private void runPQCompilationTask(JavacTask compilerTask) {
         compilerTask.call();
         System.out.println("NODEsET:" + InfoToInsert.INFO_TO_INSERT.getNodeSet().size());
         System.out.println("RELsET:" + InfoToInsert.INFO_TO_INSERT.getRelSet().size());

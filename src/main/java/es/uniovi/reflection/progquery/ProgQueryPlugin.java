@@ -1,18 +1,11 @@
 package es.uniovi.reflection.progquery;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.*;
 
 import es.uniovi.reflection.progquery.database.*;
-import org.eclipse.collections.api.factory.map.MutableMapFactory;
-import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.impl.map.mutable.MutableMapFactoryImpl;
 import org.kohsuke.MetaInfServices;
 
 import com.sun.source.util.JavacTask;
-
-import es.uniovi.reflection.progquery.tasklisteners.GetStructuresAfterAnalyze;
-import org.neo4j.configuration.GraphDatabaseSettings;
 
 @MetaInfServices(com.sun.source.util.Plugin.class)
 public class ProgQueryPlugin implements com.sun.source.util.Plugin {
@@ -55,7 +48,7 @@ public class ProgQueryPlugin implements com.sun.source.util.Plugin {
 										: new EmbeddedInsertion());
 
 		MultiCompilationScheduler scheduler=new MultiCompilationScheduler(programID, userID);
-		scheduler.addListener(task);
+		scheduler.addListener(task, null);
 		scheduler.endAnalysis();
 	}
 
