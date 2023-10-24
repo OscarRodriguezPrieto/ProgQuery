@@ -34,7 +34,6 @@ public class Main {
         scheduler.newCompilationTask(parameters.sourceFolder, parameters.class_path, JAVAC_DEFAULT_VERSION,
                 JAVAC_DEFAULT_VERSION);
 
-
         scheduler.endAnalysis();
 
         System.exit(0);
@@ -44,11 +43,11 @@ public class Main {
                                                            String neo4jUser, String neo4jPass, String database,
                                                            String maxOps, String programId, String userId,
                                                            String dbFolder) {
-        final String LOCAL_MODE = OptionsConfiguration.neo4j_modeNames[0];
+
         try {
-            DatabaseFachade.init(neo4jMode.contentEquals(OptionsConfiguration.DEFAULT_NEO4J_MODE) ?
+            DatabaseFachade.init(neo4jMode.contentEquals(OptionsConfiguration.NEO4J_MODE_SERVER) ?
                     new Neo4jDriverLazyInsertion(neo4jHost, neo4jPort, neo4jUser, neo4jPass, database, maxOps) :
-                    neo4jMode.contentEquals(LOCAL_MODE) ? new EmbeddedInsertion(
+                    neo4jMode.contentEquals(OptionsConfiguration.NEO4J_MODE_LOCAL) ? new EmbeddedInsertion(
                             Paths.get(new File(dbFolder).getCanonicalPath(), "target", database).toAbsolutePath()
                                     .toString()) : new NotPersistentLazyInsertion());
         } catch (IOException e) {
@@ -62,14 +61,14 @@ public class Main {
     public static MultiCompilationScheduler startServerInsertion(String neo4jHost, String neo4jPort, String neo4jUser,
                                                                  String neo4jPass, String database, String maxOps,
                                                                  String programId, String userId) {
-        return startInsertion(OptionsConfiguration.DEFAULT_NEO4J_MODE, neo4jHost, neo4jPort, neo4jUser, neo4jPass,
+        return startInsertion(OptionsConfiguration.NEO4J_MODE_SERVER, neo4jHost, neo4jPort, neo4jUser, neo4jPass,
                 database, maxOps, programId, userId, null);
     }
 
     public static MultiCompilationScheduler startLocalInsertion(String database, String programId, String userId,
                                                                 String dbFolder) {
-        String LOCAL_MODE = OptionsConfiguration.neo4j_modeNames[0];
-        return startInsertion(LOCAL_MODE, null, null, null, null, database, null, programId, userId, dbFolder);
+
+        return startInsertion(OptionsConfiguration.NEO4J_MODE_LOCAL, null, null, null, null, database, null, programId, userId, dbFolder);
     }
 
     private static void parseArguments(String[] args) {
