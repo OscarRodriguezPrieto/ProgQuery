@@ -1,3 +1,6 @@
+IMPORTANT!!
+Next updates, bug fixes, enhancements, and releases are available in the new repository https://github.com/ComputationalReflection/ProgQuery/ !!
+
 # ProgQuery
 ProgQuery is a system to extract syntactic and semantic information from source code programs and store it in a Neo4j graph database for posterior analysis. 
 For each program or compilation unit, ProgQuery extracts the following graph structures:
